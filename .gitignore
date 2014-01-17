@@ -1,1 +1,11 @@
-target/
+/data
+/work
+/logs
+/.idea
+/target
+.DS_Store
+*.iml
+/.project
+/.classpath
+/.settings
+.local-execution-hints.log
