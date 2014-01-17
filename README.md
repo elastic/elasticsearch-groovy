@@ -1,10 +1,27 @@
 Groovy client for Elasticsearch
 ===============================
 
+The elasticsearch groovy client project helps you to use elasticsearch in
+groovy projects.
+
+Adding to groovy projects
+-------------------------
+
+```
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    compile 'org.elasticsearch:elasticsearch-groovy:1.0.0'
+}
+```
+
 |     Groovy Client           |    elasticsearch    |  groovy  | Release date |
 |-----------------------------|---------------------|----------|:------------:|
 | 1.1.0-SNAPSHOT (master)     | 0.90                |  2.2.1   |              |
 | 1.0.0                       | 0.90                |  2.2.1   |  2014-01-17  |
+
 
 License
 -------
