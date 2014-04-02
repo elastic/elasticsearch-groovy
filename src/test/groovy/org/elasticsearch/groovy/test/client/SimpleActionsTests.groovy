@@ -116,14 +116,18 @@ class SimpleActionsTests {
         refresh = node.client.admin.indices.refresh {}
         assertThat refresh.response.failedShards, equalTo(0)
 
-        def count = node.client.count {
-            indices 'test'
-            types 'type1'
+        def theQuery = new org.elasticsearch.groovy.common.xcontent.GXContentBuilder().buildAsBytes {
             query {
                 term {
                     test = 'value'
                 }
             }
+        }
+
+        def count = node.client.count {
+            indices 'test'
+            types 'type1'
+            source theQuery
         }
         assertThat count.response.failedShards, equalTo(0)
         assertThat count.response.count, equalTo(1l)
@@ -176,11 +180,17 @@ class SimpleActionsTests {
         assertThat search.response.hits.totalHits, equalTo(1l)
         assertThat search.response.hits[0].source.test, equalTo('new value')
 
+        def deleteByQueryQuery = new org.elasticsearch.groovy.common.xcontent.GXContentBuilder().buildAsBytes {
+            query {
+                term {
+                    test = 'value'
+                }
+            }
+        }
+
         def deleteByQuery = node.client.deleteByQuery {
             indices 'test'
-            query {
-                term(test: 'value')
-            }
+            source deleteByQueryQuery
         }
         assertThat deleteByQuery.response.indices.test.failedShards, equalTo(0)
 

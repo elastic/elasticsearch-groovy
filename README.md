@@ -19,8 +19,7 @@ dependencies {
 
 |     Groovy Client           |    elasticsearch    |  groovy  | Release date |
 |-----------------------------|---------------------|----------|:------------:|
-| 1.1.0-SNAPSHOT (master)     | 0.90                |  2.2.1   |              |
-| 1.0.0                       | 0.90                |  2.2.1   |  2014-01-17  |
+| 1.0.0-SNAPSHOT (master)     | 1.0                 |  2.2.1   |  XXXX-XX-XX  |
 
 
 License

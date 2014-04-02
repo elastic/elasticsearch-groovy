@@ -50,9 +50,9 @@ import org.elasticsearch.action.admin.indices.optimize.OptimizeResponse
 import org.elasticsearch.action.admin.indices.refresh.RefreshRequest
 import org.elasticsearch.action.admin.indices.refresh.RefreshRequestBuilder
 import org.elasticsearch.action.admin.indices.refresh.RefreshResponse
-import org.elasticsearch.action.admin.indices.settings.UpdateSettingsRequest
-import org.elasticsearch.action.admin.indices.settings.UpdateSettingsRequestBuilder
-import org.elasticsearch.action.admin.indices.settings.UpdateSettingsResponse
+import org.elasticsearch.action.admin.indices.settings.put.UpdateSettingsRequest
+import org.elasticsearch.action.admin.indices.settings.put.UpdateSettingsRequestBuilder
+import org.elasticsearch.action.admin.indices.settings.put.UpdateSettingsResponse
 import org.elasticsearch.action.admin.indices.stats.IndicesStatsRequest
 import org.elasticsearch.action.admin.indices.stats.IndicesStatsRequestBuilder
 import org.elasticsearch.action.admin.indices.stats.IndicesStatsResponse

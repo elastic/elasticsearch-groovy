@@ -20,7 +20,7 @@
 package org.elasticsearch.groovy.client.action;
 
 import groovy.lang.Closure;
-import org.elasticsearch.ElasticSearchException;
+import org.elasticsearch.ElasticsearchException;
 import org.elasticsearch.action.ActionListener;
 import org.elasticsearch.action.ActionRequest;
 import org.elasticsearch.action.ListenableActionFuture;
@@ -93,19 +93,19 @@ public class GActionFuture<T> implements ListenableActionFuture<T>, ActionListen
         return actionGet();
     }
 
-    public T response(String timeout) throws ElasticSearchException {
+    public T response(String timeout) throws ElasticsearchException {
         return actionGet(timeout);
     }
 
-    public T response(long timeoutMillis) throws ElasticSearchException {
+    public T response(long timeoutMillis) throws ElasticsearchException {
         return actionGet(timeoutMillis);
     }
 
-    public T response(TimeValue timeout) throws ElasticSearchException {
+    public T response(TimeValue timeout) throws ElasticsearchException {
         return actionGet(timeout);
     }
 
-    public T response(long timeout, TimeUnit unit) throws ElasticSearchException {
+    public T response(long timeout, TimeUnit unit) throws ElasticsearchException {
         return actionGet(timeout, unit);
     }
 
@@ -131,27 +131,27 @@ public class GActionFuture<T> implements ListenableActionFuture<T>, ActionListen
     }
 
     @Override
-    public T actionGet() throws ElasticSearchException {
+    public T actionGet() throws ElasticsearchException {
         return future.actionGet();
     }
 
     @Override
-    public T actionGet(String timeout) throws ElasticSearchException {
+    public T actionGet(String timeout) throws ElasticsearchException {
         return future.actionGet(timeout);
     }
 
     @Override
-    public T actionGet(long timeoutMillis) throws ElasticSearchException {
+    public T actionGet(long timeoutMillis) throws ElasticsearchException {
         return future.actionGet(timeoutMillis);
     }
 
     @Override
-    public T actionGet(long timeout, TimeUnit unit) throws ElasticSearchException {
+    public T actionGet(long timeout, TimeUnit unit) throws ElasticsearchException {
         return future.actionGet(timeout, unit);
     }
 
     @Override
-    public T actionGet(TimeValue timeout) throws ElasticSearchException {
+    public T actionGet(TimeValue timeout) throws ElasticsearchException {
         return future.actionGet(timeout);
     }
 

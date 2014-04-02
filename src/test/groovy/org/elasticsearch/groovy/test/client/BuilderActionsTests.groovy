@@ -72,9 +72,16 @@ class BuilderActionsTests {
 
         node.client.admin.indices.refresh {}.actionGet()
 
-        def countR = node.client.prepareCount('test').setQuery({
-            term(test: 'value')
-        }).gexecute()
+
+        def theQuery = new org.elasticsearch.groovy.common.xcontent.GXContentBuilder().buildAsBytes {
+            query {
+                term {
+                    test = 'value'
+                }
+            }
+        }
+
+        def countR = node.client.prepareCount('test').setSource(theQuery).gexecute()
 
         assertThat countR.response.count, equalTo(1l)
 
