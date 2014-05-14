@@ -2,13 +2,14 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0"
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-    <name>Elasticsearch Groovy Client</name>
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.elasticsearch</groupId>
     <artifactId>elasticsearch-groovy</artifactId>
     <version>1.0.0-SNAPSHOT</version>
     <packaging>jar</packaging>
-    <description>Groovy client for ElasticSearch</description>
+    <name>Elasticsearch Groovy Client</name>
+    <description>Official Groovy client for elasticsearch</description>
+    <url>https://github.com/elasticsearch/elasticsearch-groovy/</url>
     <inceptionYear>2009</inceptionYear>
     <licenses>
         <license>
@@ -20,7 +21,7 @@
     <scm>
         <connection>scm:git:git@github.com:elasticsearch/elasticsearch-groovy.git</connection>
         <developerConnection>scm:git:git@github.com:elasticsearch/elasticsearch-groovy.git</developerConnection>
-        <url>http://github.com/elasticsearch/elasticsearch-groovy</url>
+        <url>https://github.com/elasticsearch/elasticsearch-groovy</url>
     </scm>
 
     <parent>
