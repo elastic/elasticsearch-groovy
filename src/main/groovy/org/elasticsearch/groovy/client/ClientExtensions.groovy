@@ -69,6 +69,29 @@ import org.elasticsearch.common.settings.Settings
 /**
  * {@code ClientExtensions} provides extensions to the Elasticsearch {@link Client} to enable Groovy-friendly
  * requests.
+ * <p />
+ * This enables support for using {@link Closure}s to configure (and execute) the various action requests. For example:
+ * <pre>
+ * IndexResponse indexResponse = client.index {
+ *     index "index-name"
+ *     type "type-name"
+ *     id "id-value"
+ *     source {
+ *         name "kimchy"
+ *         timestamp = new Date()
+ *         nested {
+ *             other = 1.23
+ *             data {
+ *                 count = 1234
+ *                 values = ["abc", "def"]
+ *             }
+ *         }
+ *     }
+ * }.response
+ * </pre>
+ * The above code would create an {@link IndexRequest}, call {@link IndexRequest#index(String) index("index-name")},
+ * {@link IndexRequest#type(String) type("type-name")}, {@link IndexRequest#id(String) id("id-value")}, and {@link
+ * IndexRequest#source source(Closure)}.
  */
 class ClientExtensions extends AbstractClientExtensions {
     /**
@@ -106,11 +129,7 @@ class ClientExtensions extends AbstractClientExtensions {
      * @throws NullPointerException if any parameter is {@code null}
      */
     static ListenableActionFuture<IndexResponse> index(Client self, Closure requestClosure) {
-        Wrapper<IndexRequest, IndexResponse, Client> wrapper = wrap(self, Requests.indexRequest(), requestClosure)
-
-        self.index(wrapper.request, wrapper.responseFuture)
-
-        wrapper.responseFuture
+        doRequest(self, Requests.indexRequest(), requestClosure, self.&index)
     }
 
     /**
@@ -122,11 +141,7 @@ class ClientExtensions extends AbstractClientExtensions {
      * @throws NullPointerException if any parameter is {@code null}
      */
     static ListenableActionFuture<BulkResponse> bulk(Client self, Closure requestClosure) {
-        Wrapper<BulkRequest, BulkResponse, Client> wrapper = wrap(self, new BulkRequest(), requestClosure)
-
-        self.bulk(wrapper.request, wrapper.responseFuture)
-
-        wrapper.responseFuture
+        doRequest(self, new BulkRequest(), requestClosure, self.&bulk)
     }
 
     /**
@@ -137,11 +152,7 @@ class ClientExtensions extends AbstractClientExtensions {
      * @return Never {@code null}.
      */
     static ListenableActionFuture<UpdateResponse> update(Client self, Closure requestClosure) {
-        Wrapper<UpdateRequest, UpdateResponse, Client> wrapper = wrap(self, new UpdateRequest(), requestClosure)
-
-        self.update(wrapper.request, wrapper.responseFuture)
-
-        wrapper.responseFuture
+        doRequest(self, new UpdateRequest(), requestClosure, self.&update)
     }
 
     /**
@@ -152,11 +163,7 @@ class ClientExtensions extends AbstractClientExtensions {
      * @return Never {@code null}.
      */
     static ListenableActionFuture<DeleteResponse> delete(Client self, Closure requestClosure) {
-        Wrapper<DeleteRequest, DeleteResponse, Client> wrapper = wrap(self, new DeleteRequest(), requestClosure)
-
-        self.delete(wrapper.request, wrapper.responseFuture)
-
-        wrapper.responseFuture
+        doRequest(self, new DeleteRequest(), requestClosure, self.&delete)
     }
 
     /**
@@ -167,16 +174,13 @@ class ClientExtensions extends AbstractClientExtensions {
      * @return Never {@code null}.
      */
     static ListenableActionFuture<DeleteByQueryResponse> deleteByQuery(Client self, Closure requestClosure) {
-        Wrapper<DeleteByQueryRequest, DeleteByQueryResponse, Client> wrapper =
-                wrap(self, Requests.deleteByQueryRequest(), requestClosure)
-
-        self.deleteByQuery(wrapper.request, wrapper.responseFuture)
-
-        wrapper.responseFuture
+        doRequest(self, Requests.deleteByQueryRequest(), requestClosure, self.&deleteByQuery)
     }
 
     /**
-     * Deletes a document from the index based on the index, type and id.
+     * Gets a document from the index based on the index, type and id.
+     * <p />
+     * Note: Get retrievals are performed in real time.
      *
      * @param self The {@code this} reference for the {@link Client}
      * @param requestClosure The map-like closure that configures the {@link GetRequest}.
@@ -184,11 +188,7 @@ class ClientExtensions extends AbstractClientExtensions {
      */
     static ListenableActionFuture<GetResponse> get(Client self, Closure requestClosure) {
         // index is expected to be set by the closure
-        Wrapper<GetRequest, GetResponse, Client> wrapper = wrap(self, Requests.getRequest(null), requestClosure)
-
-        self.get(wrapper.request, wrapper.responseFuture)
-
-        wrapper.responseFuture
+        doRequest(self, Requests.getRequest(null), requestClosure, self.&get)
     }
 
     /**
@@ -200,11 +200,7 @@ class ClientExtensions extends AbstractClientExtensions {
      * @return Never {@code null}.
      */
     static ListenableActionFuture<MultiGetResponse> multiGet(Client self, Closure requestClosure) {
-        Wrapper<MultiGetRequest, MultiGetResponse, Client> wrapper = wrap(self, new MultiGetRequest(), requestClosure)
-
-        self.multiGet(wrapper.request, wrapper.responseFuture)
-
-        wrapper.responseFuture
+        doRequest(self, new MultiGetRequest(), requestClosure, self.&multiGet)
     }
 
     /**
@@ -215,11 +211,7 @@ class ClientExtensions extends AbstractClientExtensions {
      * @return Never {@code null}.
      */
     static ListenableActionFuture<SuggestResponse> suggest(Client self, Closure requestClosure) {
-        Wrapper<SuggestRequest, SuggestResponse, Client> wrapper = wrap(self, new SuggestRequest(), requestClosure)
-
-        self.suggest(wrapper.request, wrapper.responseFuture)
-
-        wrapper.responseFuture
+        doRequest(self, new SuggestRequest(), requestClosure, self.&suggest)
     }
 
     /**
@@ -230,11 +222,7 @@ class ClientExtensions extends AbstractClientExtensions {
      * @return Never {@code null}.
      */
     static ListenableActionFuture<SearchResponse> search(Client self, Closure requestClosure) {
-        Wrapper<SearchRequest, SearchResponse, Client> wrapper = wrap(self, Requests.searchRequest(), requestClosure)
-
-        self.search(wrapper.request, wrapper.responseFuture)
-
-        wrapper.responseFuture
+        doRequest(self, Requests.searchRequest(), requestClosure, self.&search)
     }
 
     /**
@@ -245,12 +233,7 @@ class ClientExtensions extends AbstractClientExtensions {
      * @return Never {@code null}.
      */
     static ListenableActionFuture<MultiSearchResponse> multiSearch(Client self, Closure requestClosure) {
-        Wrapper<MultiSearchRequest, MultiSearchResponse, Client> wrapper =
-                wrap(self, new MultiSearchRequest(), requestClosure)
-
-        self.multiSearch(wrapper.request, wrapper.responseFuture)
-
-        wrapper.responseFuture
+        doRequest(self, new MultiSearchRequest(), requestClosure, self.&multiSearch)
     }
 
     /**
@@ -261,11 +244,7 @@ class ClientExtensions extends AbstractClientExtensions {
      * @return Never {@code null}.
      */
     static ListenableActionFuture<CountResponse> count(Client self, Closure requestClosure) {
-        Wrapper<CountRequest, CountResponse, Client> wrapper = wrap(self, Requests.countRequest(), requestClosure)
-
-        self.count(wrapper.request, wrapper.responseFuture)
-
-        wrapper.responseFuture
+        doRequest(self, Requests.countRequest(), requestClosure, self.&count)
     }
 
     /**
@@ -278,12 +257,7 @@ class ClientExtensions extends AbstractClientExtensions {
      * @return Never {@code null}.
      */
     static ListenableActionFuture<SearchResponse> searchScroll(Client self, Closure requestClosure) {
-        Wrapper<SearchScrollRequest, SearchResponse, Client> wrapper =
-                wrap(self, new SearchScrollRequest(), requestClosure)
-
-        self.searchScroll(wrapper.request, wrapper.responseFuture)
-
-        wrapper.responseFuture
+        doRequest(self, new SearchScrollRequest(), requestClosure, self.&searchScroll)
     }
 
     /**
@@ -294,12 +268,7 @@ class ClientExtensions extends AbstractClientExtensions {
      * @return Never {@code null}.
      */
     static ListenableActionFuture<ClearScrollResponse> clearScroll(Client self, Closure requestClosure) {
-        Wrapper<ClearScrollRequest, ClearScrollResponse, Client> wrapper =
-                wrap(self, new ClearScrollRequest(), requestClosure)
-
-        self.clearScroll(wrapper.request, wrapper.responseFuture)
-
-        wrapper.responseFuture
+        doRequest(self, new ClearScrollRequest(), requestClosure, self.&clearScroll)
     }
 
     /**
@@ -311,12 +280,7 @@ class ClientExtensions extends AbstractClientExtensions {
      */
     static ListenableActionFuture<TermVectorResponse> termVector(Client self, Closure requestClosure) {
         // index, type and id are expected to be set by the closure
-        Wrapper<TermVectorRequest, TermVectorResponse, Client> wrapper =
-                wrap(self, new TermVectorRequest(null, null, null), requestClosure)
-
-        self.termVector(wrapper.request, wrapper.responseFuture)
-
-        wrapper.responseFuture
+        doRequest(self, new TermVectorRequest(null, null, null), requestClosure, self.&termVector)
     }
 
     /**
@@ -327,12 +291,7 @@ class ClientExtensions extends AbstractClientExtensions {
      * @return Never {@code null}.
      */
     static ListenableActionFuture<MultiTermVectorsResponse> multiTermVectors(Client self, Closure requestClosure) {
-        Wrapper<MultiTermVectorsRequest, MultiTermVectorsResponse, Client> wrapper =
-                wrap(self, new MultiTermVectorsRequest(), requestClosure)
-
-        self.multiTermVectors(wrapper.request, wrapper.responseFuture)
-
-        wrapper.responseFuture
+        doRequest(self, new MultiTermVectorsRequest(), requestClosure, self.&multiTermVectors)
     }
 
     /**
@@ -343,12 +302,7 @@ class ClientExtensions extends AbstractClientExtensions {
      * @return Never {@code null}.
      */
     static ListenableActionFuture<PercolateResponse> percolate(Client self, Closure requestClosure) {
-        Wrapper<PercolateRequest, PercolateResponse, Client> wrapper =
-                wrap(self, new PercolateRequest(), requestClosure)
-
-        self.percolate(wrapper.request, wrapper.responseFuture)
-
-        wrapper.responseFuture
+        doRequest(self, new PercolateRequest(), requestClosure, self.&percolate)
     }
 
     /**
@@ -359,12 +313,7 @@ class ClientExtensions extends AbstractClientExtensions {
      * @return Never {@code null}.
      */
     static ListenableActionFuture<MultiPercolateResponse> multiPercolate(Client self, Closure requestClosure) {
-        Wrapper<MultiPercolateRequest, MultiPercolateResponse, Client> wrapper =
-                wrap(self, new MultiPercolateRequest(), requestClosure)
-
-        self.multiPercolate(wrapper.request, wrapper.responseFuture)
-
-        wrapper.responseFuture
+        doRequest(self, new MultiPercolateRequest(), requestClosure, self.&multiPercolate)
     }
 
     /**
@@ -376,12 +325,7 @@ class ClientExtensions extends AbstractClientExtensions {
      * @throws NullPointerException if any parameter is {@code null}
      */
     static ListenableActionFuture<ExplainResponse> explain(Client self, Closure requestClosure) {
-        Wrapper<ExplainRequest, ExplainResponse, Client> wrapper =
-                wrap(self, new ExplainRequest(null, null, null), requestClosure)
-
-        self.explain(wrapper.request, wrapper.responseFuture)
-
-        wrapper.responseFuture
+        doRequest(self, new ExplainRequest(null, null, null), requestClosure, self.&explain)
     }
 
     /**
@@ -393,12 +337,7 @@ class ClientExtensions extends AbstractClientExtensions {
      * @throws NullPointerException if any parameter is {@code null}
      */
     static ListenableActionFuture<PutIndexedScriptResponse> putIndexedScript(Client self, Closure requestClosure) {
-        Wrapper<PutIndexedScriptRequest, PutIndexedScriptResponse, Client> wrapper =
-                wrap(self, new PutIndexedScriptRequest(), requestClosure)
-
-        self.putIndexedScript(wrapper.request, wrapper.responseFuture)
-
-        wrapper.responseFuture
+        doRequest(self, new PutIndexedScriptRequest(), requestClosure, self.&putIndexedScript)
     }
 
     /**
@@ -410,12 +349,7 @@ class ClientExtensions extends AbstractClientExtensions {
      * @throws NullPointerException if any parameter is {@code null}
      */
     static ListenableActionFuture<GetIndexedScriptResponse> getIndexedScript(Client self, Closure requestClosure) {
-        Wrapper<GetIndexedScriptRequest, GetIndexedScriptResponse, Client> wrapper =
-                wrap(self, new GetIndexedScriptRequest(), requestClosure)
-
-        self.getIndexedScript(wrapper.request, wrapper.responseFuture)
-
-        wrapper.responseFuture
+        doRequest(self, new GetIndexedScriptRequest(), requestClosure, self.&getIndexedScript)
     }
 
     /**
@@ -428,12 +362,7 @@ class ClientExtensions extends AbstractClientExtensions {
      */
     static ListenableActionFuture<DeleteIndexedScriptResponse> deleteIndexedScript(Client self,
                                                                                    Closure requestClosure) {
-        Wrapper<DeleteIndexedScriptRequest, DeleteIndexedScriptResponse, Client> wrapper =
-                wrap(self, new DeleteIndexedScriptRequest(), requestClosure)
-
-        self.deleteIndexedScript(wrapper.request, wrapper.responseFuture)
-
-        wrapper.responseFuture
+        doRequest(self, new DeleteIndexedScriptRequest(), requestClosure, self.&deleteIndexedScript)
     }
 
     /**
@@ -446,11 +375,7 @@ class ClientExtensions extends AbstractClientExtensions {
      * @throws NullPointerException if any parameter is {@code null} except {@code index}
      */
     static ListenableActionFuture<SearchResponse> moreLikeThis(Client self, String index, Closure requestClosure) {
-        Wrapper<MoreLikeThisRequest, SearchResponse, Client> wrapper =
-                wrap(self, Requests.moreLikeThisRequest(index), requestClosure)
-
-        self.moreLikeThis(wrapper.request, wrapper.responseFuture)
-
-        wrapper.responseFuture
+        // the only one that _requires_ the index as a parameter/constructor arg
+        doRequest(self, Requests.moreLikeThisRequest(index), requestClosure, self.&moreLikeThis)
     }
 }

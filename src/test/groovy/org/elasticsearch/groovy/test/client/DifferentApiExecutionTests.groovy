@@ -26,6 +26,7 @@ import org.elasticsearch.node.NodeBuilder
 
 import org.junit.After
 import org.junit.Before
+import org.junit.Ignore
 import org.junit.Test
 
 import java.util.concurrent.CountDownLatch
@@ -37,6 +38,7 @@ import static org.hamcrest.Matchers.equalTo
 /**
  *
  */
+@Ignore
 class DifferentApiExecutionTests {
 
     def Node node

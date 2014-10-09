@@ -61,6 +61,7 @@ class IndicesAdminClientExtensionsActionTests extends AbstractClientTests {
 
         assert response.failedShards == 0
 
+        // because we have refreshed the index, we should now be able to search for documents guaranteed
         SearchResponse searchResponse = client.search {
             indices indexName
             types typeName

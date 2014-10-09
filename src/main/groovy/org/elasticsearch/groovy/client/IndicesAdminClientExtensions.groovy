@@ -99,12 +99,7 @@ class IndicesAdminClientExtensions extends AbstractClientExtensions {
      * @throws NullPointerException if any parameter is {@code null}
      */
     static ListenableActionFuture<RefreshResponse> refresh(IndicesAdminClient self, Closure requestClosure) {
-        Wrapper<RefreshRequest, RefreshResponse, IndicesAdminClient> wrapper =
-                wrap(self, Requests.refreshRequest(), requestClosure)
-
-        self.refresh(wrapper.request, wrapper.responseFuture)
-
-        wrapper.responseFuture
+        doRequest(self, Requests.refreshRequest(), requestClosure, self.&refresh)
     }
 
     /**
@@ -116,12 +111,7 @@ class IndicesAdminClientExtensions extends AbstractClientExtensions {
      * @throws NullPointerException if any parameter is {@code null}
      */
     static ListenableActionFuture<IndicesExistsResponse> exists(IndicesAdminClient self, Closure requestClosure) {
-        Wrapper<IndicesExistsRequest, IndicesExistsResponse, IndicesAdminClient> wrapper =
-                wrap(self, Requests.indicesExistsRequest(), requestClosure)
-
-        self.exists(wrapper.request, wrapper.responseFuture)
-
-        wrapper.responseFuture
+        doRequest(self, Requests.indicesExistsRequest(), requestClosure, self.&exists)
     }
 
     /**
@@ -132,13 +122,9 @@ class IndicesAdminClientExtensions extends AbstractClientExtensions {
      * @return Never {@code null}.
      * @throws NullPointerException if any parameter is {@code null}
      */
-    static ListenableActionFuture<TypesExistsResponse> typeExists(IndicesAdminClient self, Closure requestClosure) {
-        Wrapper<TypesExistsRequest, TypesExistsResponse, IndicesAdminClient> wrapper =
-                wrap(self, new TypesExistsRequest(null), requestClosure)
-
-        self.typesExists(wrapper.request, wrapper.responseFuture)
-
-        wrapper.responseFuture
+    static ListenableActionFuture<TypesExistsResponse> typesExists(IndicesAdminClient self, Closure requestClosure) {
+        // indices must be supplied by the closure
+        doRequest(self, new TypesExistsRequest(null), requestClosure, self.&typesExists)
     }
 
     /**
@@ -150,12 +136,7 @@ class IndicesAdminClientExtensions extends AbstractClientExtensions {
      * @throws NullPointerException if any parameter is {@code null}
      */
     static ListenableActionFuture<IndicesStatsResponse> stats(IndicesAdminClient self, Closure requestClosure) {
-        Wrapper<IndicesStatsRequest, IndicesStatsResponse, IndicesAdminClient> wrapper =
-                wrap(self, new IndicesStatsRequest(), requestClosure)
-
-        self.stats(wrapper.request, wrapper.responseFuture)
-
-        wrapper.responseFuture
+        doRequest(self, new IndicesStatsRequest(), requestClosure, self.&stats)
     }
 
     /**
@@ -167,12 +148,7 @@ class IndicesAdminClientExtensions extends AbstractClientExtensions {
      * @throws NullPointerException if any parameter is {@code null}
      */
     static ListenableActionFuture<RecoveryResponse> recoveries(IndicesAdminClient self, Closure requestClosure) {
-        Wrapper<RecoveryRequest, RecoveryResponse, IndicesAdminClient> wrapper =
-                wrap(self, new RecoveryRequest(), requestClosure)
-
-        self.recoveries(wrapper.request, wrapper.responseFuture)
-
-        wrapper.responseFuture
+        doRequest(self, new RecoveryRequest(), requestClosure, self.&recoveries)
     }
 
     /**
@@ -184,12 +160,7 @@ class IndicesAdminClientExtensions extends AbstractClientExtensions {
      * @throws NullPointerException if any parameter is {@code null}
      */
     static ListenableActionFuture<IndicesSegmentResponse> segments(IndicesAdminClient self, Closure requestClosure) {
-        Wrapper<IndicesSegmentsRequest, IndicesSegmentResponse, IndicesAdminClient> wrapper =
-                wrap(self, Requests.indicesSegmentsRequest(), requestClosure)
-
-        self.segments(wrapper.request, wrapper.responseFuture)
-
-        wrapper.responseFuture
+        doRequest(self, Requests.indicesExistsRequest(), requestClosure, self.&segments)
     }
 
     /**
@@ -201,12 +172,8 @@ class IndicesAdminClientExtensions extends AbstractClientExtensions {
      * @throws NullPointerException if any parameter is {@code null}
      */
     static ListenableActionFuture<CreateIndexResponse> create(IndicesAdminClient self, Closure requestClosure) {
-        Wrapper<CreateIndexRequest, CreateIndexResponse, IndicesAdminClient> wrapper =
-                wrap(self, Requests.createIndexRequest(null), requestClosure)
-
-        self.create(wrapper.request, wrapper.responseFuture)
-
-        wrapper.responseFuture
+        // index must be set by the closure
+        doRequest(self, Requests.createIndexRequest(null), requestClosure, self.&create)
     }
 
     /**
@@ -220,12 +187,8 @@ class IndicesAdminClientExtensions extends AbstractClientExtensions {
      * @throws NullPointerException if any parameter is {@code null}
      */
     static ListenableActionFuture<DeleteIndexResponse> delete(IndicesAdminClient self, Closure requestClosure) {
-        Wrapper<DeleteIndexRequest, DeleteIndexResponse, IndicesAdminClient> wrapper =
-                wrap(self, Requests.deleteIndexRequest(null), requestClosure)
-
-        self.delete(wrapper.request, wrapper.responseFuture)
-
-        wrapper.responseFuture
+        // index must be set by the closure
+        doRequest(self, Requests.deleteIndexRequest(null), requestClosure, self.&delete)
     }
 
     /**
@@ -238,12 +201,8 @@ class IndicesAdminClientExtensions extends AbstractClientExtensions {
      * @throws NullPointerException if any parameter is {@code null}
      */
     static ListenableActionFuture<CloseIndexResponse> close(IndicesAdminClient self, Closure requestClosure) {
-        Wrapper<CloseIndexRequest, CloseIndexResponse, IndicesAdminClient> wrapper =
-                wrap(self, Requests.closeIndexRequest(null), requestClosure)
-
-        self.close(wrapper.request, wrapper.responseFuture)
-
-        wrapper.responseFuture
+        // index must be set by the closure
+        doRequest(self, Requests.closeIndexRequest(null), requestClosure, self.&close)
     }
 
     /**
@@ -255,12 +214,8 @@ class IndicesAdminClientExtensions extends AbstractClientExtensions {
      * @throws NullPointerException if any parameter is {@code null}
      */
     static ListenableActionFuture<OpenIndexResponse> open(IndicesAdminClient self, Closure requestClosure) {
-        Wrapper<OpenIndexRequest, OpenIndexResponse, IndicesAdminClient> wrapper =
-                wrap(self, Requests.openIndexRequest(null), requestClosure)
-
-        self.open(wrapper.request, wrapper.responseFuture)
-
-        wrapper.responseFuture
+        // index must be set by the closure
+        doRequest(self, Requests.openIndexRequest(null), requestClosure, self.&open)
     }
 
     /**
@@ -275,12 +230,7 @@ class IndicesAdminClientExtensions extends AbstractClientExtensions {
      * @throws NullPointerException if any parameter is {@code null}
      */
     static ListenableActionFuture<FlushResponse> flush(IndicesAdminClient self, Closure requestClosure) {
-        Wrapper<FlushRequest, FlushResponse, IndicesAdminClient> wrapper =
-                wrap(self, Requests.flushRequest(), requestClosure)
-
-        self.flush(wrapper.request, wrapper.responseFuture)
-
-        wrapper.responseFuture
+        doRequest(self, Requests.flushRequest(), requestClosure, self.&flush)
     }
 
     /**
@@ -299,12 +249,7 @@ class IndicesAdminClientExtensions extends AbstractClientExtensions {
      * @throws NullPointerException if any parameter is {@code null}
      */
     static ListenableActionFuture<OptimizeResponse> optimize(IndicesAdminClient self, Closure requestClosure) {
-        Wrapper<OptimizeRequest, OptimizeResponse, IndicesAdminClient> wrapper =
-                wrap(self, Requests.optimizeRequest(), requestClosure)
-
-        self.optimize(wrapper.request, wrapper.responseFuture)
-
-        wrapper.responseFuture
+        doRequest(self, Requests.optimizeRequest(), requestClosure, self.&optimize)
     }
 
     /**
@@ -316,12 +261,7 @@ class IndicesAdminClientExtensions extends AbstractClientExtensions {
      * @throws NullPointerException if any parameter is {@code null}
      */
     static ListenableActionFuture<GetMappingsResponse> getMappings(IndicesAdminClient self, Closure requestClosure) {
-        Wrapper<GetMappingsRequest, GetMappingsResponse, IndicesAdminClient> wrapper =
-                wrap(self, new GetMappingsRequest(), requestClosure)
-
-        self.getMappings(wrapper.request, wrapper.responseFuture)
-
-        wrapper.responseFuture
+        doRequest(self, new GetMappingsRequest(), requestClosure, self.&getMappings)
     }
 
     /**
@@ -334,12 +274,7 @@ class IndicesAdminClientExtensions extends AbstractClientExtensions {
      */
     static ListenableActionFuture<GetFieldMappingsResponse> getFieldMappings(IndicesAdminClient self,
                                                                              Closure requestClosure) {
-        Wrapper<GetFieldMappingsRequest, GetFieldMappingsResponse, IndicesAdminClient> wrapper =
-                wrap(self, new GetFieldMappingsRequest(), requestClosure)
-
-        self.getFieldMappings(wrapper.request, wrapper.responseFuture)
-
-        wrapper.responseFuture
+        doRequest(self, new GetFieldMappingsRequest(), requestClosure, self.&getFieldMappings)
     }
 
     /**
@@ -351,12 +286,7 @@ class IndicesAdminClientExtensions extends AbstractClientExtensions {
      * @throws NullPointerException if any parameter is {@code null}
      */
     static ListenableActionFuture<PutMappingResponse> putMapping(IndicesAdminClient self, Closure requestClosure) {
-        Wrapper<PutMappingRequest, PutMappingResponse, IndicesAdminClient> wrapper =
-                wrap(self, Requests.putMappingRequest(), requestClosure)
-
-        self.putMapping(wrapper.request, wrapper.responseFuture)
-
-        wrapper.responseFuture
+        doRequest(self, Requests.putMappingRequest(), requestClosure, self.&putMapping)
     }
 
     /**
@@ -369,12 +299,7 @@ class IndicesAdminClientExtensions extends AbstractClientExtensions {
      */
     static ListenableActionFuture<DeleteMappingResponse> deleteMapping(IndicesAdminClient self,
                                                                        Closure requestClosure) {
-        Wrapper<DeleteMappingRequest, DeleteMappingResponse, IndicesAdminClient> wrapper =
-                wrap(self, Requests.deleteMappingRequest(), requestClosure)
-
-        self.deleteMapping(wrapper.request, wrapper.responseFuture)
-
-        wrapper.responseFuture
+        doRequest(self, Requests.deleteMappingRequest(), requestClosure, self.&deleteMapping)
     }
 
     /**
@@ -386,12 +311,7 @@ class IndicesAdminClientExtensions extends AbstractClientExtensions {
      * @throws NullPointerException if any parameter is {@code null}
      */
     static ListenableActionFuture<IndicesAliasesResponse> aliases(IndicesAdminClient self, Closure requestClosure) {
-        Wrapper<IndicesAliasesRequest, IndicesAliasesResponse, IndicesAdminClient> wrapper =
-                wrap(self, Requests.indexAliasesRequest(), requestClosure)
-
-        self.aliases(wrapper.request, wrapper.responseFuture)
-
-        wrapper.responseFuture
+        doRequest(self, Requests.indexAliasesRequest(), requestClosure, self.&aliases)
     }
 
     /**
@@ -403,12 +323,7 @@ class IndicesAdminClientExtensions extends AbstractClientExtensions {
      * @throws NullPointerException if any parameter is {@code null}
      */
     static ListenableActionFuture<GetAliasesResponse> getAliases(IndicesAdminClient self, Closure requestClosure) {
-        Wrapper<GetAliasesRequest, GetAliasesResponse, IndicesAdminClient> wrapper =
-                wrap(self, new GetAliasesRequest(), requestClosure)
-
-        self.getAliases(wrapper.request, wrapper.responseFuture)
-
-        wrapper.responseFuture
+        doRequest(self, new GetAliasesRequest(), requestClosure, self.&getAliases)
     }
 
     /**
@@ -420,12 +335,7 @@ class IndicesAdminClientExtensions extends AbstractClientExtensions {
      * @throws NullPointerException if any parameter is {@code null}
      */
     static ListenableActionFuture<AliasesExistResponse> aliasesExist(IndicesAdminClient self, Closure requestClosure) {
-        Wrapper<GetAliasesRequest, AliasesExistResponse, IndicesAdminClient> wrapper =
-                wrap(self, new GetAliasesRequest(), requestClosure)
-
-        self.aliasesExist(wrapper.request, wrapper.responseFuture)
-
-        wrapper.responseFuture
+        doRequest(self, new GetAliasesRequest(), requestClosure, self.&aliasesExist)
     }
 
     /**
@@ -438,12 +348,7 @@ class IndicesAdminClientExtensions extends AbstractClientExtensions {
      */
     static ListenableActionFuture<ClearIndicesCacheResponse> clearCache(IndicesAdminClient self,
                                                                         Closure requestClosure) {
-        Wrapper<ClearIndicesCacheRequest, ClearIndicesCacheResponse, IndicesAdminClient> wrapper =
-                wrap(self, Requests.clearIndicesCacheRequest(), requestClosure)
-
-        self.clearCache(wrapper.request, wrapper.responseFuture)
-
-        wrapper.responseFuture
+        doRequest(self, Requests.clearIndicesCacheRequest(), requestClosure, self.&clearCache)
     }
 
     /**
@@ -458,12 +363,7 @@ class IndicesAdminClientExtensions extends AbstractClientExtensions {
      */
     static ListenableActionFuture<UpdateSettingsResponse> updateSettings(IndicesAdminClient self,
                                                                          Closure requestClosure) {
-        Wrapper<UpdateSettingsRequest, UpdateSettingsResponse, IndicesAdminClient> wrapper =
-                wrap(self, new UpdateSettingsRequest(), requestClosure)
-
-        self.updateSettings(wrapper.request, wrapper.responseFuture)
-
-        wrapper.responseFuture
+        doRequest(self, new UpdateSettingsRequest(), requestClosure, self.&updateSettings)
     }
 
     /**
@@ -476,12 +376,8 @@ class IndicesAdminClientExtensions extends AbstractClientExtensions {
      */
     static ListenableActionFuture<PutIndexTemplateResponse> putTemplate(IndicesAdminClient self,
                                                                         Closure requestClosure) {
-        Wrapper<PutIndexTemplateRequest, PutIndexTemplateResponse, IndicesAdminClient> wrapper =
-                wrap(self, new PutIndexTemplateRequest(null), requestClosure)
-
-        self.putTemplate(wrapper.request, wrapper.responseFuture)
-
-        wrapper.responseFuture
+        // template name expected be supplied by the closure
+        doRequest(self, new PutIndexTemplateRequest(null), requestClosure, self.&putTemplate)
     }
 
     /**
@@ -495,12 +391,7 @@ class IndicesAdminClientExtensions extends AbstractClientExtensions {
      * @throws NullPointerException if {@code self} is {@code null}
      */
     static ListenableActionFuture<DeleteIndexTemplateResponse> deleteTemplate(IndicesAdminClient self, String name) {
-        Wrapper<DeleteIndexTemplateRequest, DeleteIndexTemplateResponse, IndicesAdminClient> wrapper =
-                wrap(self, new DeleteIndexTemplateRequest(name))
-
-        self.deleteTemplate(wrapper.request, wrapper.responseFuture)
-
-        wrapper.responseFuture
+        doRequest(self, new DeleteIndexTemplateRequest(name), self.&deleteTemplate)
     }
 
     /**
@@ -513,12 +404,7 @@ class IndicesAdminClientExtensions extends AbstractClientExtensions {
      */
     static ListenableActionFuture<GetIndexTemplatesResponse> getTemplates(IndicesAdminClient self,
                                                                           Closure requestClosure) {
-        Wrapper<GetIndexTemplatesRequest, GetIndexTemplatesResponse, IndicesAdminClient> wrapper =
-                wrap(self, new GetIndexTemplatesRequest(), requestClosure)
-
-        self.getTemplates(wrapper.request, wrapper.responseFuture)
-
-        wrapper.responseFuture
+        doRequest(self, new GetIndexTemplatesRequest(), requestClosure, self.&getTemplates)
     }
 
     /**
@@ -531,12 +417,7 @@ class IndicesAdminClientExtensions extends AbstractClientExtensions {
      */
     static ListenableActionFuture<ValidateQueryResponse> validateQuery(IndicesAdminClient self,
                                                                        Closure requestClosure) {
-        Wrapper<ValidateQueryRequest, ValidateQueryResponse, IndicesAdminClient> wrapper =
-                wrap(self, new ValidateQueryRequest(), requestClosure)
-
-        self.validateQuery(wrapper.request, wrapper.responseFuture)
-
-        wrapper.responseFuture
+        doRequest(self, new ValidateQueryRequest(), requestClosure, self.&validateQuery)
     }
 
     /**
@@ -548,12 +429,8 @@ class IndicesAdminClientExtensions extends AbstractClientExtensions {
      * @throws NullPointerException if any parameter is {@code null}
      */
     static ListenableActionFuture<PutWarmerResponse> putWarmer(IndicesAdminClient self, Closure requestClosure) {
-        Wrapper<PutWarmerRequest, PutWarmerResponse, IndicesAdminClient> wrapper =
-                wrap(self, new PutWarmerRequest(null), requestClosure)
-
-        self.putWarmer(wrapper.request, wrapper.responseFuture)
-
-        wrapper.responseFuture
+        // warmer name is expected to be set by the closure
+        doRequest(self, new PutWarmerRequest(null), requestClosure, self.&putWarmer)
     }
 
     /**
@@ -565,12 +442,7 @@ class IndicesAdminClientExtensions extends AbstractClientExtensions {
      * @throws NullPointerException if any parameter is {@code null}
      */
     static ListenableActionFuture<DeleteWarmerResponse> deleteWarmer(IndicesAdminClient self, Closure requestClosure) {
-        Wrapper<DeleteWarmerRequest, DeleteWarmerResponse, IndicesAdminClient> wrapper =
-                wrap(self, new DeleteWarmerRequest(), requestClosure)
-
-        self.deleteWarmer(wrapper.request, wrapper.responseFuture)
-
-        wrapper.responseFuture
+        doRequest(self, new DeleteWarmerRequest(), requestClosure, self.&deleteWarmer)
     }
 
     /**
@@ -582,12 +454,7 @@ class IndicesAdminClientExtensions extends AbstractClientExtensions {
      * @throws NullPointerException if any parameter is {@code null}
      */
     static ListenableActionFuture<GetWarmersResponse> getWarmers(IndicesAdminClient self, Closure requestClosure) {
-        Wrapper<GetWarmersRequest, GetWarmersResponse, IndicesAdminClient> wrapper =
-                wrap(self, new GetWarmersRequest(), requestClosure)
-
-        self.getWarmers(wrapper.request, wrapper.responseFuture)
-
-        wrapper.responseFuture
+        doRequest(self, new GetWarmersRequest(), requestClosure, self.&getWarmers)
     }
 
     /**
@@ -599,12 +466,7 @@ class IndicesAdminClientExtensions extends AbstractClientExtensions {
      * @throws NullPointerException if any parameter is {@code null}
      */
     static ListenableActionFuture<GetSettingsResponse> getSettings(IndicesAdminClient self, Closure requestClosure) {
-        Wrapper<GetSettingsRequest, GetSettingsResponse, IndicesAdminClient> wrapper =
-                wrap(self, new GetSettingsRequest(), requestClosure)
-
-        self.getSettings(wrapper.request, wrapper.responseFuture)
-
-        wrapper.responseFuture
+        doRequest(self, new GetSettingsRequest(), requestClosure, self.&getSettings)
     }
 
     /**
@@ -618,11 +480,7 @@ class IndicesAdminClientExtensions extends AbstractClientExtensions {
     static ListenableActionFuture<AnalyzeResponse> analyze(IndicesAdminClient self,
                                                            String text,
                                                            Closure requestClosure) {
-        Wrapper<AnalyzeRequest, AnalyzeResponse, IndicesAdminClient> wrapper =
-                wrap(self, new AnalyzeRequest(text), requestClosure)
-
-        self.analyze(wrapper.request, wrapper.responseFuture)
-
-        wrapper.responseFuture
+        // text must currently be supplied to the constructor
+        doRequest(self, new AnalyzeRequest(text), requestClosure, self.&analyze)
     }
 }
