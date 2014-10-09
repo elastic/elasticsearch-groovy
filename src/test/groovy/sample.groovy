@@ -24,7 +24,7 @@
 //])
 
 def startNode() {
-    def nodeBuilder = new org.elasticsearch.groovy.node.GNodeBuilder()
+    def nodeBuilder = new NodeBuilder()
     nodeBuilder.settings {
         node {
             client = true

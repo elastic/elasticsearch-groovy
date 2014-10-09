@@ -38,9 +38,6 @@ import org.elasticsearch.action.admin.indices.delete.DeleteIndexResponse
 import org.elasticsearch.action.admin.indices.flush.FlushRequest
 import org.elasticsearch.action.admin.indices.flush.FlushRequestBuilder
 import org.elasticsearch.action.admin.indices.flush.FlushResponse
-import org.elasticsearch.action.admin.indices.gateway.snapshot.GatewaySnapshotRequest
-import org.elasticsearch.action.admin.indices.gateway.snapshot.GatewaySnapshotRequestBuilder
-import org.elasticsearch.action.admin.indices.gateway.snapshot.GatewaySnapshotResponse
 import org.elasticsearch.action.admin.indices.mapping.put.PutMappingRequest
 import org.elasticsearch.action.admin.indices.mapping.put.PutMappingRequestBuilder
 import org.elasticsearch.action.admin.indices.mapping.put.PutMappingResponse
@@ -71,7 +68,6 @@ import org.elasticsearch.action.admin.indices.warmer.put.PutWarmerRequest
 import org.elasticsearch.action.admin.indices.warmer.put.PutWarmerRequestBuilder
 import org.elasticsearch.action.admin.indices.warmer.put.PutWarmerResponse
 import org.elasticsearch.client.IndicesAdminClient
-import org.elasticsearch.client.internal.InternalClient
 import org.elasticsearch.groovy.client.action.GActionFuture
 import org.elasticsearch.groovy.common.xcontent.GXContentBuilder
 
@@ -132,38 +128,11 @@ class GIndicesAdminClient {
 
     private final GClient gClient
 
-    private final InternalClient internalClient
-
     final IndicesAdminClient indicesAdminClient
 
     def GIndicesAdminClient(gClient) {
         this.gClient = gClient
-        this.internalClient = gClient.client
-        this.indicesAdminClient = internalClient.admin().indices()
-    }
-
-    // STATUS
-
-    IndicesStatusRequestBuilder prepareStatus(String... indices) {
-        indicesAdminClient.prepareStatus(indices)
-    }
-
-    GActionFuture<IndicesStatusResponse> status(Closure c) {
-        IndicesStatusRequest request = new IndicesStatusRequest()
-        c.setDelegate request
-        c.resolveStrategy = gClient.resolveStrategy
-        c.call()
-        status(request)
-    }
-
-    GActionFuture<IndicesStatusResponse> status(IndicesStatusRequest request) {
-        GActionFuture<IndicesStatusResponse> future = new GActionFuture<IndicesStatusResponse>(internalClient.threadPool(), request)
-        indicesAdminClient.status(request, future)
-        return future
-    }
-
-    void status(IndicesStatusRequest request, ActionListener<IndicesStatusResponse> listener) {
-        indicesAdminClient.status(request, listener)
+        this.indicesAdminClient = gClient.client.admin().indices()
     }
 
     // STATS
@@ -181,7 +150,7 @@ class GIndicesAdminClient {
     }
 
     GActionFuture<IndicesStatsResponse> stats(IndicesStatsRequest request) {
-        GActionFuture<IndicesStatsResponse> future = new GActionFuture<IndicesStatsResponse>(internalClient.threadPool(), request)
+        GActionFuture<IndicesStatsResponse> future = new GActionFuture<IndicesStatsResponse>(gClient.client.threadPool(), request)
         indicesAdminClient.stats(request, future)
         return future
     }
@@ -205,7 +174,7 @@ class GIndicesAdminClient {
     }
 
     GActionFuture<CreateIndexResponse> create(CreateIndexRequest request) {
-        GActionFuture<CreateIndexResponse> future = new GActionFuture<CreateIndexResponse>(internalClient.threadPool(), request)
+        GActionFuture<CreateIndexResponse> future = new GActionFuture<CreateIndexResponse>(gClient.client.threadPool(), request)
         indicesAdminClient.create(request, future)
         return future
     }
@@ -229,7 +198,7 @@ class GIndicesAdminClient {
     }
 
     GActionFuture<DeleteIndexResponse> delete(DeleteIndexRequest request) {
-        GActionFuture<DeleteIndexResponse> future = new GActionFuture<DeleteIndexResponse>(internalClient.threadPool(), request)
+        GActionFuture<DeleteIndexResponse> future = new GActionFuture<DeleteIndexResponse>(gClient.client.threadPool(), request)
         indicesAdminClient.delete(request, future)
         return future
     }
@@ -253,7 +222,7 @@ class GIndicesAdminClient {
     }
 
     GActionFuture<RefreshResponse> refresh(RefreshRequest request) {
-        GActionFuture<RefreshResponse> future = new GActionFuture<RefreshResponse>(internalClient.threadPool(), request)
+        GActionFuture<RefreshResponse> future = new GActionFuture<RefreshResponse>(gClient.client.threadPool(), request)
         indicesAdminClient.refresh(request, future)
         return future
     }
@@ -277,7 +246,7 @@ class GIndicesAdminClient {
     }
 
     GActionFuture<FlushResponse> flush(FlushRequest request) {
-        GActionFuture<FlushResponse> future = new GActionFuture<FlushResponse>(internalClient.threadPool(), request)
+        GActionFuture<FlushResponse> future = new GActionFuture<FlushResponse>(gClient.client.threadPool(), request)
         indicesAdminClient.flush(request, future)
         return future
     }
@@ -301,7 +270,7 @@ class GIndicesAdminClient {
     }
 
     GActionFuture<OptimizeResponse> optimize(OptimizeRequest request) {
-        GActionFuture<OptimizeResponse> future = new GActionFuture<OptimizeResponse>(internalClient.threadPool(), request)
+        GActionFuture<OptimizeResponse> future = new GActionFuture<OptimizeResponse>(gClient.client.threadPool(), request)
         indicesAdminClient.optimize(request, future)
         return future
     }
@@ -325,37 +294,13 @@ class GIndicesAdminClient {
     }
 
     GActionFuture<PutMappingResponse> putMapping(PutMappingRequest request) {
-        GActionFuture<PutMappingResponse> future = new GActionFuture<PutMappingResponse>(internalClient.threadPool(), request)
+        GActionFuture<PutMappingResponse> future = new GActionFuture<PutMappingResponse>(gClient.client.threadPool(), request)
         indicesAdminClient.putMapping(request, future)
         return future
     }
 
     void putMapping(PutMappingRequest request, ActionListener<PutMappingResponse> listener) {
         indicesAdminClient.putMapping(request, listener)
-    }
-
-    // GATEWAY SNAPSHOT
-
-    GatewaySnapshotRequestBuilder prepareGatewaySnapshot(String... indices) {
-        indicesAdminClient.prepareGatewaySnapshot(indices)
-    }
-
-    GActionFuture<GatewaySnapshotResponse> gatewaySnapshot(Closure c) {
-        GatewaySnapshotRequest request = new GatewaySnapshotRequest()
-        c.setDelegate request
-        c.resolveStrategy = gClient.resolveStrategy
-        c.call()
-        gatewaySnapshot(request)
-    }
-
-    GActionFuture<GatewaySnapshotResponse> gatewaySnapshot(GatewaySnapshotRequest request) {
-        GActionFuture<GatewaySnapshotResponse> future = new GActionFuture<GatewaySnapshotResponse>(internalClient.threadPool(), request)
-        indicesAdminClient.gatewaySnapshot(request, future)
-        return future
-    }
-
-    void gatewaySnapshot(GatewaySnapshotRequest request, ActionListener<GatewaySnapshotResponse> listener) {
-        indicesAdminClient.gatewaySnapshot(request, listener)
     }
 
     // Aliases
@@ -373,7 +318,7 @@ class GIndicesAdminClient {
     }
 
     GActionFuture<IndicesAliasesResponse> aliases(IndicesAliasesRequest request) {
-        GActionFuture<IndicesAliasesResponse> future = new GActionFuture<IndicesAliasesResponse>(internalClient.threadPool(), request)
+        GActionFuture<IndicesAliasesResponse> future = new GActionFuture<IndicesAliasesResponse>(gClient.client.threadPool(), request)
         indicesAdminClient.aliases(request, future)
         return future
     }
@@ -401,7 +346,7 @@ class GIndicesAdminClient {
     }
 
     GActionFuture<ClearIndicesCacheResponse> clearCache(ClearIndicesCacheRequest request) {
-        GActionFuture<ClearIndicesCacheResponse> future = new GActionFuture<ClearIndicesCacheResponse>(internalClient.threadPool(), request)
+        GActionFuture<ClearIndicesCacheResponse> future = new GActionFuture<ClearIndicesCacheResponse>(gClient.client.threadPool(), request)
         indicesAdminClient.clearCache(request, future)
         return future
     }
@@ -421,7 +366,7 @@ class GIndicesAdminClient {
     }
 
     GActionFuture<UpdateSettingsResponse> updateSettings(UpdateSettingsRequest request) {
-        GActionFuture<UpdateSettingsResponse> future = new GActionFuture<UpdateSettingsResponse>(internalClient.threadPool(), request)
+        GActionFuture<UpdateSettingsResponse> future = new GActionFuture<UpdateSettingsResponse>(gClient.client.threadPool(), request)
         indicesAdminClient.updateSettings(request, future)
         return future
     }
@@ -441,7 +386,7 @@ class GIndicesAdminClient {
     }
 
     GActionFuture<AnalyzeResponse> analyze(AnalyzeRequest request) {
-        GActionFuture<AnalyzeResponse> future = new GActionFuture<AnalyzeResponse>(internalClient.threadPool(), request)
+        GActionFuture<AnalyzeResponse> future = new GActionFuture<AnalyzeResponse>(gClient.client.threadPool(), request)
         indicesAdminClient.analyze(request, future)
         return future
     }
@@ -461,7 +406,7 @@ class GIndicesAdminClient {
     }
 
     GActionFuture<PutIndexTemplateResponse> putTemplate(PutIndexTemplateRequest request) {
-        GActionFuture<PutIndexTemplateResponse> future = new GActionFuture<PutIndexTemplateResponse>(internalClient.threadPool(), request)
+        GActionFuture<PutIndexTemplateResponse> future = new GActionFuture<PutIndexTemplateResponse>(gClient.client.threadPool(), request)
         indicesAdminClient.putTemplate(request, future)
         return future
     }
@@ -481,7 +426,7 @@ class GIndicesAdminClient {
     }
 
     GActionFuture<DeleteIndexTemplateResponse> deleteTemplate(DeleteIndexTemplateRequest request) {
-        GActionFuture<DeleteIndexTemplateResponse> future = new GActionFuture<DeleteIndexTemplateResponse>(internalClient.threadPool(), request)
+        GActionFuture<DeleteIndexTemplateResponse> future = new GActionFuture<DeleteIndexTemplateResponse>(gClient.client.threadPool(), request)
         indicesAdminClient.deleteTemplate(request, future)
         return future
     }
@@ -501,7 +446,7 @@ class GIndicesAdminClient {
     }
 
     GActionFuture<PutWarmerResponse> putWarmer(PutWarmerRequest request) {
-        GActionFuture<PutWarmerResponse> future = new GActionFuture<PutWarmerResponse>(internalClient.threadPool(), request)
+        GActionFuture<PutWarmerResponse> future = new GActionFuture<PutWarmerResponse>(gClient.client.threadPool(), request)
         indicesAdminClient.putWarmer(request, future)
         return future
     }
@@ -519,7 +464,7 @@ class GIndicesAdminClient {
     }
 
     GActionFuture<DeleteWarmerResponse> deleteWarmer(DeleteWarmerRequest request) {
-        GActionFuture<DeleteWarmerResponse> future = new GActionFuture<DeleteWarmerResponse>(internalClient.threadPool(), request)
+        GActionFuture<DeleteWarmerResponse> future = new GActionFuture<DeleteWarmerResponse>(gClient.client.threadPool(), request)
         indicesAdminClient.deleteWarmer(request, future)
         return future
     }

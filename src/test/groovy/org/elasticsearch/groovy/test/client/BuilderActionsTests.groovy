@@ -19,8 +19,10 @@
 
 package org.elasticsearch.groovy.test.client
 
-import org.elasticsearch.groovy.node.GNode
-import org.elasticsearch.groovy.node.GNodeBuilder
+import org.elasticsearch.groovy.common.xcontent.GXContentBuilder
+import org.elasticsearch.node.Node
+import org.elasticsearch.node.NodeBuilder
+
 import org.junit.After
 import org.junit.Before
 import org.junit.Test
@@ -34,11 +36,11 @@ import static org.hamcrest.Matchers.equalTo
 
 class BuilderActionsTests {
 
-    def GNode node
+    def Node node
 
     @Before
     public void startNode() {
-        GNodeBuilder nodeBuilder = new GNodeBuilder()
+        NodeBuilder nodeBuilder = new NodeBuilder()
         nodeBuilder.settings {
             node {
                 local = true
@@ -73,7 +75,7 @@ class BuilderActionsTests {
         node.client.admin.indices.refresh {}.actionGet()
 
 
-        def theQuery = new org.elasticsearch.groovy.common.xcontent.GXContentBuilder().buildAsBytes {
+        def theQuery = new GXContentBuilder().buildAsBytes {
             query {
                 term {
                     test = 'value'

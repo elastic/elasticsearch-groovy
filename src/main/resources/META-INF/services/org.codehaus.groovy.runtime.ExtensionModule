@@ -1,0 +1,20 @@
+#
+# Groovy Extension Modules take static methods and, using the type of the first argument, in-place extend that class.
+# In essence, this allows existing code to be augmented by adding methods to already packaged classes that did not
+# previously exist (including final classes, such as java.lang.String!).
+#
+# This is very similar to how C# extension methods work (the syntax is different and users do not have to import the
+# extension method's namespace/package or class).
+#
+moduleName = elasticsearch-groovy-module
+#
+# Version number is used to ensure that two ExtensionModules are not loaded twice (two versions can coexist!).
+#
+moduleVersion = 1.0
+#
+# Take static methods defined in these comma separated classes and add them as instance methods (in effect making the
+# first parameter the implicit this argument in normal class-level methods).
+#
+extensionClasses = \
+  org.elasticsearch.groovy.node.NodeBuilderExtensions,\
+  org.elasticsearch.groovy.node.NodeExtensions

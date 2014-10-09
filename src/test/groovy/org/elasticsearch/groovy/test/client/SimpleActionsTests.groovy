@@ -19,8 +19,10 @@
 
 package org.elasticsearch.groovy.test.client
 
-import org.elasticsearch.groovy.node.GNode
-import org.elasticsearch.groovy.node.GNodeBuilder
+import org.elasticsearch.groovy.common.xcontent.GXContentBuilder
+import org.elasticsearch.node.Node
+import org.elasticsearch.node.NodeBuilder
+
 import org.junit.After
 import org.junit.Before
 import org.junit.Test
@@ -33,11 +35,11 @@ import static org.hamcrest.Matchers.equalTo
  */
 class SimpleActionsTests {
 
-    def GNode node
+    def Node node
 
     @Before
     public void startNode() {
-        GNodeBuilder nodeBuilder = new GNodeBuilder()
+        NodeBuilder nodeBuilder = new NodeBuilder()
         nodeBuilder.settings {
             node {
                 local = true
@@ -57,7 +59,7 @@ class SimpleActionsTests {
 
     @Test
     void testSimpleOperations() {
-        def value1 = new org.elasticsearch.groovy.common.xcontent.GXContentBuilder().buildAsString {
+        def value1 = new GXContentBuilder().buildAsString {
             something = 'test'
         }
         println value1
@@ -180,7 +182,7 @@ class SimpleActionsTests {
         assertThat search.response.hits.totalHits, equalTo(1l)
         assertThat search.response.hits[0].source.test, equalTo('new value')
 
-        def deleteByQueryQuery = new org.elasticsearch.groovy.common.xcontent.GXContentBuilder().buildAsBytes {
+        def deleteByQueryQuery = new GXContentBuilder().buildAsBytes {
             query {
                 term {
                     test = 'value'
