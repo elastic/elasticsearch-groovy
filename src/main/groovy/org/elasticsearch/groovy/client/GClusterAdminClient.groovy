@@ -39,7 +39,6 @@ import org.elasticsearch.action.admin.cluster.node.restart.NodesRestartRequestBu
 import org.elasticsearch.action.admin.cluster.node.shutdown.NodesShutdownRequestBuilder
 import org.elasticsearch.action.admin.cluster.node.stats.NodesStatsRequestBuilder
 import org.elasticsearch.action.admin.cluster.state.ClusterStateRequestBuilder
-import org.elasticsearch.client.internal.InternalClient
 import org.elasticsearch.groovy.client.action.GActionFuture
 
 /**
@@ -49,14 +48,11 @@ class GClusterAdminClient {
 
     private final GClient gClient
 
-    private final InternalClient internalClient
-
     final ClusterAdminClient clusterAdminClient
 
     def GClusterAdminClient(gClient) {
         this.gClient = gClient
-        this.internalClient = gClient.client
-        this.clusterAdminClient = internalClient.admin().cluster()
+        this.clusterAdminClient = gClient.client.admin().cluster()
     }
 
     // HEALTH
@@ -74,7 +70,7 @@ class GClusterAdminClient {
     }
 
     GActionFuture<ClusterHealthResponse> health(ClusterHealthRequest request) {
-        GActionFuture<ClusterHealthResponse> future = new GActionFuture<ClusterHealthResponse>(internalClient.threadPool(), request)
+        GActionFuture<ClusterHealthResponse> future = new GActionFuture<ClusterHealthResponse>(gClient.client.threadPool(), request)
         clusterAdminClient.health(request, future)
         return future
     }
@@ -98,7 +94,7 @@ class GClusterAdminClient {
     }
 
     GActionFuture<ClusterStateResponse> state(ClusterStateRequest request) {
-        GActionFuture<ClusterStateResponse> future = new GActionFuture<ClusterStateResponse>(internalClient.threadPool(), request)
+        GActionFuture<ClusterStateResponse> future = new GActionFuture<ClusterStateResponse>(gClient.client.threadPool(), request)
         clusterAdminClient.state(request, future)
         return future
     }
@@ -122,7 +118,7 @@ class GClusterAdminClient {
     }
 
     GActionFuture<NodesInfoResponse> nodesInfo(NodesInfoRequest request) {
-        GActionFuture<NodesInfoResponse> future = new GActionFuture<NodesInfoResponse>(internalClient.threadPool(), request)
+        GActionFuture<NodesInfoResponse> future = new GActionFuture<NodesInfoResponse>(gClient.client.threadPool(), request)
         clusterAdminClient.nodesInfo(request, future)
         return future
     }
@@ -146,7 +142,7 @@ class GClusterAdminClient {
     }
 
     GActionFuture<NodesStatsResponse> nodesStats(NodesStatsRequest request) {
-        GActionFuture<NodesStatsResponse> future = new GActionFuture<NodesStatsResponse>(internalClient.threadPool(), request)
+        GActionFuture<NodesStatsResponse> future = new GActionFuture<NodesStatsResponse>(gClient.client.threadPool(), request)
         clusterAdminClient.nodesStats(request, future)
         return future
     }
@@ -170,7 +166,7 @@ class GClusterAdminClient {
     }
 
     GActionFuture<NodesShutdownResponse> nodesShutdown(NodesShutdownRequest request) {
-        GActionFuture<NodesShutdownResponse> future = new GActionFuture<NodesShutdownResponse>(internalClient.threadPool(), request)
+        GActionFuture<NodesShutdownResponse> future = new GActionFuture<NodesShutdownResponse>(gClient.client.threadPool(), request)
         clusterAdminClient.nodesShutdown(request, future)
         return future
     }
@@ -194,7 +190,7 @@ class GClusterAdminClient {
     }
 
     GActionFuture<NodesRestartResponse> nodesRestart(NodesRestartRequest request) {
-        GActionFuture<NodesRestartResponse> future = new GActionFuture<NodesRestartResponse>(internalClient.threadPool(), request)
+        GActionFuture<NodesRestartResponse> future = new GActionFuture<NodesRestartResponse>(gClient.client.threadPool(), request)
         clusterAdminClient.nodesRestart(request, future)
         return future
     }

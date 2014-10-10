@@ -48,7 +48,6 @@ import org.elasticsearch.action.update.UpdateRequest
 import org.elasticsearch.action.update.UpdateRequestBuilder
 import org.elasticsearch.action.update.UpdateResponse
 import org.elasticsearch.client.Client
-import org.elasticsearch.client.internal.InternalClient
 import org.elasticsearch.common.xcontent.XContentType
 import org.elasticsearch.groovy.client.action.GActionFuture
 import org.elasticsearch.groovy.common.xcontent.GXContentBuilder
@@ -188,13 +187,10 @@ class GClient {
 
     int resolveStrategy = Closure.DELEGATE_FIRST
 
-    private final InternalClient internalClient
-
     final GAdminClient admin
 
     GClient(client) {
         this.client = client
-        this.internalClient = client
 
         this.admin = new GAdminClient(this)
     }
@@ -216,7 +212,7 @@ class GClient {
     }
 
     GActionFuture<IndexResponse> index(IndexRequest request) {
-        GActionFuture<IndexResponse> future = new GActionFuture<IndexResponse>(internalClient.threadPool(), request)
+        GActionFuture<IndexResponse> future = new GActionFuture<IndexResponse>(client.threadPool(), request)
         client.index(request, future)
         return future
     }
@@ -238,7 +234,7 @@ class GClient {
     }
 
     GActionFuture<GetResponse> get(GetRequest request) {
-        GActionFuture<GetResponse> future = new GActionFuture<GetResponse>(internalClient.threadPool(), request)
+        GActionFuture<GetResponse> future = new GActionFuture<GetResponse>(client.threadPool(), request)
         client.get(request, future)
         return future
     }
@@ -260,7 +256,7 @@ class GClient {
     }
 
     GActionFuture<DeleteResponse> delete(DeleteRequest request) {
-        GActionFuture<DeleteResponse> future = new GActionFuture<DeleteResponse>(internalClient.threadPool(), request)
+        GActionFuture<DeleteResponse> future = new GActionFuture<DeleteResponse>(client.threadPool(), request)
         client.delete(request, future)
         return future
     }
@@ -282,7 +278,7 @@ class GClient {
     }
 
     GActionFuture<DeleteByQueryResponse> deleteByQuery(DeleteByQueryRequest request) {
-        GActionFuture<DeleteByQueryResponse> future = new GActionFuture<DeleteByQueryResponse>(internalClient.threadPool(), request)
+        GActionFuture<DeleteByQueryResponse> future = new GActionFuture<DeleteByQueryResponse>(client.threadPool(), request)
         client.deleteByQuery(request, future)
         return future
     }
@@ -304,7 +300,7 @@ class GClient {
     }
 
     GActionFuture<CountResponse> count(CountRequest request) {
-        GActionFuture<CountResponse> future = new GActionFuture<CountResponse>(internalClient.threadPool(), request)
+        GActionFuture<CountResponse> future = new GActionFuture<CountResponse>(client.threadPool(), request)
         client.count(request, future)
         return future
     }
@@ -326,7 +322,7 @@ class GClient {
     }
 
     GActionFuture<SearchResponse> search(SearchRequest request) {
-        GActionFuture<SearchResponse> future = new GActionFuture<SearchResponse>(internalClient.threadPool(), request)
+        GActionFuture<SearchResponse> future = new GActionFuture<SearchResponse>(client.threadPool(), request)
         client.search(request, future)
         return future
     }
@@ -348,7 +344,7 @@ class GClient {
     }
 
     GActionFuture<PercolateResponse> percolate(PercolateRequest request) {
-        GActionFuture<PercolateResponse> future = new GActionFuture<PercolateResponse>(internalClient.threadPool(), request)
+        GActionFuture<PercolateResponse> future = new GActionFuture<PercolateResponse>(client.threadPool(), request)
         client.percolate(request, future)
         return future
     }
@@ -362,7 +358,7 @@ class GClient {
     }
 
     GActionFuture<SearchResponse> moreLikeThis(MoreLikeThisRequest request) {
-        GActionFuture<SearchResponse> future = new GActionFuture<SearchResponse>(internalClient.threadPool(), request)
+        GActionFuture<SearchResponse> future = new GActionFuture<SearchResponse>(client.threadPool(), request)
         client.moreLikeThis(request, future)
         return future
     }
@@ -384,7 +380,7 @@ class GClient {
     }
 
     GActionFuture<UpdateResponse> update(UpdateRequest request) {
-        GActionFuture<UpdateResponse> future = new GActionFuture<UpdateResponse>(internalClient.threadPool(), request)
+        GActionFuture<UpdateResponse> future = new GActionFuture<UpdateResponse>(client.threadPool(), request)
         client.update(request, future)
         return future
     }
