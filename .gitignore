@@ -1,3 +1,4 @@
+/build
 /data
 /work
 /logs
@@ -5,6 +6,7 @@
 /target
 .DS_Store
 *.iml
+/.gradle
 /.project
 /.classpath
 /.settings
