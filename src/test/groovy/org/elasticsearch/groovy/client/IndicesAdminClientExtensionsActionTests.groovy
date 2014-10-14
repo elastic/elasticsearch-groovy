@@ -65,7 +65,7 @@ class IndicesAdminClientExtensionsActionTests extends AbstractClientTests {
         SearchResponse searchResponse = client.search {
             indices indexName
             types typeName
-            source toBytes {
+            source {
                 query {
                     match {
                         name = "needle"
