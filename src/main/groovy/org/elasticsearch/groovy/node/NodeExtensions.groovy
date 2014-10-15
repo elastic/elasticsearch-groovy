@@ -16,56 +16,36 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-
 package org.elasticsearch.groovy.node
 
-import org.elasticsearch.groovy.client.GClient
-
+import org.elasticsearch.client.Client
 import org.elasticsearch.common.settings.Settings
 import org.elasticsearch.node.Node
 
 /**
- *
+ * {@code NodeExtensions} provides convenience methods to standard Elasticsearch {@link Node}s to make them more Groovy
+ * friendly.
  */
-class GNode {
-
-    final Node node
-
-    final GClient client
-
-    GNode(Node node) {
-        this.node = node
-        this.client = new GClient(node.client())
+class NodeExtensions {
+    /**
+     * Get the {@link Settings} used to create the {@link Node}.
+     *
+     * @param self The {@link Node} to invoke
+     * @return Always {@link Node#settings()}.
+     * @throws NullPointerException if {@code self} is {@code null}
+     */
+    static Settings getSettings(Node self) {
+        self.settings()
     }
 
     /**
-     * The settings that were used to create the node.
+     * Get a {@link Client} that can be used to execute actions (operations) against the cluster.
+     *
+     * @param self The {@link Node} to invoke
+     * @return Always {@link Node#settings()}.
+     * @throws NullPointerException if {@code self} is {@code null}
      */
-    Settings getSettings() {
-        node.settings()
-    }
-
-    /**
-     * Start the node. If the node is already started, this method is no-op.
-     */
-    GNode start() {
-        node.start()
-        this
-    }
-
-    /**
-     * Stops the node. If the node is already started, this method is no-op.
-     */
-    GNode stop() {
-        node.stop()
-        this
-    }
-
-    /**
-     * Closes the node (and {@link #stop}s if it's running).
-     */
-    GNode close() {
-        node.close()
-        this
+    static Client getClient(Node self) {
+        self.client()
     }
 }
