@@ -21,7 +21,6 @@ package org.elasticsearch.groovy.node
 import org.elasticsearch.ElasticsearchIllegalArgumentException
 import org.elasticsearch.common.settings.ImmutableSettings
 import org.elasticsearch.common.settings.loader.JsonSettingsLoader
-import org.elasticsearch.groovy.common.xcontent.GXContentBuilder
 import org.elasticsearch.node.NodeBuilder
 
 /**
@@ -59,13 +58,11 @@ class NodeBuilderExtensions {
      * @throws ElasticsearchIllegalArgumentException if the {@code settings} fail to parse as JSON
      */
     static NodeBuilder settings(NodeBuilder self, Closure settings) {
-        byte[] settingsBytes = new GXContentBuilder().buildAsBytes(settings)
-
         try {
-            self.settings().put(new JsonSettingsLoader().load(settingsBytes))
+            self.settings().put(new JsonSettingsLoader().load(settings.asJsonBytes()))
         }
         catch (IOException e) {
-            throw new ElasticsearchIllegalArgumentException("Closure fail to map to JSON.", e)
+            throw new ElasticsearchIllegalArgumentException("Closure failed to map to valid JSON.", e)
         }
 
         self

@@ -33,10 +33,11 @@ moduleVersion = 1.0
 # first parameter the implicit this argument in normal class-level methods).
 #
 extensionClasses = \
+  org.elasticsearch.groovy.ClosureExtensions,\
   org.elasticsearch.groovy.client.AdminClientExtensions,\
   org.elasticsearch.groovy.client.ClientExtensions,\
   org.elasticsearch.groovy.client.ClusterAdminClientExtensions,\
   org.elasticsearch.groovy.client.IndicesAdminClientExtensions,\
   org.elasticsearch.groovy.node.NodeBuilderExtensions,\
-  org.elasticsearch.groovy.node.NodeExtensions
-
+  org.elasticsearch.groovy.node.NodeExtensions,\
+  org.elasticsearch.groovy.common.xcontent.XContentBuilderExtensions

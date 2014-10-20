@@ -21,7 +21,7 @@ package org.elasticsearch.groovy.node
 import org.elasticsearch.client.Client
 import org.elasticsearch.common.settings.Settings
 import org.elasticsearch.node.Node
-import org.elasticsearch.test.ElasticsearchIntegrationTest
+import org.elasticsearch.test.ElasticsearchTestCase
 
 import org.junit.Test
 
@@ -34,7 +34,7 @@ import static org.mockito.Mockito.when
 /**
  * Tests {@link NodeExtensions}.
  */
-class NodeExtensionsTests extends ElasticsearchIntegrationTest {
+class NodeExtensionsTests extends ElasticsearchTestCase {
     /**
      * Mock {@link Node} to ensure functionality.
      */
