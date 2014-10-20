@@ -22,7 +22,7 @@ import org.elasticsearch.common.settings.ImmutableSettings
 import org.elasticsearch.common.settings.Settings
 import org.elasticsearch.node.Node
 import org.elasticsearch.node.NodeBuilder
-import org.elasticsearch.test.ElasticsearchIntegrationTest
+import org.elasticsearch.test.ElasticsearchTestCase
 
 import org.junit.Test
 
@@ -35,7 +35,7 @@ import static org.mockito.Mockito.when
 /**
  * Tests {@link NodeBuilderExtensions}.
  */
-class NodeBuilderExtensionsTests extends ElasticsearchIntegrationTest {
+class NodeBuilderExtensionsTests extends ElasticsearchTestCase {
     /**
      * Tested {@link NodeBuilder}.
      */
