@@ -39,8 +39,11 @@
         <tests.jvms>1</tests.jvms>
         <tests.shuffle>true</tests.shuffle>
         <tests.output>onerror</tests.output>
-        <tests.client.ratio></tests.client.ratio>
         <es.logger.level>INFO</es.logger.level>
+        <tests.bwc.path>${project.basedir}/backwards</tests.bwc.path>
+        <tests.heap.size>512m</tests.heap.size>
+        <tests.heapdump.path>${basedir}/logs/</tests.heapdump.path>
+        <tests.topn>5</tests.topn>
     </properties>
 
     <repositories>
@@ -51,45 +54,8 @@
     </repositories>
 
     <dependencies>
-        <!-- Compile Dependencies -->
-
-        <dependency>
-            <groupId>org.codehaus.groovy</groupId>
-            <artifactId>groovy-all</artifactId>
-            <version>${groovy.version}</version>
-            <scope>compile</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.elasticsearch</groupId>
-            <artifactId>elasticsearch</artifactId>
-            <version>${elasticsearch.version}</version>
-            <scope>compile</scope>
-        </dependency>
-
-        <!-- Runtime Dependencies -->
-
-        <dependency>
-            <groupId>log4j</groupId>
-            <artifactId>log4j</artifactId>
-            <version>1.2.17</version>
-            <scope>runtime</scope>
-        </dependency>
-
         <!-- Test Dependencies -->
 
-        <dependency>
-            <groupId>org.apache.lucene</groupId>
-            <artifactId>lucene-test-framework</artifactId>
-            <version>${lucene.version}</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.elasticsearch</groupId>
-            <artifactId>elasticsearch</artifactId>
-            <version>${elasticsearch.version}</version>
-            <type>test-jar</type>
-            <scope>test</scope>
-        </dependency>
         <dependency>
             <groupId>org.hamcrest</groupId>
             <artifactId>hamcrest-all</artifactId>
@@ -108,7 +74,45 @@
             <version>1.10.5</version>
             <scope>test</scope>
         </dependency>
+        <dependency>
+            <groupId>org.apache.lucene</groupId>
+            <artifactId>lucene-test-framework</artifactId>
+            <version>${lucene.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.elasticsearch</groupId>
+            <artifactId>elasticsearch</artifactId>
+            <version>${elasticsearch.version}</version>
+            <type>test-jar</type>
+            <scope>test</scope>
+        </dependency>
 
+        <!-- Compile Dependencies -->
+
+        <dependency>
+            <groupId>org.codehaus.groovy</groupId>
+            <artifactId>groovy-all</artifactId>
+            <version>${groovy.version}</version>
+            <!-- Enable invokedynamic instruction support -->
+            <classifier>indy</classifier>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.elasticsearch</groupId>
+            <artifactId>elasticsearch</artifactId>
+            <version>${elasticsearch.version}</version>
+            <scope>compile</scope>
+        </dependency>
+
+        <!-- Runtime Dependencies -->
+
+        <dependency>
+            <groupId>log4j</groupId>
+            <artifactId>log4j</artifactId>
+            <version>1.2.17</version>
+            <scope>runtime</scope>
+        </dependency>
     </dependencies>
 
     <build>
@@ -250,14 +254,14 @@
                         <phase>compile</phase>
                         <configuration>
                             <tasks>
-                                <mkdir dir="${basedir}/src/main/groovy"/>
                                 <taskdef name="groovyc"
                                          classname="org.codehaus.groovy.ant.Groovyc">
                                     <classpath refid="maven.compile.classpath"/>
                                 </taskdef>
                                 <mkdir dir="${project.build.outputDirectory}"/>
                                 <groovyc destdir="${project.build.outputDirectory}"
-                                         srcdir="${basedir}/src/main/groovy/" listfiles="true">
+                                         srcdir="${basedir}/src/main/groovy/" listfiles="true"
+                                         indy="true">
                                     <classpath refid="maven.compile.classpath"/>
                                     <javac source="1.7" target="1.7" debug="on"/>
                                 </groovyc>
@@ -272,14 +276,14 @@
                         <phase>test-compile</phase>
                         <configuration>
                             <tasks>
-                                <mkdir dir="${basedir}/src/test/groovy"/>
                                 <taskdef name="groovyc"
                                          classname="org.codehaus.groovy.ant.Groovyc">
                                     <classpath refid="maven.test.classpath"/>
                                 </taskdef>
                                 <mkdir dir="${project.build.testOutputDirectory}"/>
                                 <groovyc destdir="${project.build.testOutputDirectory}"
-                                         srcdir="${basedir}/src/test/groovy/" listfiles="true">
+                                         srcdir="${basedir}/src/test/groovy/" listfiles="true"
+                                         indy="true">
                                     <classpath refid="maven.test.classpath"/>
                                     <javac source="1.7" target="1.7" debug="on"/>
                                 </groovyc>
