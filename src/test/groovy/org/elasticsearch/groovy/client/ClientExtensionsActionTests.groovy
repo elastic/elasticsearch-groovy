@@ -52,7 +52,7 @@ class ClientExtensionsActionTests extends AbstractClientTests {
             index indexName
             type 'tweet'
             id tweetId
-            source toIndexBytes {
+            source {
                 user = "kimchy"
                 message = "this is a tweet!"
             }
@@ -109,21 +109,21 @@ class ClientExtensionsActionTests extends AbstractClientTests {
             add Requests.indexRequest(indexName).with {
                 type typeName
                 id ids[0]
-                source toIndexBytes {
+                source {
                     user = randomInt()
                 }
             },
             Requests.indexRequest(indexName).with {
                 type typeName
                 id ids[1]
-                source toIndexBytes {
+                source {
                     user = randomInt()
                 }
             },
             Requests.indexRequest(indexName).with {
                 type typeName
                 id ids[2]
-                source toIndexBytes {
+                source {
                     user = randomInt()
                 }
             }
@@ -153,7 +153,7 @@ class ClientExtensionsActionTests extends AbstractClientTests {
         SearchResponse response = client.search {
             indices indexName
             types typeName
-            source toBytes {
+            source {
                 query {
                     match {
                         user = userId
@@ -177,7 +177,7 @@ class ClientExtensionsActionTests extends AbstractClientTests {
         CountResponse response = client.count {
             indices indexName
             types typeName
-            source toBytes {
+            source {
                 query {
                     range {
                         value {
@@ -201,7 +201,7 @@ class ClientExtensionsActionTests extends AbstractClientTests {
         DeleteByQueryResponse response = client.deleteByQuery {
             indices indexName
             types typeName
-            source toBytes {
+            source {
                 query {
                     range {
                         value {
@@ -222,7 +222,7 @@ class ClientExtensionsActionTests extends AbstractClientTests {
         CountResponse countResponse = client.count {
             indices indexName
             types typeName
-            source toBytes {
+            source {
                 query {
                     match_all { }
                 }
@@ -256,7 +256,7 @@ class ClientExtensionsActionTests extends AbstractClientTests {
             // explicit return for compiler to identify otherwise ambiguous code block
             return {
                 type typeName
-                source toIndexBytes {
+                source {
                     // note: "it" cannot be used because it's overridden (and always null)
                     value = currentValue
                 }

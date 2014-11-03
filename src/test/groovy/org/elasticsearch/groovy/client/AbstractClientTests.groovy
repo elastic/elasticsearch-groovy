@@ -23,7 +23,6 @@ import org.elasticsearch.action.index.IndexRequest
 import org.elasticsearch.action.index.IndexResponse
 import org.elasticsearch.client.Client
 import org.elasticsearch.client.Requests
-import org.elasticsearch.groovy.common.xcontent.GXContentBuilder
 import org.elasticsearch.test.ElasticsearchIntegrationTest
 
 import org.junit.Before
@@ -44,28 +43,6 @@ abstract class AbstractClientTests extends ElasticsearchIntegrationTest {
     }
 
     /**
-     * Temporary helper function used to convert {@code closure}s into byte arrays for inner-closure settings.
-     * <p />
-     * Once {@code ActionRequest} extensions are added, this method should become unnecessary.
-     * @param closure The closure to convert
-     * @return Never {@code null}.
-     */
-    byte[] toBytes(Closure closure) {
-        new GXContentBuilder().buildAsBytes(closure)
-    }
-
-    /**
-     * Temporary helper function used to convert {@code closure}s into byte arrays for inner-closure settings.
-     * <p />
-     * Once {@code ActionRequest} extensions are added, this method should become unnecessary.
-     * @param closure The closure to convert
-     * @return Never {@code null}.
-     */
-    byte[] toIndexBytes(Closure closure) {
-        new GXContentBuilder().buildAsBytes(closure, Requests.INDEX_CONTENT_TYPE)
-    }
-
-    /**
      * Index the {@code doc} in the {@code indexName} and {@code typeName} with a randomly generated ID that is
      * returned.
      *
@@ -81,7 +58,7 @@ abstract class AbstractClientTests extends ElasticsearchIntegrationTest {
             index indexName
             type typeName
             id docId
-            source toIndexBytes(doc)
+            source doc
         }.actionGet()
 
         // sanity check
