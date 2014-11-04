@@ -38,8 +38,8 @@ Please read documentation relative to the version you are using:
 
 * [1.3.4.0-SNAPSHOT](https://github.com/elasticsearch/elasticsearch-groovy/blob/master/README.md)
 
-Adding to Groovy projects
--------------------------
+Adding to your Groovy projects
+------------------------------
 
 ### Gradle
 
@@ -66,7 +66,7 @@ dependencies {
 </dependencies>
 ```
 
-Compiling Gradle Client
+Compiling Groovy Client
 -----------------------
 
 To compile this code on your own, then run:
@@ -77,7 +77,7 @@ $ mvn clean package -DskipTests
 
 In the longer term, there will be a Gradle build script to perform this action.
 
-Testing Gradle Client
+Testing Groovy Client
 ---------------------
 
 The Groovy Client makes use of the [Randomized Testing framework used by Elasticsearch
