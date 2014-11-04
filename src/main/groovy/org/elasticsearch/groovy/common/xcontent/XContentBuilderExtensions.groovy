@@ -125,7 +125,7 @@ class XContentBuilderExtensions {
      * @throws IOException if any error occurs while mapping the {@link Closure}
      */
     static byte[] buildBytes(Closure self, XContentType type) throws IOException {
-        build(self, type).bytes().array()
+        build(self, type).bytes().toBytes()
     }
 
     /**
