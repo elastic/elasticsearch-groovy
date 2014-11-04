@@ -92,8 +92,8 @@ class XContentBuilderExtensionsTests extends ElasticsearchTestCase {
 
     @Test
     void testBuildString() {
-        // avoid using SMILE because it will [expectedly] fail with strings (so YAML was picked to avoid using hitting
-        //  SMILE and reusing JSON)
+        // avoid using CBOR/SMILE because it will [expectedly] fail with strings (so YAML was picked explicitly to
+        //  avoid using the binary only formats and unnecessarily reusing JSON)
         String string = XContentBuilderExtensions.buildString(closure, XContentType.YAML)
 
         assert closure.asMap() == XContentType.YAML.xContent().createParser(string).mapAndClose()
@@ -140,5 +140,96 @@ class XContentBuilderExtensionsTests extends ElasticsearchTestCase {
         assert jsonBuilder.generator() == jsonBuilder.getGenerator()
         assert jsonBuilder.stream() == jsonBuilder.getStream()
         assert jsonBuilder.string() == jsonBuilder.getString()
+    }
+
+    // simple tests to ensure accuracy (these are also covered in the ClosureExtension tests, though less specifically)
+
+    @Test
+    void testSingleProperty() {
+        assert '{"rootprop":"something"}' == { rootprop = 'something' }.asJsonString()
+    }
+
+    @Test
+    void testArrayAndProperty() {
+        assert '{"categories":["a","b","c"],"rootprop":"something"}' == {
+            categories = ['a', 'b', 'c']
+            rootprop = 'something'
+        }.asJsonString()
+    }
+
+    @Test
+    void testNestedObjects() {
+        assert '{"categories":["a","b","c"],"rootprop":"something","test":{"subprop":10}}' == {
+            categories = ['a', 'b', 'c']
+            rootprop = 'something'
+            test {
+                subprop = 10
+            }
+        }.asJsonString()
+    }
+
+    @Test
+    void testAssignedNestedObjects() {
+        assert '{"categories":["a","b","c"],"rootprop":"something","test":{"subprop":10}}' == {
+            categories = ['a', 'b', 'c']
+            rootprop = 'something'
+            test = {
+                subprop = 10
+            }
+        }.asJsonString()
+    }
+
+    @Test
+    void testMapObjects() {
+        assert '{"categories":["a","b","c"],"rootprop":"something","test":{"subprop":10,"three":[1,2,3]}}' == {
+            categories = ['a', 'b', 'c']
+            rootprop = 'something'
+            test subprop: 10, three: [1, 2, 3]
+        }.asJsonString()
+    }
+
+    @Test
+    void testArrayOfClosures() {
+        assert '{"foo":[{"bar":"hello"},{"hello":"bar"}]}' == {
+            foo = [{ bar = 'hello'}, { hello = 'bar' }]
+        }.asJsonString()
+    }
+
+    @Test
+    void testExampleFromReferenceGuide() {
+        List<String> results = ['one', 'two', 'three']
+
+        assert '{"books":[{"title":"one"},{"title":"two"},{"title":"three"}]}' == {
+            books = results.collect {
+                [title: it]
+            }
+        }.asJsonString()
+    }
+
+    @Test
+    void testAppendToList() {
+        List<String> results = ['one', 'two', 'three']
+
+        assert '{"books":[{"title":"one"},{"title":"two"},{"title":"three"}]}' == {
+            books = []
+            for (b in results) {
+                books << [title: b]
+            }
+        }.asJsonString()
+    }
+
+    @Test
+    void testReusedClosure() {
+        List<String> results = ['one', 'two', 'three']
+
+        Closure closure = {
+            rootprop = 'something'
+            books = results.collect {
+                [title: it]
+            }
+        }
+
+        assert closure.asJsonString() == closure.asJsonString()
+        assert '{"rootprop":"something","books":[{"title":"one"},{"title":"two"},{"title":"three"}]}' == closure.asJsonString()
     }
 }

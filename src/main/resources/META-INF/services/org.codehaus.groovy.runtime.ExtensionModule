@@ -34,6 +34,18 @@ moduleVersion = 1.0
 #
 extensionClasses = \
   org.elasticsearch.groovy.ClosureExtensions,\
+  org.elasticsearch.groovy.action.ListenableActionFutureExtensions,\
+  org.elasticsearch.groovy.action.admin.indices.create.CreateIndexRequestExtensions,\
+  org.elasticsearch.groovy.action.admin.indices.mapping.put.PutMappingRequestExtensions,\
+  org.elasticsearch.groovy.action.admin.indices.settings.put.UpdateSettingsRequestExtensions,\
+  org.elasticsearch.groovy.action.count.CountRequestExtensions,\
+  org.elasticsearch.groovy.action.deletebyquery.DeleteByQueryRequestExtensions,\
+  org.elasticsearch.groovy.action.index.IndexRequestExtensions,\
+  org.elasticsearch.groovy.action.indexedscripts.put.PutIndexedScriptRequestExtensions,\
+  org.elasticsearch.groovy.action.mlt.MoreLikeThisRequestExtensions,\
+  org.elasticsearch.groovy.action.percolate.PercolateRequestExtensions,\
+  org.elasticsearch.groovy.action.search.SearchRequestExtensions,\
+  org.elasticsearch.groovy.action.update.UpdateRequestExtensions,\
   org.elasticsearch.groovy.client.AdminClientExtensions,\
   org.elasticsearch.groovy.client.ClientExtensions,\
   org.elasticsearch.groovy.client.ClusterAdminClientExtensions,\

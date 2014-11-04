@@ -25,8 +25,13 @@ import org.elasticsearch.action.delete.DeleteResponse
 import org.elasticsearch.action.deletebyquery.DeleteByQueryResponse
 import org.elasticsearch.action.get.GetResponse
 import org.elasticsearch.action.index.IndexResponse
+import org.elasticsearch.action.indexedscripts.delete.DeleteIndexedScriptResponse
+import org.elasticsearch.action.indexedscripts.get.GetIndexedScriptResponse
+import org.elasticsearch.action.indexedscripts.put.PutIndexedScriptResponse
 import org.elasticsearch.action.search.SearchResponse
+import org.elasticsearch.action.update.UpdateResponse
 import org.elasticsearch.client.Requests
+
 import org.junit.Test
 
 /**
@@ -69,7 +74,7 @@ class ClientExtensionsActionTests extends AbstractClientTests {
             user = randomAsciiOfLengthBetween(1, 16)
         }
 
-        // don't need a refresh, since we're not searching it
+        // don't need a refresh, since we're not searching for it
         DeleteResponse response = client.delete {
             index indexName
             type typeName
@@ -78,6 +83,53 @@ class ClientExtensionsActionTests extends AbstractClientTests {
 
         assert response.found
         assert response.id == docId
+
+        // don't need a refresh, since we're not searching for it
+        GetResponse getResponse = client.get {
+            index indexName
+            type typeName
+            id docId
+        }.actionGet()
+
+        assert ! getResponse.exists
+    }
+
+    @Test
+    void testUpdateRequest() {
+        String userId = randomAsciiOfLengthBetween(1, 16)
+
+        int nestedValue = randomInt()
+
+        String docId = indexDoc(indexName, typeName) {
+            user = userId
+        }
+
+        // update the document by adding a nested object (creatively named "nested")
+        UpdateResponse response = client.update {
+            index indexName
+            type typeName
+            id docId
+            doc {
+                nested {
+                    value = nestedValue
+                }
+            }
+        }.actionGet()
+
+        assert ! response.created
+        assert response.version == 2
+
+        // don't need a refresh, since we're not searching for it
+        GetResponse getResponse = client.get {
+            index indexName
+            type typeName
+            id docId
+        }.actionGet()
+
+        assert getResponse.exists
+        assert getResponse.version == 2
+        assert getResponse.sourceAsMap["user"] == userId
+        assert getResponse.sourceAsMap.nested.value == nestedValue
     }
 
     @Test
@@ -88,7 +140,7 @@ class ClientExtensionsActionTests extends AbstractClientTests {
             user = userId
         }
 
-        // don't need a refresh, since we're not searching it
+        // don't need a refresh, since we're not searching for it
         GetResponse response = client.get {
             index indexName
             type typeName
@@ -164,7 +216,7 @@ class ClientExtensionsActionTests extends AbstractClientTests {
 
         assert response.hits.totalHits == 1
         assert response.hits.hits[0].id == docId
-        assert response.hits.hits[0].source["user"] == userId
+        assert response.hits.hits[0].source.user == userId
     }
 
     @Test
@@ -231,6 +283,116 @@ class ClientExtensionsActionTests extends AbstractClientTests {
 
         // the counts should match exactly since we have the whole data set and are performing the opposite calculation
         assert countResponse.count == values.count { it < gteValue }
+    }
+
+    @Test
+    void testPutIndexedScriptRequest() {
+        int startCount = randomInt(1024)
+
+        String docId = indexDoc(indexName, typeName) {
+            // actual value is ignored
+            user = randomAsciiOfLengthBetween(1, 16)
+            count = startCount
+        }
+
+        // index the script
+        PutIndexedScriptResponse response = client.putIndexedScript {
+            id 'testPutIndexedScriptRequest'
+            // NOTE: This will be the Groovy runtime within Elasticsearch and not the Groovy client (this)
+            scriptLang 'groovy'
+            source {
+                // NOTE: The script is [in this case] Groovy, but it must be a string that is interpreted on the server
+                script = "ctx._source.count += count"
+            }
+        }.actionGet()
+
+        assert response.created
+
+        UpdateResponse updateResponse = client.update {
+            index indexName
+            type typeName
+            id docId
+            source {
+                script_id 'testPutIndexedScriptRequest'
+                lang 'groovy'
+                params {
+                    count = 5
+                }
+            }
+        }.actionGet()
+
+        assert ! updateResponse.created
+        assert updateResponse.id == docId
+        assert updateResponse.version == 2
+
+        GetResponse getResponse = client.get {
+            index indexName
+            type typeName
+            id docId
+        }.actionGet()
+
+        assert getResponse.exists
+        assert getResponse.version == updateResponse.version
+        assert getResponse.source.user != null
+        assert getResponse.source.count == startCount + 5
+    }
+
+    @Test
+    void testGetIndexedScriptRequest() {
+        String groovyScript = "ctx._source.count += count"
+
+        // index the script
+        PutIndexedScriptResponse putResponse = client.putIndexedScript {
+            id 'testGetIndexedScriptRequest'
+            // NOTE: This will be the Groovy runtime within Elasticsearch and not the Groovy client (this)
+            scriptLang 'groovy'
+            source {
+                // NOTE: The script is [in this case] Groovy, but it must be a string that is interpreted on the server
+                script = groovyScript
+            }
+        }.actionGet()
+
+        assert putResponse.created
+
+        GetIndexedScriptResponse response = client.getIndexedScript {
+            id 'testGetIndexedScriptRequest'
+            scriptLang 'groovy'
+        }.actionGet()
+
+        assert response.exists
+        assert response.version == putResponse.version
+        assert response.script == groovyScript
+    }
+
+    @Test
+    void testDeleteIndexedScriptRequest() {
+        String groovyScript = "ctx._source.count += count"
+
+        // index the script
+        PutIndexedScriptResponse putResponse = client.putIndexedScript {
+            id 'testDeleteIndexedScriptRequest'
+            scriptLang 'groovy'
+            source {
+                script = "ctx._source.count += count"
+            }
+        }.actionGet()
+
+        assert putResponse.created
+
+        // perform the delete
+        DeleteIndexedScriptResponse response = client.deleteIndexedScript {
+            id 'testDeleteIndexedScriptRequest'
+            scriptLang 'groovy'
+        }.actionGet()
+
+        assert response.found
+
+        GetIndexedScriptResponse getResponse = client.getIndexedScript {
+            id 'testDeleteIndexedScriptRequest'
+            scriptLang 'groovy'
+        }.actionGet()
+
+        assert ! getResponse.exists
     }
 
     /**

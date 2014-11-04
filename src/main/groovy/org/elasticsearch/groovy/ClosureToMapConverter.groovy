@@ -74,7 +74,8 @@ package org.elasticsearch.groovy
  * </pre>
  * Mixing the two styles is allowed, but consistency is naturally very important for code readability.
  * <p />
- * Instances should never be reused. This class is not thread safe (only invoke it once from a single thread).
+ * Instances should never be reused. Instances of this class are not thread safe, but separate instances do not share
+ * any state and therefore multiple instances can run in parallel.
  * @see ClosureExtensions#asMap(Closure)
  */
 class ClosureToMapConverter {
@@ -138,13 +139,13 @@ class ClosureToMapConverter {
      */
     private ClosureToMapConverter(Closure closure) {
         // required
-        this.closure = closure
+        this.closure = (Closure)closure.clone()
 
         // When looking up properties and invoking methods, it first looks at the delegate (THIS) for the value. If
         //  the delegate (THIS) does not have it, then it will check the owner for the value (effectively the closure).
-        closure.delegate = this
+        this.closure.delegate = this
         // Note: Using OWNER_FIRST (the default) does not work except for non-nested closures.
-        closure.resolveStrategy = Closure.DELEGATE_FIRST
+        this.closure.resolveStrategy = Closure.DELEGATE_FIRST
     }
 
     /**
@@ -162,7 +163,7 @@ class ClosureToMapConverter {
     }
 
     /**
-     * Called when the {@link #closure} is delegating to {@code this} isntance for method invocations. For example
+     * Called when the {@link #closure} is delegating to {@code this} instance for method invocations. For example
      * <pre>
      * { username "kimchy" }
      * </pre>
@@ -205,9 +206,6 @@ class ClosureToMapConverter {
 
     /**
      * Get the value defined in the {@link #map} with the {@code propertyName}.
-     *
-     * @param propertyName The map key
-     * @return {@code null} if undefined.
      */
     @Override
     Object getProperty(String propertyName) {
