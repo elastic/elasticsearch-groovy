@@ -50,16 +50,6 @@ extensionClasses = \
   org.elasticsearch.groovy.client.ClientExtensions,\
   org.elasticsearch.groovy.client.ClusterAdminClientExtensions,\
   org.elasticsearch.groovy.client.IndicesAdminClientExtensions,\
-  org.elasticsearch.groovy.client.action.admin.indicies.CreateIndexRequestExtensions,\
-  org.elasticsearch.groovy.client.action.admin.indicies.PutMappingRequestExtensions,\
-  org.elasticsearch.groovy.client.action.admin.indicies.UpdateSettingsRequestExtensions,\
-  org.elasticsearch.groovy.client.action.count.CountRequestExtensions,\
-  org.elasticsearch.groovy.client.action.deletebyquery.DeleteByQueryRequestExtensions,\
-  org.elasticsearch.groovy.client.action.index.IndexRequestExtensions,\
-  org.elasticsearch.groovy.client.action.mlt.MoreLikeThisRequestExtensions,\
-  org.elasticsearch.groovy.client.action.percolate.PercolateRequestExtensions,\
-  org.elasticsearch.groovy.client.action.search.SearchRequestExtensions,\
-  org.elasticsearch.groovy.client.action.update.UpdateRequestExtensions,\
   org.elasticsearch.groovy.node.NodeBuilderExtensions,\
   org.elasticsearch.groovy.node.NodeExtensions,\
   org.elasticsearch.groovy.common.xcontent.XContentBuilderExtensions
