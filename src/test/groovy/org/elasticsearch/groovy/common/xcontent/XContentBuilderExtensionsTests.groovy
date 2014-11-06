@@ -85,9 +85,9 @@ class XContentBuilderExtensionsTests extends ElasticsearchTestCase {
 
     @Test
     void testBuildBytes() {
-        byte[] bytes = XContentBuilderExtensions.buildBytes(closure, XContentType.SMILE)
+        byte[] bytes = XContentBuilderExtensions.buildBytes(closure, type)
 
-        assert closure.asMap() == XContentType.SMILE.xContent().createParser(bytes).mapAndClose()
+        assert closure.asMap() == type.xContent().createParser(bytes).mapAndClose()
     }
 
     @Test
@@ -131,10 +131,10 @@ class XContentBuilderExtensionsTests extends ElasticsearchTestCase {
         XContentBuilder jsonBuilder = XContentFactory.contentBuilder(XContentType.JSON).map(closure)
 
         assert closure.asJsonString() == jsonBuilder.string()
-        assert closure.asJsonBytes() == jsonBuilder.bytes().array()
+        assert closure.asJsonBytes() == jsonBuilder.bytes().toBytes()
         assert closure.buildString(type) == arbitraryBuilder.string()
         assert closure.build(type).string() == arbitraryBuilder.string()
-        assert closure.buildBytes(type) == arbitraryBuilder.bytes().array()
+        assert closure.buildBytes(type) == arbitraryBuilder.bytes().toBytes()
         assert jsonBuilder.bytes() == jsonBuilder.getBytes()
         assert jsonBuilder.bytesStream() == jsonBuilder.getBytesStream()
         assert jsonBuilder.generator() == jsonBuilder.getGenerator()

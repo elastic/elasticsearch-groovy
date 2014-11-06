@@ -1,0 +1,196 @@
+/*
+ * Licensed to Elasticsearch under one or more contributor
+ * license agreements. See the NOTICE file distributed with
+ * this work for additional information regarding copyright
+ * ownership. Elasticsearch licenses this file to you under
+ * the Apache License, Version 2.0 (the "License"); you may
+ * not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
+ */
+
+///////////////////////////////////////////////////
+//                                               //
+//                Gradle Plugins                 //
+//                                               //
+///////////////////////////////////////////////////
+
+apply plugin: 'groovy'
+apply plugin: 'java-library-distribution'
+
+///////////////////////////////////////////////////
+//                                               //
+//             Dependency Details                //
+//                                               //
+///////////////////////////////////////////////////
+
+/**
+ * Extension properties are a Gradle feature that allow "extra" variables to be added to a project in a predictable way.
+ * To define them, you must use the ".ext." go-between. Once defined, they are accessible directly from the associated
+ * {@code project} object.
+ * <p />
+ * For example, <code>project.ext.version = '1.2.3-SNAPSHOT'</code> could be accessed as {@code project.version}.
+ * Within <em>that</em> {@code project}'s build.gradle file, it can be accessed directly as {@code version}".
+ */
+project.ext {
+    // A map that is defined to contain version numbers for all dependencies in the current release.
+    versions = [
+            elasticsearch              : '1.4.0',
+            groovy                     : '2.3.2',
+            java                       : '1.7',
+            hamcrest                   : '1.3',
+            log4j                      : '1.2.17',
+            lucene                     : '4.10.2',
+            mockito                    : '1.10.5',
+            'randomizedtesting-runner' : '2.1.10'
+    ]
+
+    // A map defining shorthand names to reference external dependencies.
+    //
+    // Note: Strings must use double quotes to expand "${var}" into its actual value. '${var}' is literally that string.
+    //  Similarly, keys that have spaces or dashes in their name must be quoted (single or double).
+    externalDeps = [
+            // Test Dependencies
+            'elasticsearch-tests'      : "org.elasticsearch:elasticsearch:${versions.elasticsearch}:tests",
+            hamcrest                   : "org.hamcrest:hamcrest-all:${versions.hamcrest}",
+            'lucene-test-framework'    : "org.apache.lucene:lucene-test-framework:${versions.lucene}",
+            mockito                    : "org.mockito:mockito-core:${versions.mockito}",
+            'randomizedtesting-runner' : "com.carrotsearch.randomizedtesting:randomizedtesting-runner:${versions['randomizedtesting-runner']}",
+            // Compile Dependencies
+            elasticsearch              : "org.elasticsearch:elasticsearch:${versions.elasticsearch}",
+            groovy                     : "org.codehaus.groovy:groovy-all:${versions.groovy}:indy",
+            // Test Runtime Dependencies
+            log4j                      : "log4j:log4j:${versions.log4j}"
+    ]
+}
+
+/**
+ * Dependent on Maven Central to retrieve all external dependencies.
+ */
+repositories {
+    mavenCentral()
+}
+
+/**
+ * Associate external dependencies with this project. Gradle only requires this step, and it does not require the
+ * {@code versions} and {@code externalDeps} {@code Map}s. I find that they make it much easier to eyeball what is
+ * happening as well as to find mistakes.
+ * <p />
+ * Where order does <em>not</em> matter for the dependencies, then they are sorted alphabetically.
+ */
+dependencies {
+    testCompile externalDeps['hamcrest'],
+            externalDeps['lucene-test-framework'],
+            externalDeps['mockito'],
+            externalDeps['randomizedtesting-runner'],
+            externalDeps['elasticsearch-tests'] // Must come after lucene-test-framework
+
+    compile externalDeps['elasticsearch'],
+            externalDeps['groovy']
+
+    testRuntime externalDeps['log4j']
+}
+
+// The minimum required Java version (this matches the Elasticsearch minimum Java version)
+// Note: If we could supply the minimum Java update, then we would specify this as 1.7.0_60 (or 7u60 for short).
+sourceCompatibility = versions.java
+
+///////////////////////////////////////////////////
+//                                               //
+//               Project Details                 //
+//                                               //
+///////////////////////////////////////////////////
+
+// Project details
+description = 'Official Groovy client for Elasticsearch'
+
+// The group of the project. This is the same group that represents the "org.elasticsearch" in the Maven repository.
+group = 'org.elasticsearch'
+// The Groovy client adds an extra subversion to the Elasticsearch version number so that it is immediately obvious what
+// version each release is compatible with.
+version = "${versions.elasticsearch}.0-SNAPSHOT"
+
+///////////////////////////////////////////////////
+//                                               //
+//             Build Customization               //
+//                                               //
+///////////////////////////////////////////////////
+
+// Allow the system property to override the environment variable. However, if the system property is not defined and
+// the environment variable is defined, then use the environment variable's value.
+//
+// It's worth pointing out that if neither are set, then it will use Elasticsearch's default value at runtime. This is
+// currently `true`.
+if (System.getProperty('es.node.local') == null && System.getenv('ES_TEST_LOCAL') != null) {
+    System.setProperty('es.node.local', System.getenv('ES_TEST_LOCAL'))
+}
+
+/**
+ * Configure Groovy compilation.
+ */
+tasks.withType(GroovyCompile) {
+    // Enable the usage of invokedynamic instructions in compiled Groovy code
+    // NOTE: This requires the "indy" version of the Groovy jar to take effect _and_ this is the reason that Java 7u60
+    //  or later is required by the Groovy client.
+    groovyOptions.optimizationOptions.indy = true
+}
+
+/**
+ * Pass on any system property that starts with "tests." or "es." to the test JVM.
+ * <p />
+ * For example, this includes "-Dtests.seed=3BE033A80EF93B56", which is used by the randomized runner to
+ * [unsurprisingly] seed a test so that it can be repeated with the same values each run. This is useful when the test
+ * fails.
+ * <p />
+ * To run tests the same way, with the same values (the seed), 100 times <em>or</em> until the first failure, then use
+ * the following command:
+ * <pre>
+ * $ gradle clean test -Dtests.seed=3BE033A80EF93B56 -Dtests.iters=100 -Dtests.failfast=true
+ * </pre>
+ * This can be very useful for when testing potential threading issues.
+ * <p />
+ * Note: Error output may suggest to run Maven for any test failure. Don't be fooled! Use the suggested system
+ * properties  with <em>this</em> Gradle build!
+ */
+tasks.withType(Test) {
+    // Expected System Properties, which all come from Elasticsearch / Lucene / Randomized Runner:
+    //
+    //  tests.shuffle
+    //  tests.verbose
+    //  tests.seed
+    //  tests.failfast
+    //  tests.iters
+    //  tests.maxfailures
+    //  tests.class   ; note this overlaps with the Gradle test filter feature (-Dtest.single=*)
+    //  tests.method
+    //  tests.nightly
+    //  tests.badapples
+    //  tests.weekly
+    //  tests.slow
+    //  tests.awaitsfix
+    //  tests.timeoutSuite
+    //  tests.showSuccess
+    //  tests.integration
+    //  tests.cluster_seed
+    //  tests.client.ratio
+    //  es.node.local OR environment variable ES_TEST_LOCAL
+    //  es.node.mode
+    //  es.logger.level
+    //  java.awt.headless
+
+    // Add any "tests." or "es." system properties to the test's JVM. These system properties control the randomized
+    // runner.
+    systemProperties System.properties.findAll { prop ->
+        ['tests.', 'es.', 'java.awt.headless'].any {
+            prop.key.startsWith(it)
+        }
+    }
+}

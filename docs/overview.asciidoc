@@ -1,0 +1,36 @@
+== Overview
+
+This is the official Groovy client for Elasticsearch.  It is designed to be 100% compatible with the matching release of
+Elasticsearch's official Java client, only adding features that make it more convenient to use in Groovy without losing
+_any_ of the core functionality.
+
+The Groovy client is able to maintain compatibility by using a Groovy
+http://groovy.codehaus.org/Creating+an+extension+module[feature known as Extension modules]. We make heavy use of this
+approach to extend the Java client _in place_ to maintain compatibility and simplicity.
+
+By taking this approach, every Elasticsearch Java client example works with the Groovy client and they can be extended
+easily to simplify development. In general, the Groovy client has a few core goals:
+
+1. Provide 100% compatibility with the Java client and therefore feature parity.
+2. Provide Groovy-friendly syntax where it improves the API.
+3. Avoid adding complexity for the sake of supporting Groovy.
+4. Avoid unnecessarily compromising the performance of the Java client for the sake of Groovy.
+
+=== Groovy and Java Requirements
+
+tl;dr Use Java 7u60 or later
+
+The Groovy client is a literal extension of the Java client and therefore it has all of the same requirements. One of
+the most pressing requirements is the version of Java that is required.
+
+Supported versions of the Elasticsearch Java client require Java 7 or later to be able to run with a recommendation to
+stay up-to-date with JVM releases, and to particularly avoid Java releases prior to Java 7 update 55. The Groovy client
+gets more specific due to a new Java instruction known as `invokedynamic`, or `indy` for short (__in__voke__dy__namic),
+which we take advantage of to get higher performance, lower memory usage, and even smaller jar files in some cases.
+
+With the `indy` requirement comes a http://groovy.codehaus.org/InvokeDynamic+support[further restriction on Java 7
+JVMs] from the Groovy maintainers. They recommend that you should never use Java versions 7u21 through 7u55 due to more
+than one https://bugs.openjdk.java.net/browse/JDK-8033669[JVM bug] (e.g.,
+https://bugs.openjdk.java.net/browse/JDK-8034024[here's another]).
+
+As a result, they explicitly suggest and our Groovy client implicitly requires Java 7u60 or later.
