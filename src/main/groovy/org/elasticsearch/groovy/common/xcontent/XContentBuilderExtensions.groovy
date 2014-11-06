@@ -144,7 +144,8 @@ class XContentBuilderExtensions {
     }
 
     /**
-     * Close the {@link XContentBuilder} and get the result as a {@code byte} array in the preset {@code XContentType}.
+     * Close the {@link XContentBuilder} and get the resulting {@link BytesReference} in the preset
+     * {@code XContentType}.
      *
      * @param self The {@code this} reference for the {@link XContentBuilder}
      * @return Always {@link XContentBuilder#bytes()}.

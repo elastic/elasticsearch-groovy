@@ -1,7 +1,7 @@
 Groovy Client for Elasticsearch
 ===============================
 
-The Elasticsearch Groovy Client project helps you to use Elasticsearch in Groovy projects. This Groovy client is
+The Elasticsearch Groovy client project helps you to use Elasticsearch in Groovy projects. This Groovy client is
 different from previous releases in that it inherently supports 100% of the Elasticsearch API for the supported version
 by using the Groovy extension feature with the Java Client. Literally anything possible in the same version of the Java
 Client is possible with the Groovy client, plus some Groovy-friendly extensions.
@@ -30,13 +30,13 @@ Besides the usage of `Closure`s, the above example should look very familiar to 
 Versions
 --------
 
-|     Groovy Client           |    elasticsearch    |  groovy  | Release date |
+|     Groovy Client           |    Elasticsearch    |  Groovy  | Release date |
 |-----------------------------|---------------------|----------|:------------:|
-| 1.3.4.0-SNAPSHOT            | 1.3.4               |  2.3.2   |  XXXX-XX-XX  |
+| 1.4.0.0-SNAPSHOT            | 1.4.0               |  2.3.2   |  XXXX-XX-XX  |
 
 Please read documentation relative to the version you are using:
 
-* [1.3.4.0-SNAPSHOT](https://github.com/elasticsearch/elasticsearch-groovy/blob/master/README.md)
+* [1.4.0.0-SNAPSHOT](https://github.com/elasticsearch/elasticsearch-groovy/blob/master/README.md)
 
 Adding to your Groovy projects
 ------------------------------
@@ -49,7 +49,7 @@ repositories {
 }
 
 dependencies {
-    compile 'org.elasticsearch:elasticsearch-groovy:1.3.4.0-SNAPSHOT'
+    compile 'org.elasticsearch:elasticsearch-groovy:1.4.0.0-SNAPSHOT'
 }
 ```
 
@@ -60,7 +60,7 @@ dependencies {
   <dependency>
     <groupId>org.elasticsearch</groupId>
     <artifactId>elasticsearch-groovy</artifactId>
-    <version>1.3.4.0-SNAPSHOT</version>
+    <version>1.4.0.0-SNAPSHOT</version>
     <scope>compile</scope>
   </dependency>
 </dependencies>
@@ -72,10 +72,12 @@ Compiling Groovy Client
 To compile this code on your own, then run:
 
 ```bash
-$ mvn clean package -DskipTests
+$ gradle clean installDist
 ```
 
-In the longer term, there will be a Gradle build script to perform this action.
+This will skip all tests and place the compiled jar in
+`./build/install/elasticsearch-groovy/elasticsearch-groovy-{version}.jar`. It will package all dependencies (e.g., 
+`elasticsearch-{version}.jar`) into `./build/install/elasticsearch-groovy/lib`.
 
 Testing Groovy Client
 ---------------------
@@ -85,10 +87,13 @@ itself](http://www.elasticsearch.org/blog/elasticsearch-testing-qa-increasing-co
 tests and integration tests that this uses can be invoked with the same command:
 
 ```bash
-$ mvn clean test
+$ gradle clean test
 ```
 
-In the longer term, there will be a Gradle build script to perform this action.
+The various `tests.*` and `es.*` system properties that are used by Elasticsearch are also used by the Gradle build
+script. As a result, any recommendation that suggests running `mvn clean test -DsystemProp=xyz` can be replaced with
+`gradle clean test -DsystemProp=xyz` (the only change was from `mvn` to `gradle`). This _only_ applies to the Groovy
+client.
 
 Suggested Groovy Settings
 -------------------------
@@ -101,7 +106,7 @@ support for Java 5 and Java 6, which means that `invokedynamic` cannot be enable
 ### Compiling Groovy with `invokedynamic` support
 
 To support `invokedynamic` in your own Groovy project(s), at a minimum, you *must* include the `invokedynamic`-compiled
-Groovy jar, which Codehaus calls the `indy` (`in`voke`dy`namic) jar.
+Groovy jar, which the Groovy developers call the `indy` (`in`voke`dy`namic) jar.
 
 #### Gradle
 
@@ -133,7 +138,7 @@ dependencies {
 
 After including the `indy` jar, you now _only_ have an `invokedynamic`-compatible Groovy runtime. All internal Groovy
 calls will use `invokedynamic`, as will any other Groovy code compiled with `invokedynamic` support (e.g., the
-Elasticsearch Groovy Client), but _your_ code must also be compiled with `invokedynamic` support.
+Elasticsearch Groovy client), but _your_ code must also be compiled with `invokedynamic` support.
 
 #### Gradle
 
