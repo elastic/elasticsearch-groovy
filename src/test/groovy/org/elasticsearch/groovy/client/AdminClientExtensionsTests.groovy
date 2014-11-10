@@ -22,6 +22,7 @@ import org.elasticsearch.client.AdminClient
 import org.elasticsearch.client.ClusterAdminClient
 import org.elasticsearch.client.IndicesAdminClient
 import org.elasticsearch.node.Node
+import org.elasticsearch.test.ElasticsearchTestCase
 
 import org.junit.Test
 
@@ -34,7 +35,7 @@ import static org.mockito.Mockito.when
 /**
  * Tests {@link AdminClientExtensions}.
  */
-class AdminClientExtensionsTests {
+class AdminClientExtensionsTests extends ElasticsearchTestCase {
     /**
      * Mock {@link AdminClient} to ensure functionality.
      */

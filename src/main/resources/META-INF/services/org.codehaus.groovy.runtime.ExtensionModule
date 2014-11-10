@@ -52,4 +52,11 @@ extensionClasses = \
   org.elasticsearch.groovy.client.IndicesAdminClientExtensions,\
   org.elasticsearch.groovy.node.NodeBuilderExtensions,\
   org.elasticsearch.groovy.node.NodeExtensions,\
+  org.elasticsearch.groovy.common.settings.ImmutableSettingsBuilderExtensions,\
   org.elasticsearch.groovy.common.xcontent.XContentBuilderExtensions
+#
+# Take static methods defined in these comma separated classes and add them as static methods to the class associated
+# with the first method parameter, which is otherwise completely ignored.
+#
+staticExtensionClasses = \
+  org.elasticsearch.groovy.common.settings.ImmutableSettingsStaticExtensions

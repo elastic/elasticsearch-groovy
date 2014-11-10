@@ -16,49 +16,48 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.elasticsearch.groovy.node
+package org.elasticsearch.groovy.common.settings
 
 import org.elasticsearch.ElasticsearchIllegalArgumentException
 import org.elasticsearch.common.settings.ImmutableSettings
-import org.elasticsearch.node.NodeBuilder
+import org.elasticsearch.common.settings.loader.JsonSettingsLoader
 
 /**
- * {@code NodeBuilderExtensions} provides convenience methods to standard Elasticsearch {@link NodeBuilder}s to make
- * them more Groovy friendly.
+ * {@code ImmutableSettingsBuilderExtensions} provide Groovy-friendly extensions to {@link ImmutableSettings.Builder}.
+ * <p />
+ * In particular, this adds the ability to specify settings in the form of a {@link Closure} in addition to existing
+ * options.
  */
-class NodeBuilderExtensions {
+class ImmutableSettingsBuilderExtensions {
     /**
-     * Set any addition settings by working directly against the internally used settings builder.
-     *
-     * @param self The {@code this} reference for the {@link NodeBuilder}
-     * @return Always {@link NodeBuilder#settings()}.
-     * @throws NullPointerException if {@code self} is {@code null}
-     */
-    static ImmutableSettings.Builder getSettings(NodeBuilder self) {
-        self.settings()
-    }
-
-    /**
-     * Explicit node settings to set.
+     * Explicit settings to set.
      * <pre>
-     * nodeBuilder().settings {
+     * ImmutableSettings.Builder.settingsBuilder().put {
      *     node {
-     *         local = true
+     *         client = true
      *     }
      *     cluster {
      *         name = 'es-cluster-name'
      *     }
      * }
      * </pre>
+     * Note: This provides an advantage over the {@code Map} variant that requires a string-to-string mapping. This
+     * will in effect create a JSON map out of the {@code settings} and then convert that to a string-to-string mapping
+     * for you.
      *
-     * @param self The {@code this} reference for the {@link NodeBuilder}
+     * @param self The {@code this} reference for the {@link ImmutableSettings.Builder}
      * @param settings The settings specified as a {@link Closure}
      * @return Always {@code self}.
      * @throws NullPointerException if any parameter is {@code null}
      * @throws ElasticsearchIllegalArgumentException if the {@code settings} fail to parse as JSON
      */
-    static NodeBuilder settings(NodeBuilder self, Closure settings) {
-        self.settings().put(settings)
+    static ImmutableSettings.Builder put(ImmutableSettings.Builder self, Closure settings) {
+        try {
+            self.put(new JsonSettingsLoader().load(settings.asJsonBytes()))
+        }
+        catch (IOException e) {
+            throw new ElasticsearchIllegalArgumentException("Closure failed to map to valid JSON.", e)
+        }
 
         self
     }
