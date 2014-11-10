@@ -41,42 +41,42 @@ apply plugin: 'java-library-distribution'
  * Within <em>that</em> {@code project}'s build.gradle file, it can be accessed directly as {@code version}".
  */
 project.ext {
-    // A map that is defined to contain version numbers for all dependencies in the current release.
-    versions = [
-            elasticsearch              : '1.4.0',
-            groovy                     : '2.3.2',
-            java                       : '1.7',
-            hamcrest                   : '1.3',
-            log4j                      : '1.2.17',
-            lucene                     : '4.10.2',
-            mockito                    : '1.10.5',
-            'randomizedtesting-runner' : '2.1.10'
-    ]
+  // A map that is defined to contain version numbers for all dependencies in the current release.
+  versions = [
+    elasticsearch              : '1.4.0',
+    groovy                     : '2.3.2',
+    java                       : '1.7',
+    hamcrest                   : '1.3',
+    log4j                      : '1.2.17',
+    lucene                     : '4.10.2',
+    mockito                    : '1.10.5',
+    'randomizedtesting-runner' : '2.1.10'
+  ]
 
-    // A map defining shorthand names to reference external dependencies.
-    //
-    // Note: Strings must use double quotes to expand "${var}" into its actual value. '${var}' is literally that string.
-    //  Similarly, keys that have spaces or dashes in their name must be quoted (single or double).
-    externalDeps = [
-            // Test Dependencies
-            'elasticsearch-tests'      : "org.elasticsearch:elasticsearch:${versions.elasticsearch}:tests",
-            hamcrest                   : "org.hamcrest:hamcrest-all:${versions.hamcrest}",
-            'lucene-test-framework'    : "org.apache.lucene:lucene-test-framework:${versions.lucene}",
-            mockito                    : "org.mockito:mockito-core:${versions.mockito}",
-            'randomizedtesting-runner' : "com.carrotsearch.randomizedtesting:randomizedtesting-runner:${versions['randomizedtesting-runner']}",
-            // Compile Dependencies
-            elasticsearch              : "org.elasticsearch:elasticsearch:${versions.elasticsearch}",
-            groovy                     : "org.codehaus.groovy:groovy-all:${versions.groovy}:indy",
-            // Test Runtime Dependencies
-            log4j                      : "log4j:log4j:${versions.log4j}"
-    ]
+  // A map defining shorthand names to reference external dependencies.
+  //
+  // Note: Strings must use double quotes to expand "${var}" into its actual value. '${var}' is literally that string.
+  //  Similarly, keys that have spaces or dashes in their name must be quoted (single or double).
+  externalDeps = [
+    // Test Dependencies
+    'elasticsearch-tests'      : "org.elasticsearch:elasticsearch:${versions.elasticsearch}:tests",
+    hamcrest                   : "org.hamcrest:hamcrest-all:${versions.hamcrest}",
+    'lucene-test-framework'    : "org.apache.lucene:lucene-test-framework:${versions.lucene}",
+    mockito                    : "org.mockito:mockito-core:${versions.mockito}",
+    'randomizedtesting-runner' : "com.carrotsearch.randomizedtesting:randomizedtesting-runner:${versions['randomizedtesting-runner']}",
+    // Compile Dependencies
+    elasticsearch              : "org.elasticsearch:elasticsearch:${versions.elasticsearch}",
+    groovy                     : "org.codehaus.groovy:groovy-all:${versions.groovy}:indy",
+    // Test Runtime Dependencies
+    log4j                      : "log4j:log4j:${versions.log4j}"
+  ]
 }
 
 /**
  * Dependent on Maven Central to retrieve all external dependencies.
  */
 repositories {
-    mavenCentral()
+  mavenCentral()
 }
 
 /**
@@ -87,16 +87,16 @@ repositories {
  * Where order does <em>not</em> matter for the dependencies, then they are sorted alphabetically.
  */
 dependencies {
-    testCompile externalDeps['hamcrest'],
-            externalDeps['lucene-test-framework'],
-            externalDeps['mockito'],
-            externalDeps['randomizedtesting-runner'],
-            externalDeps['elasticsearch-tests'] // Must come after lucene-test-framework
+  testCompile externalDeps['hamcrest'],
+              externalDeps['lucene-test-framework'],
+              externalDeps['mockito'],
+              externalDeps['randomizedtesting-runner'],
+              externalDeps['elasticsearch-tests'] // Must come after lucene-test-framework
 
-    compile externalDeps['elasticsearch'],
-            externalDeps['groovy']
+  compile externalDeps['elasticsearch'],
+          externalDeps['groovy']
 
-    testRuntime externalDeps['log4j']
+  testRuntime externalDeps['log4j']
 }
 
 // The minimum required Java version (this matches the Elasticsearch minimum Java version)
@@ -130,17 +130,17 @@ version = "${versions.elasticsearch}.0-SNAPSHOT"
 // It's worth pointing out that if neither are set, then it will use Elasticsearch's default value at runtime. This is
 // currently `true`.
 if (System.getProperty('es.node.local') == null && System.getenv('ES_TEST_LOCAL') != null) {
-    System.setProperty('es.node.local', System.getenv('ES_TEST_LOCAL'))
+  System.setProperty('es.node.local', System.getenv('ES_TEST_LOCAL'))
 }
 
 /**
  * Configure Groovy compilation.
  */
 tasks.withType(GroovyCompile) {
-    // Enable the usage of invokedynamic instructions in compiled Groovy code
-    // NOTE: This requires the "indy" version of the Groovy jar to take effect _and_ this is the reason that Java 7u60
-    //  or later is required by the Groovy client.
-    groovyOptions.optimizationOptions.indy = true
+  // Enable the usage of invokedynamic instructions in compiled Groovy code
+  // NOTE: This requires the "indy" version of the Groovy jar to take effect _and_ this is the reason that Java 7u60
+  //  or later is required by the Groovy client.
+  groovyOptions.optimizationOptions.indy = true
 }
 
 /**
@@ -161,36 +161,36 @@ tasks.withType(GroovyCompile) {
  * properties  with <em>this</em> Gradle build!
  */
 tasks.withType(Test) {
-    // Expected System Properties, which all come from Elasticsearch / Lucene / Randomized Runner:
-    //
-    //  tests.shuffle
-    //  tests.verbose
-    //  tests.seed
-    //  tests.failfast
-    //  tests.iters
-    //  tests.maxfailures
-    //  tests.class   ; note this overlaps with the Gradle test filter feature (-Dtest.single=*)
-    //  tests.method
-    //  tests.nightly
-    //  tests.badapples
-    //  tests.weekly
-    //  tests.slow
-    //  tests.awaitsfix
-    //  tests.timeoutSuite
-    //  tests.showSuccess
-    //  tests.integration
-    //  tests.cluster_seed
-    //  tests.client.ratio
-    //  es.node.local OR environment variable ES_TEST_LOCAL
-    //  es.node.mode
-    //  es.logger.level
-    //  java.awt.headless
+  // Many of the expected System Properties, which all come from Elasticsearch / Lucene / Randomized Runner:
+  //
+  //  tests.shuffle
+  //  tests.verbose
+  //  tests.seed
+  //  tests.failfast
+  //  tests.iters
+  //  tests.maxfailures
+  //  tests.class   ; note this overlaps with the Gradle test filter feature (-Dtest.single=*)
+  //  tests.method
+  //  tests.nightly
+  //  tests.badapples
+  //  tests.weekly
+  //  tests.slow
+  //  tests.awaitsfix
+  //  tests.timeoutSuite
+  //  tests.showSuccess
+  //  tests.integration
+  //  tests.cluster_seed
+  //  tests.client.ratio
+  //  es.node.local OR environment variable ES_TEST_LOCAL
+  //  es.node.mode
+  //  es.logger.level
+  //  java.awt.headless
 
-    // Add any "tests." or "es." system properties to the test's JVM. These system properties control the randomized
-    // runner.
-    systemProperties System.properties.findAll { prop ->
-        ['tests.', 'es.', 'java.awt.headless'].any {
-            prop.key.startsWith(it)
-        }
+  // Add any "tests." or "es." system properties to the test's JVM. These system properties control the randomized
+  // runner.
+  systemProperties System.properties.findAll { prop ->
+    ['tests.', 'es.', 'java.awt.headless'].any {
+      prop.key.startsWith(it)
     }
+  }
 }

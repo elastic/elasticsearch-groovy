@@ -22,6 +22,7 @@ import org.elasticsearch.client.AdminClient
 import org.elasticsearch.client.Client
 import org.elasticsearch.common.settings.Settings
 import org.elasticsearch.node.Node
+import org.elasticsearch.test.ElasticsearchTestCase
 
 import org.junit.Test
 
@@ -35,7 +36,7 @@ import static org.mockito.Mockito.when
 /**
  * Tests {@link ClientExtensions}.
  */
-class ClientExtensionsTests {
+class ClientExtensionsTests extends ElasticsearchTestCase {
     /**
      * Mock {@link Client} to ensure functionality.
      */
