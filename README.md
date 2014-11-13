@@ -38,6 +38,22 @@ Please read documentation relative to the version you are using:
 
 * [1.4.0.0-SNAPSHOT](https://github.com/elasticsearch/elasticsearch-groovy/blob/master/README.md)
 
+JVM Warning
+-----------
+
+Both Elasticsearch and the Elasticsearch Groovy client require Java 7. In addition, the Groovy client is compiled with
+`indy` support enabled, which means that it theoretically could cause issues if you are running with Java 7u22 to 7u55 
+due to a bug in the JVM related to `invokedynamic`. This is [reported directly from the Groovy
+developers](http://groovy.codehaus.org/InvokeDynamic+support) and it is strongly suggested that you run Java 7u60 or
+later.
+
+|     JVM Release    | Groovy Client Support | `invokedynamic` Support |
+|--------------------|-----------------------|-------------------------|
+| Java 5             | *Unsupported*         | None                    |
+| Java 6             | *Unsupported*         | None                    |
+| Java 7u22 to 7u55  | *Unsupported*         | **Buggy**               |
+| Java 7u60 or later | Supported             | Supported               |
+
 Adding to your Groovy projects
 ------------------------------
 
@@ -172,22 +188,6 @@ To change this setting:
 2. Select `Compiler`
 3. Select `Groovy Compiler`
 4. Check `Invoke dynamic support`
-
-JVM Warning
------------
-
-Both Elasticsearch and the Elasticsearch Groovy client require Java 7. In addition, the Groovy client is compiled with
-`indy` support enabled, which means that it theoretically could cause issues if you are running with Java 7u22 to 7u55 
-due to a bug in the JVM related to `invokedynamic`. This is [reported directly from the Groovy
-developers](http://groovy.codehaus.org/InvokeDynamic+support) and it is strongly suggested that you run Java 7u60 or
-later.
-
-|     JVM Release    | Groovy Client Support | `invokedynamic` Support |
-|--------------------|-----------------------|-------------------------|
-| Java 5             | *Unsupported*         | None                    |
-| Java 6             | *Unsupported*         | None                    |
-| Java 7u22 to 7u55  | *Unsupported*         | **Buggy**               |
-| Java 7u60 or later | Supported             | Supported               |
 
 License
 -------
