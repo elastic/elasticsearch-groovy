@@ -1,0 +1,280 @@
+== Understanding Requests and Responses Enhancements
+
+The Groovy client mostly works by adding http://groovy.codehaus.org/Creating+an+extension+module[Groovy extension modules]
+that add new methods to existing classes in the Java client.
+
+Two of the places that benefit the most from understanding the nature of these extensions are how the Groovy client provide
+closure support to configure _every_ `ActionRequest` and the resulting `ListenableActionFuture` that gets returned.
+
+`ActionRequest` is the base class used to represent a request being sent to your Elasticsearch cluster by the Java client.
+`ActionResponse` is the corresponding response type associated with the request. The Groovy client does _not_ provide
+enhancements to these base types, rather it generically enables configuration of `ActionRequest` by enhancing the `Client`
+types.
+
+:toc:
+
+=== Configuring `ActionRequest`
+
+`ActionRequest` is just the generic type and by itself provides no concept of the action that to be performed.
+Because the many implementations within Elasticsearch contain very different parameters -- ranging from `source` content to
+simple parameters like `index`, `type`, and `id` -- the Groovy client cannot generically extend it to add desired
+functionality. The key is that none of the parameters are guaranteed to exist on a different `ActionRequest`.
+
+The easiest way to understand this is to compare two existing implementations of `ActionRequest`:
+
+1. `org.elasticsearch.action.index.IndexRequest`
++
+The `IndexRequest` is an `ActionRequest` that accepts _many_ different parameters, but the most interesting is the `source`,
+which is the source document that is added to your Elasticsearch `index`/`type` with an optional `id` (indexing without
+setting the `id` will cause Elasticsearch to generate a random ID for the document).
+
+2. `org.elasticsearch.action.get.GetRequest`
++
+The `GetRequest` is an `ActionRequest` that accepts a few different parameters, but the core parameters are the `index`,
+`type`, and `id` of the document to retrieve.
+
+In this case, both requests share _some_ parameters (specifically `index`, `type`, and `id`), but even in this simple case,
+their required-ness varies.
+
+As a result, the Groovy client does its best to add Groovy-friendly extensions on a per-request basis and changes are
+explicitly added to a given implementation. Simple requests that do not require (or allow) complicated setup are not enhanced
+in anyway, except that they can be configured with a `Closure` at the top level. This works using Groovy's own
+http://groovy.codehaus.org/groovy-jdk/java/lang/Object.html#with(groovy.lang.Closure)[with extension] to allow a given
+`Closure` to delegate _all_ calls to the associated object. For example:
+
+[source,groovy]
+---------------------------
+// Java approach
+GetRequest javaGetRequest = new GetRequest();
+
+request.index("my-index");
+request.type("my-type");
+request.id("my-id");
+
+// Groovy enhanced approach
+GetRequest groovyGetRequest = new GetRequest().with {
+  index "my-index"
+  type "my-type"
+  id "my-id"
+}
+---------------------------
+
+Both approaches are completely valid and they yield an identically configured `GetRequest`. Using the `with` method delegates
+all method calls to the referenced `this` object (the newly constructed `GetRequest` in this example), which provides a
+syntacic shorthand for the Java approach.
+
+The benefit of using `with` is that it allows the API to be passed a `Closure` that completely configures the specific
+`ActionRequest`, which is exactly how the Groovy client works. Having been shown the above example, the Groovy-extended
+`Client` can be used to do the same thing:
+
+[source,groovy]
+---------------------------
+// get a client
+Client client = /* ... */
+
+// Groovy enhanced GetRequest
+GetResponse response = client.get {
+  index "my-index"
+  type "my-type"
+  id "my-id"
+}.actionGet()
+---------------------------
+
+The Groovy `Client` is extended to add `Closure` support to every request with the exception of any deprecated
+requests (e.g., facets). In the above example, we use the overloaded `get` method added via Groovy extensions.
+
+You can see exactly how all of the `Client` extensions are added by looking at the
+https://github.com/elasticsearch/elasticsearch-groovy/blob/master/src/main/groovy/org/elasticsearch/groovy/client/ClientExtensions.groovy[`ClientExtensions` class]. Each method is an added overload that invokes one of the two `doRequest` methods
+in the
+https://github.com/elasticsearch/elasticsearch-groovy/blob/master/src/main/groovy/org/elasticsearch/groovy/client/AbstractClientExtensions.groovy[`AbstractClientExtensions` class] to do the actual work and make the asynchronous request.
+
+The `Client` will generate the appropriate `ActionRequest` object for the given request and then apply the `Closure` using
+the `with` method that was demonstrated earlier.
+
+==== A More Complicated `ActionRequest`
+
+The above example walked through one of the simplest `ActionRequest` implementations in order to show how it works. The next
+step is understanding how a more complicated `ActionRequest` is enhanced to work in a Groovy-friendly way.
+
+[source,groovy]
+---------------------------
+// get a client
+Client client = /* ... */
+
+// Groovy enhanced IndexRequest
+IndexResponse response = client.index {
+  index "my-index"
+  type "my-type"
+  id "my-id" // Note: the ID optional as always
+  source {
+    user = "kimchy"
+    message = "this is a tweet!"
+    details {
+      timestamp = new Date()
+    }
+  }
+}.actionGet()
+---------------------------
+
+With the earlier `GetRequest` example in mind, you should recognize the `index`, `type`, and `id` methods being invoked.
+However, the `source` method is new here and it is given an inner `Closure`.
+
+First and foremost, it should be noted that _any_ method accepting a `Closure` (or any other Groovy-specific feature) is
+added by the Groovy client. Considering that point, it should be clear that the Groovy client has added at least one
+extension method to the `IndexRequest` class (you can see those added in the
+https://github.com/elasticsearch/elasticsearch-groovy/blob/master/src/main/groovy/org/elasticsearch/groovy/action/index/IndexRequestExtensions.groovy[IndexRequestExtensions class]).
+
+There, like other `ActionRequest` implementations that accept a `source`, the Groovy client adds an overloaded `source`
+method that accepts a `Closure`. Unlike the above examples, _that_ `Closure` is not interpretted using Groovy's `with`
+method. Instead, it uses extension methods provided by the Groovy client to enhance the `Closure` class itself. The idea
+behind those extensions is to treat the `Closure` as data rather than logic and the extensions are described in further
+detail in <<enhanced-closures>>.
+
+=== Configuring `ActionResponse`
+
+The other side of an `ActionRequest` is naturally an `ActionResponse`. Every `ActionRequest` has an `ActionResponse`;
+some share the same `ActionResponse` implementation of a related `ActionRequest`, but the key is that none are `void`
+(e.g., `search` and `searchScroll` are different requests with the same response: `SearchResponse`).
+
+All `Client` extensions use the `Client`'s thread pool to perform the passed `ActionRequest` asynchronously by default. The
+returned object is a `ListenableActionFuture` that results in an `ActionResponse` (or exception upon errors). For example,
+the method signature for the provided search method effectively is:
+
+[source,groovy]
+---------------------------
+ListenableActionFuture<SearchResponse> search(Closure requestClosure)
+---------------------------
+
+The above signature is applied to the `Client` so that asynchronous requests can be made like:
+
+[source,groovy]
+---------------------------
+ListenableActionFuture<SearchResponse> responseFuture = client.search {
+  indices 'index1', 'index2'
+  types 'type1', 'type2'
+  source {
+    query {
+      match {
+        user = userId
+      }
+    }
+  }
+}
+---------------------------
+
+==== Synchronous Responses
+
+As noted above, the `Closure`-based extension methods all respond asynchronously by returning a `ListenableActionFuture`.
+In your own code, you can immediately block until the actual `ActionResponse` is returned, thereby effectively converting
+the asynchronous request into a synchronous one.
+
+[source,groovy]
+---------------------------
+import org.elasticsearch.ElasticsearchException
+
+try {
+  ListenableActionFuture<SearchResponse> responseFuture = client.search {
+    // ...
+  }
+
+  SearchResponse response = responseFuture.actionGet()
+}
+catch (ElasticsearchException e) {
+  // request failed
+}
+---------------------------
+
+[IMPORTANT]
+====
+It is good practice to monitor for exceptions and to log them for analysis. All requests can cause exceptions, including
+validation exceptions that are thrown when the `ActionRequest` is not fully or properly filled out, as well as exceptions
+that occur on the server (e.g., attempting to execute with an unknown script).
+====
+
+The above example will block the caller thread until the `SearchResponse` is returned or an exception is thrown. Overloaded
+versions of the `actionGet` method exist to allow you to put timeouts into your call.
+
+[WARNING]
+====
+Timeouts given to client-side requests are _only_ handled by the client. Therefore, if your request times out locally in,
+say, 5 seconds, then it only means that the client has given up. If that request were to trigger a script that loops
+infinitely on the server, then it will still be running on the server after your request times out.
+====
+
+==== Asynchronous Response
+
+Asynchronous responses are only helpful if you can get the result of them. Fortunately, the `ListenableActionFuture` already
+allows you to listen using an `ActionFuture`, but the Groovy client expands on this to allow you to listen using a
+`Closure`. Additionally, it allows you to listen to success-or-failure, only-success, and only-failure.
+
+===== Success or Failure
+
+[source,groovy]
+---------------------------
+import org.elasticsearch.ElasticsearchException
+
+ListenableActionFuture<SearchResponse> responseFuture = client.search {
+  // ...
+}.listener { response, exception ->
+  if (exception != null) {
+    // request failed due to the exception
+  }
+  else {
+    // request was "successful" (true success
+    //  depends on the actual response)
+  }
+}
+---------------------------
+
+===== Success or Failure, but Not Both
+
+Often times it is a lot more convenient to separate the logic used to handle success versus failure. With the Groovy client,
+this you can do just that by explicitly handling only success _or_ failure.
+
+[source,groovy]
+---------------------------
+import org.elasticsearch.ElasticsearchException
+
+ListenableActionFuture<SearchResponse> responseFuture = client.search {
+  // ...
+}.success {
+  // the implicit "it" parameter is SearchResponse
+  doSomethingWithSuccess(it.hits)
+}.failure {
+  // the implicit "it" parameter is SearchResponse
+  doSomethingWithFailure(it.hits)
+}
+---------------------------
+
+[NOTE]
+====
+If you have a standard error handler that takes a single parameter -- a `Throwable` -- then you can use that as the
+failure listener using http://groovy.codehaus.org/Functional+Programming+with+Groovy[Groovy's functional programming
+features]. Specifically, you can pass a _method_ by reference using `.&` to have Groovy pass the method as a `Closure`
+(similar to a lambda expression).
+
+[source,groovy]
+---------------------------
+import org.elasticsearch.ElasticsearchException
+
+ListenableActionFuture<SearchResponse> responseFuture = client.search {
+  // ...
+}.success {
+  // the implicit "it" parameter is SearchResponse
+  doSomethingWithSuccess(it.hits)
+}.failure(
+  // expected signature:
+  //  static [ignored] staticErrorHandler(Throwable t) { ... }
+  SomeStaticClass.&staticErrorHandler
+).failure(
+  // expected signature:
+  //  [ignored] instanceErrorHandler(Throwable t) { ... }
+  this.&instanceErrorHandler
+).failure {
+  SomeStaticClass.staticErrorHandler(it, "Custom message")
+}
+---------------------------
+====
+
+It may be tempting to only ever listen to success -- don't. You want to know when exceptions happen as they provide a
+reason why something failed, which can help you to improve your application _or_ to submit bug reports to Elasticsearch.

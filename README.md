@@ -3,36 +3,36 @@ Groovy Client for Elasticsearch
 
 The Elasticsearch Groovy client project helps you to use Elasticsearch in Groovy projects. This Groovy client is
 different from previous releases in that it inherently supports 100% of the Elasticsearch API for the supported version
-by using the Groovy extension feature with the Java Client. Literally anything possible in the same version of the Java
-Client is possible with the Groovy client, plus some Groovy-friendly extensions.
+by using the Groovy extension feature with the Java client. Literally anything possible in the same version of the Java
+client is possible with the Groovy client, plus some Groovy-friendly extensions.
 
 In much earlier versions of the client, you would run code like this:
 
 ```groovy
-GClient client = new GNodeBuilder().settings { ... }.build().client
+GClient client = new GNodeBuilder().settings { ... }.node().client
 GActionFuture future = client.index { ... }.gexecute()
 ```
 
-This would provide a `GClient` from a `GNodeBuilder`, which was meant to provide the same features as the Java Client's
-`Client` and `NodeBuilder`. However, because they had to be written to support every new feature of the Java Client, it
+This would provide a `GClient` from a `GNodeBuilder`, which was meant to provide the same features as the Java client's
+`Client` and `NodeBuilder`. However, because they had to be written to support every new feature of the Java client, it
 was missing some method variants.
 
 In this release, all of the `G`-prefixed classes have been replaced by extensions, which means that you can now use the
-Java Client code from any Java Client example that you find online <em>with the benefit of the Groovy extensions</em>.
+Java client code from any Java client example that you find online <em>with the benefit of the Groovy extensions</em>.
 
 ```groovy
-Client client = nodeBuilder().settings { ... }.build().client
-ListenableActionFuture<IndexResponse> future = client.index { ... }.actionGet()
+Client client = nodeBuilder().settings { ... }.node().client
+ListenableActionFuture<IndexResponse> future = client.index { ... }
 ```
 
-Besides the usage of `Closure`s, the above example should look very familiar to existing Java Client users.
+Besides the usage of `Closure`s, the above example should look very familiar to existing Java client users.
 
 Versions
 --------
 
-|     Groovy Client           |    Elasticsearch    |  Groovy  | Release date |
-|-----------------------------|---------------------|----------|:------------:|
-| 1.4.0.0-SNAPSHOT            | 1.4.0               |  2.3.2   |  XXXX-XX-XX  |
+|     Groovy Client           |    Elasticsearch    |  Groovy  | Java | Release date |
+|-----------------------------|---------------------|----------|------|:------------:|
+| 1.4.0.0-SNAPSHOT            | 1.4.0               |  2.3.2   | 7+   | XXXX-XX-XX  |
 
 Please read documentation relative to the version you are using:
 
@@ -82,7 +82,7 @@ This will skip all tests and place the compiled jar in
 Testing Groovy Client
 ---------------------
 
-The Groovy Client makes use of the [Randomized Testing framework used by Elasticsearch
+The Groovy client makes use of the [Randomized Testing framework used by Elasticsearch
 itself](http://www.elasticsearch.org/blog/elasticsearch-testing-qa-increasing-coverage-randomizing-test-runs/). The unit
 tests and integration tests that this uses can be invoked with the same command:
 
@@ -138,7 +138,8 @@ dependencies {
 
 After including the `indy` jar, you now _only_ have an `invokedynamic`-compatible Groovy runtime. All internal Groovy
 calls will use `invokedynamic`, as will any other Groovy code compiled with `invokedynamic` support (e.g., the
-Elasticsearch Groovy client), but _your_ code must also be compiled with `invokedynamic` support.
+Groovy client), but _your_ code must also be compiled with `invokedynamic` support to gain the benefits within your
+compiled jar(s).
 
 #### Gradle
 
@@ -175,9 +176,9 @@ To change this setting:
 JVM Warning
 -----------
 
-Both Elasticsearch and the Elasticsearch Groovy Client require Java 7. In addition, the Groovy Client is compiled with
-`indy` support enabled, which means that it theoretically could cause issues if you are running with Java 7u22 to 7u55 due
-to a bug in the JVM related to `invokedynamic`. This is [reported directly from the Groovy
+Both Elasticsearch and the Elasticsearch Groovy client require Java 7. In addition, the Groovy client is compiled with
+`indy` support enabled, which means that it theoretically could cause issues if you are running with Java 7u22 to 7u55 
+due to a bug in the JVM related to `invokedynamic`. This is [reported directly from the Groovy
 developers](http://groovy.codehaus.org/InvokeDynamic+support) and it is strongly suggested that you run Java 7u60 or
 later.
 

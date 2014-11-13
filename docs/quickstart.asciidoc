@@ -1,0 +1,393 @@
+== Quickstart
+
+The quickstart section will give you a deeper overview of the Groovy client and how the most commonly used functions work.
+
+=== Installation
+
+In the following examples, `${VERSION}` is used to represent the version of the Groovy client that your project depends
+on. You should _always_ use the same version as your Elasticsearch installation. For example, the initial release of
+the Groovy client supported Elasticsearch 1.4.0, so the Groovy client to use would be 1.4.0.0. The final version number
+represents the Groovy client's release version (e.g., bugfix version) and the 1.4.0 mirrors the supported Elasticsearch
+version. In this case, `${VERSION}` would be `1.4.0.0`.
+
+- Include the Groovy client as a dependency to your Groovy project.
+
+==== Gradle Dependency
+
+If you are using Gradle to build your code, then you can include the dependency by adding maven central (or your local
+repository, should you not have access to the internet during builds; please verify checksums when adding to your local
+repositories):
+
+[source,gradle]
+----------------------------
+repositories {
+  mavenCentral()
+}
+
+dependencies {
+  compile 'org.elasticsearch:elasticsearch-groovy:${VERSION}'
+}
+----------------------------
+
+==== Maven Dependency
+
+If you are using Maven to build your code, then you can include would do:
+
+[source,maven]
+----------------------------
+<dependencies>
+  <dependency>
+    <groupId>org.elasticsearch</groupId>
+    <artifactId>elasticsearch-groovy</artifactId>
+    <version>${VERSION}</version>
+    <scope>compile</scope>
+  </dependency>
+</dependencies>
+----------------------------
+
+[[client-usage]]
+=== Client Usage
+
+Once you have added the dependency to your project, then you can create a `Client` just like you would in the
+http://www.elasticsearch.org/guide/en/elasticsearch/client/java-api/current/client.html[Java client]. The `Client` interface
+allows you to access the full power of your Elasticsearch cluster made up of one or more `Node`s.
+
+`Clients` only need to be configured once so that they can find and connect to your Elasticsearch cluster . In addition to the options available in the Java client, the Groovy client adds the ability to use a `Closure` when
+specifying `Settings`, which can be done directly on the associated `NodeBuilder` or to an instance of
+`ImmutableSettings.Builder`:
+
+[[node-client]]
+==== Node Client
+
+The simplest way to connect is to
+http://www.elasticsearch.org/guide/en/elasticsearch/client/java-api/current/client.html#node-client[create a `Node`
+`Client`] that joins the Elasticsearch as a client only.
+
+[source,groovy]
+----------------------------
+import org.elasticsearch.client.Client
+import org.elasticsearch.node.Node
+
+import static org.elasticsearch.node.NodeBuilder.nodeBuilder
+
+//// Groovy way
+Node node = nodeBuilder().settings {
+  cluster {
+    name = "my-cluster-name"
+  }
+  node {
+    client = true
+  }
+}.node()
+
+//// Purely Java way
+Node node = nodeBuilder().client(true).clusterName("my-cluster-name").node()
+----------------------------
+
+The Groovy approach tends to be more useful only when applying settings that do not have Java methods already
+associated with them. Those methods _can_ be used alongside the `Closure`-based `settings` method.
+
+[[transport-client]]
+==== Transport Client
+
+In addition to creating a <<node-client>>, you can
+http://www.elasticsearch.org/guide/en/elasticsearch/client/java-api/current/client.html#transport-client[create a
+`TransportClient`]:
+
+[source,groovy]
+----------------------------
+import org.elasticsearch.client.transport.TransportClient // Note: is-a Client
+import org.elasticsearch.common.settings.ImmutableSettings
+import org.elasticsearch.common.settings.Settings
+
+//// Groovy way
+TransportClient client = new TransportClient(ImmutableSettings.settingsBuilder {
+  cluster {
+    name = "my-cluster-name"
+  }
+  client {
+    transport {
+      sniff = true
+    }
+  }
+})
+
+// add transport addresses
+client.addTransportAddress(...)
+
+//// Purely Java way (could be reduced to a very long line)
+ImmutableSettings.Builder builder = ImmutableSettings.settingsBuilder()
+builder.put("cluster.name", "my-cluster-name").put("client.transport.sniff", true)
+Settings settings = builder.build()
+TransportClient client = new TransportClient(settings)
+
+// add transport addresses
+client.addTransportAddress(...)
+----------------------------
+
+[[using-the-groovy-client]]
+==== Action Requests
+
+Getting a reference to the `Client` can done be using the instructions from the <<node-client>> or <<transport-client>>
+section. The `Client` is used to access your Elasticsearch cluster to index (add), retrieve (get or search), update, or
+delete data. It can also be used to access the `AdminClient` to perform administrative actions, such as creating new
+indices within your cluster or checking on your cluster's health.
+
+For those experienced with the Java client actions, the extensions added should be familiar because they expose _every_
+`ActionRequest` by allowing a `Closure` to configure it before being sent to the cluster by the `Client`. Requests are 
+sent to the cluster immediately after calling one of the `Closure` method variants using the asynchronous API. You can force
+any call to become a blocking call by invoking one of the `ListenableActionFuture`'s `actionGet` overloads that
+is available for every `Closure`-configured request.
+
+Invoking `actionGet` is a blocking call and it will not return until the request has returned or fails (e.g., the request times out or an exception is thrown).
+
+_All_ requests are Java implementations of `ActionRequest`. The actual mechanisms used by the Groovy client to configure
+the requests are explained in <<configuring-actionrequests>>.
+
+[[index-a-document]]
+===== Index a Document
+
+Elasticsearch has indices that store documents. _Storing_ a document is called _indexing_ a document. Indexing a document
+can be done using the http://www.elasticsearch.org/guide/en/elasticsearch/client/java-api/current/index_.html[Java
+client's Index API] or the `Closure` extension added by the Groovy client:
+
+[source,groovy]
+----------------------------
+import org.elasticsearch.action.index.IndexResponse
+import org.elasticsearch.client.Client
+
+// ...
+
+IndexResponse response = client.index {
+  index "my_index"
+  type "my_type"
+  // Note: The ID is completely optional and a 
+  //  unique one will be generated on the server
+  id "my_id"
+  source {
+    user = "kimchy"
+    postDate = new Date()
+    message = "trying out Elasticsearch"
+    nested {
+      details {
+        here = 123
+        timestamp = new Date()
+      }
+    }
+  }
+}.actionGet()
+----------------------------
+
+[[search-for-a-document]]
+===== Search for a Document
+
+The ability to search for a document is most likely the reason that you are using Elasticsearch in the first place.
+Searching happens in near real time. To do so, you can use the
+http://www.elasticsearch.org/guide/en/elasticsearch/client/java-api/current/get.html[Java client's Search API] or the
+`Closure` extension added by the Groovy client:
+
+[source,groovy]
+----------------------------
+import org.elasticsearch.action.search.SearchResponse
+import org.elasticsearch.client.Client
+
+// ...
+
+SearchResponse response = client.search {
+  indices "index1", "index2"
+  types "type1", "type2"
+  source {
+    query {
+      match {
+        user = userId
+      }
+    }
+  }
+}.actionGet()
+----------------------------
+
+[IMPORTANT]
+====
+Searching happens in
+http://www.elasticsearch.org/guide/en/elasticsearch/guide/current/near-real-time.html[_near_ real time]. This means that
+immediately after adding (indexing), updating, or deleting a document, you are _not_ guaranteed to be able to search for
+and find the document.
+
+In your own internal tests, you can guarantee the searchability of a document by invoking a `refresh` on the associated index (e.g., `"index1"` in the above example).
+
+[source,groovy]
+----------------------------
+import org.elasticsearch.client.Client
+
+// Perform some operations that modify documents in "index1"
+client.index { /* ... */ }
+
+client.admin.indices.refresh { indices "index1" }.actionGet()
+
+// Those documents are now guaranteed to be searchable
+//  assuming no exception was thrown
+client.search { /* ... */ }
+----------------------------
+====
+
+[[get-a-document]]
+===== Get a Document
+
+If you know the `id` of a document, as well as the `index` and `type` that contains it, then you can retrieve in directly
+in real time. Getting a document can be done using the
+http://www.elasticsearch.org/guide/en/elasticsearch/client/java-api/current/get.html[Java client's Get API] or the
+`Closure` extension added by the Groovy client:
+
+[source,groovy]
+----------------------------
+import org.elasticsearch.action.get.GetResponse
+import org.elasticsearch.client.Client
+
+// ...
+
+GetResponse response = client.get {
+  index "my_index"
+  type "my_type"
+  id "my_id"
+}.actionGet()
+----------------------------
+
+[NOTE]
+====
+Unlike search, retrieving a document using the Get API happens in real time. This means that immediately after adding
+(indexing), updating, or deleting a document, you _will_ retrieve the latest version of the requested document.
+====
+
+[[delete-a-document]]
+===== Delete a Document
+
+If you know the `id` of a document, as well as the `index` and `type` that contains it, then you can delete it directly.
+Deleting a document can be done using the
+http://www.elasticsearch.org/guide/en/elasticsearch/client/java-api/current/delete.html[Java client's Delete API] or the
+`Closure` extension added by the Groovy client:
+
+[source,groovy]
+----------------------------
+import org.elasticsearch.action.delete.DeleteResponse
+import org.elasticsearch.client.Client
+
+// ...
+
+DeleteResponse response = client.delete {
+  index "my_index"
+  type "my_type"
+  id "my_id"
+}.actionGet()
+----------------------------
+
+The other methods exposed via the Search API are also available to the `Closure`, but using the `source` method allows you
+to apply the http://www.elasticsearch.org/guide/en/elasticsearch/reference/current/query-dsl.html[Query DSL] almost
+identically in your own code as you would within the REST API.
+
+[[bulk-operations]]
+===== Bulk Document Operations
+
+Elasticsearch has indices that store documents. In terms of operations that mutate them, you can create (index), update, or
+delete a document. As single operations, they make sense, but when performing a lot of operations (bulk operations), it can
+sometimes be grouped before sending it to the Elasticsearch cluster. Doing so makes use of the Bulk API, and it is _always_
+preferable to individual operations because it allows multiple operations to share the inherent network overhead that goes
+into making each request. By grouping the operations, that back-and-forth network overhead can be minimized.
+
+All three mutative document operations can be performed within the Bulk API using the http://www.elasticsearch.org/guide/en/elasticsearch/client/java-api/current/bulk.html[Java
+client's Bulk API] or the `Closure` extension added by the Groovy client:
+
+[source,groovy]
+----------------------------
+import org.elasticsearch.action.bulk.BulkResponse
+import org.elasticsearch.action.delete.DeleteRequest
+import org.elasticsearch.action.index.IndexRequest
+import org.elasticsearch.action.update.UpdateRequest
+import org.elasticsearch.client.Client
+
+// ...
+
+BulkResponse response = client.bulk {
+  add new IndexRequest().with {
+    index "my_index"
+    type "my_type"
+    id "my_id"
+    source {
+      user = "kimchy"
+      postDate = "2013-01-30"
+      message = "trying out Elasticsearch"
+      nested {
+        details {
+          here = 123
+          timestamp = new Date()
+        }
+      }
+    }
+  }, // <- note the comma that implicitly uses the array of requests
+  new UpdateRequest().with {
+    index "my_index"
+    type "my_type"
+    id "my_id"
+    doc {
+      nested {
+        value = "some value"
+      }
+    }
+  }
+  // note that there is no comma, so this separately calls add
+  add new DeleteRequest().with {
+    index "my_index"
+    type "my_type"
+    id "my_id"
+  }
+}.actionGet()
+----------------------------
+
+Usage of this API is expected to take advantage of the `add(ActionRequest... requests)` or
+`add(Iterable<ActionRequest> requests)` method, which would generally be passed the array or `Collection` directly rather
+than manually typing in a series of bulk operations. Having said that, it is perfectly reasonable to _know_ a series of
+document operations that are submitted at the same time, thereby making use of the Bulk API statically.
+
+[NOTE]
+====
+The above Bulk example would create a document, immediately update it, and then delete it. There is no real reason to
+intentionally do this except to show how to use all three operations in a single example.
+
+In real world scenarios, this may unwittingly come up while bulk processing external data and that is perfectly _normal_
+and acceptable.
+====
+
+[[create-index]]
+===== Create an Index
+
+Creating an index with dynamic mappings will happen automatically whenever you add (index) documents to an previously index
+or type within an index. This is great when testing things out, but in practice, you will want to create an index manually
+with specific settings and potentially mappings. For more advanced users, this can be done with index templates, but for
+the most common use cases, this can be manually performed.
+
+Creating an index can be done using the Java _admin_ client's Indicies API for creating indicies or the
+`Closure` extension added by the Groovy client:
+
+[source,groovy]
+----------------------------
+import org.elasticsearch.action.admin.indices.create.CreateIndexResponse
+import org.elasticsearch.client.Client
+
+// ...
+
+CreateIndexResponse response = client.admin.indices.create {
+  index "my_index"
+  source {
+    settings {
+      index {
+        number_of_shards = 2
+        number_of_replicas = 0
+      }
+    }
+  }
+}.actionGet()
+----------------------------
+
+[NOTE]
+====
+The values shown are not suggested setting overrides.
+====

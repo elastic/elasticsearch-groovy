@@ -36,7 +36,7 @@ class CreateIndexRequestExtensions {
      * @throws NullPointerException if any parameter is {@code null}
      */
     static CreateIndexRequest source(CreateIndexRequest self, Closure source) {
-        self.source(source.asJsonBytes())
+        self.source(source.asMap())
     }
 
     /**
@@ -48,7 +48,7 @@ class CreateIndexRequestExtensions {
      * @throws NullPointerException if any parameter is {@code null}
      */
     static CreateIndexRequest settings(CreateIndexRequest self, Closure settings) {
-        self.settings(settings.asJsonString())
+        self.settings(settings.asMap())
     }
 
     /**
@@ -61,7 +61,7 @@ class CreateIndexRequestExtensions {
      * @throws NullPointerException if any parameter is {@code null} except {@code type}
      */
     static CreateIndexRequest mapping(CreateIndexRequest self, String type, Closure mapping) {
-        self.mapping(type, mapping.asJsonString())
+        self.mapping(type, mapping.asMap())
     }
 
     /**
@@ -73,7 +73,7 @@ class CreateIndexRequestExtensions {
      * @throws NullPointerException if any parameter is {@code null}
      */
     static CreateIndexRequestBuilder setSource(CreateIndexRequestBuilder self, Closure source) {
-        self.setSource(source.asJsonBytes())
+        self.setSource(source.asMap())
     }
 
     /**
@@ -85,7 +85,7 @@ class CreateIndexRequestExtensions {
      * @throws NullPointerException if any parameter is {@code null}
      */
     static CreateIndexRequestBuilder setSettings(CreateIndexRequestBuilder self, Closure settings) {
-        self.setSettings(settings.asJsonString())
+        self.setSettings(settings.asMap())
     }
 
     /**
@@ -98,6 +98,6 @@ class CreateIndexRequestExtensions {
      * @throws NullPointerException if any parameter is {@code null}
      */
     static CreateIndexRequestBuilder addMapping(CreateIndexRequestBuilder self, String type, Closure mapping) {
-        self.addMapping(type, mapping.asJsonString())
+        self.addMapping(type, mapping.asMap())
     }
 }

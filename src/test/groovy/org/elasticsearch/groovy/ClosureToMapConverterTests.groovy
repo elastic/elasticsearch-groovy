@@ -52,6 +52,40 @@ class ClosureToMapConverterTests extends ElasticsearchTestCase {
     }
 
     @Test
+    void testReusedVariableMapConversion() {
+        long value = randomLong()
+        String string = randomAsciiOfLengthBetween(1, 16)
+        Date now = new Date()
+        boolean bool = randomBoolean()
+
+        Closure closure = {
+            id = value
+            name = string
+            date = now
+            valid = bool
+        }
+
+        Map<String, Object> map = mapClosure(closure)
+
+        assert map.id == value
+        assert map.name == string
+        assert map.date == now
+        assert map.valid == bool
+
+        value = randomLong()
+        string = randomAsciiOfLengthBetween(1, 16)
+        now = new Date()
+        bool = ! bool
+
+        map = mapClosure(closure)
+
+        assert map.id == value
+        assert map.name == string
+        assert map.date == now
+        assert map.valid == bool
+    }
+
+    @Test
     void testListMapConversion() {
         long value = randomLong()
         List values = [randomAsciiOfLengthBetween(1, 8), randomLong(), randomBoolean()]

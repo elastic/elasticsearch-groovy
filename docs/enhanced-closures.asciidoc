@@ -1,0 +1,208 @@
+== Closure Enhancements Added by the Groovy Client
+
+One of the key sets of enhancements added by the Groovy client are the extensions added to Groovy's `Closure` type. Most of
+the Groovy client's other extensions depend heavily on the `Closure` extensions that are described here.
+
+:toc:
+
+=== `Closure` to `Map<String, Object>`
+
+The key extension that is core to most others in the Groovy client is the ability to treat a `Closure` as data rather than
+logic (code). In order to get full use of the Groovy client, you only need to be _aware_ of these enhancements.
+
+[source,groovy]
+---------------
+// Note: I made up the dates
+Closure closure = {
+  user_id = 12345
+  first_name = "Tony"
+  last_name = "Stark"
+  timestamp = new Date()
+  employment {
+    history = [{
+      name = "Stark Industries"
+      start = "1980-01-13"
+      end = "2007-05-03"
+      fired = false
+    }, {
+      name = "S.H.I.E.L.D"
+      start = "2011-10-15"
+    }]
+  }
+}
+---------------
+
+[WARNING]
+=========
+Convert any `Map` whose keys are _not_ `String` instances into a `Map<String, ?>` before using it within the `Closure` as a
+field's value.
+
+Any `Map` is used as a shallow copy. The idea is not to allow you to modify it, but that the use will be rare, that the
+time-to-live of the generated `Map` instance will be short, and to force the burden of translating any `Map<?, ?>` to
+`Map<String, ?>` onto you (the handling of conversion to `String` keys is certainly doable within a loop, but thing's like
+`Date` objects may give wildly different outputs from what _you_ would expect).
+=========
+
+The above example of a semi-complicated `Closure` is one that could easily represent a document in your Elasticsearch index (if you
+have an index of inaccurate Marvel references). In general though, you can think of the above document if it were converted into JSON:
+
+[source,json]
+---------------
+var json = {
+  "user_id" : 12345,
+  "first_name" : "Tony",
+  "last_name" : "Stark",
+  "timestamp" : new Date(),
+  "employment" : {
+    history : [{
+      "name" : "Stark Industries",
+      "start" : "1980-01-13",
+      "end" : "2007-05-03",
+      "fired" : false
+    }, {
+      "name" : "S.H.I.E.L.D",
+      "start" : "2011-10-15"
+    }]
+  }
+}
+---------------
+
+==== Converting the `Closure`
+
+Without understanding how it works, you can convert any `Closure` into a `Map<String, Object>` (which may include nested
+`Map<String, Object>`) using the added `Closure.asMap()` extension method.
+
+[source,groovy]
+---------------
+Map<String, Object> mappedClosure = { /* ... */ }.asMap() // <- Extension Method Here
+---------------
+
+And that's about it. The `asMap` extension method takes no arguments, and it uses
+http://groovy.codehaus.org/Replace+Inheritance+with+Delegation[Groovy's delegating features] in order to take over how the
+`Closure` is handled.
+
+[IMPORTANT]
+===========
+Extension methods that the Groovy client provides that accept a `Closure` will do this for you.
+===========
+
+===== `Closure` Delegation
+
+This section can be skipped unless you are interested in what happens
+https://github.com/elasticsearch/elasticsearch-groovy/blob/master/src/main/groovy/org/elasticsearch/groovy/ClosureToMapConverter.groovy[under
+the hood in `ClosureToMapConverter`].
+
+http://groovy.codehaus.org/Replace+Inheritance+with+Delegation[Groovy provides a feature known as delegation], which loosely
+allows calling code to take over on behalf of another object (forcibly delegate on the instance's behalf). There are a bunch
+of semantics that go into delegating an object, but the Groovy client _only_ uses the
+http://groovy.codehaus.org/api/groovy/lang/Closure.html#DELEGATE_FIRST[`DELEGATE_FIRST`]
+strategy to completely hijack the processing of any selected Groovy `Closure`; this means that all requests that come from
+the `Closure` are handled by the delegate -- the Groovy client's converter object.
+
+Delegation takes three different forms that allow's other Groovy code to completely take control of the delegated object:
+
+1. Any "property" assignment is handled by `void setProperty(String propertyName, Object newValue)`
++
+[source,groovy]
+---------------
+{
+  first_name = "First"
+  middle_names = [ "One", "Two" ]
+  age = 42
+  nested = {
+    /* ... */
+  }
+}
+---------------
++
+The above example would trigger four separate calls to `setProperty`:
++
+.. `"first_name"` with `"First"`
+.. `"middle_names"` with `[ "One" , "Two" ]`
+.. `"age"` with `42` (`Integer`)
+.. `"nested"` with `{ /* ... */ }` (`Closure`)
+... This will trigger a recursive call that results in a nested `Map<String, Object>` representing the passed-in `Closure`.
+2. Any "method" call is handled by `void invokeMethod(String methodName, Object args)`
++
+[source,groovy]
+---------------
+{
+  first_name "First"
+  middle_names "One", "Two"
+  age 42
+  nested {
+    /* ... */
+  }
+}
+---------------
++
+The above example would trigger four separate calls to `invokeMethod`:
++
+[NOTE]
+======
+It is interesting to note that the incoming value is sent as a single-valued array, even though it is unfortunately not
+obviously passed as an `Object[]`.
+======
++
+.. `"first_name"` with `[ "First" ]`
+.. `"middle_names"` with `[ "One" , "Two" ]`
+.. `"age"` with `[ 42 ]` (contains an `Integer`)
+.. `"nested"` with `[ { /* ... */ } ]` (contains a `Closure`)
+... This will trigger a recursive call that results in a nested `Map<String, Object>` representing the passed-in `Closure`.
+3. Any property that is read would use the `Object getProperty(String propertyName)`.
++
+[source,groovy]
+---------------
+{
+  first_name = "First"
+  last_name = "Last"
+  name = first_name + ' ' + last_name
+}
+---------------
++
+This is a less commonly used method in the Groovy client, but it does come up from time to time. The Groovy client uses the
+`getProperty` method to return a value for `invokeMethod`.
+
+[NOTE]
+======
+To the Groovy client, the only difference between using the `setProperty` and `invokeMethod` approaches is how they _look_. Values that
+are passed through the `invokeMethod` approach are treated identically to those passed in via the `setProperty`.
+
+The two formats _can_ be mixed, but it is a good idea to pick a style and stick with it. For examples in the documentation, only nested
+objects (an inner `Closure`) use the non-`setProperty` approach. There is no reason for this except for consistency. Technically
+speaking, the `invokeMethod` does more work, but not enough to be significant.
+======
+
+====== Even Deeper
+
+If you are still curious, the
+https://github.com/elasticsearch/elasticsearch-groovy/blob/master/src/main/groovy/org/elasticsearch/groovy/ClosureToMapConverter.groovy[`ClosureToMapConverter#convertValue`]
+can be evaluated to see what is happening.
+
+However, in the interest of completeness, there are a handful of special cases handled for conversion whenever
+values of the given type are come across:
+
+1. `Closure`
+.. This is evaluated as a nested `Map` that is returned to replace the given value.
+2. `Collection`
+.. Any `Collection` is evaluated by walking the `Collection` and returning a value per-item that is evaluated using this list
+recursively. The `Collection` itself is _not_ modified even if it is allowed to be modified.
+3. `Object[]` or any primitive array
+.. Any array is converted into a `List`, and then it follows the same behavior as any `Collection`.
+
+=== `Closure` to other types
+
+In addition to converting a `Closure` to a `Map`, you can also convert them into other types with a single method call (that
+usually depends on being converted into a `Map` first).
+
+These other conversion methods tend to be the ones _actually_ used internally.
+
+[cols="2*", options="header"]
+|===
+| `Closure` Extension Method  | Result
+| `asJsonBytes()`             | JSON `byte[]` from `buildBytes(JSON)`.
+| `asJsonString()`            | JSON `String` (not pretty printed) from `buildString(JSON)`. Mostly meant for debug output.
+| `asMap()`                   | `Map<String, Object>` described above.
+| `build(XContentType)`       | `XContentBuilder` containing the `Closure` as a `Map` in the requested type.
+| `buildBytes(XContentType)`  | `byte[]` using `build(XContentType)` to get the result of `XContentBuilder.bytes().toBytes()`.
+| `buildString(XContentType)` | `String` using `build(XContentType)` to get `XContentBuilder.string()`.
