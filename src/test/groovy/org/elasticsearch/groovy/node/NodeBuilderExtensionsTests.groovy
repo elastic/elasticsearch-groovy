@@ -49,7 +49,7 @@ class NodeBuilderExtensionsTests extends ElasticsearchTestCase {
         boolean localNode = randomBoolean()
         int arbitraryField = randomInt()
 
-        builder.settings {
+        NodeBuilderExtensions.settings(builder) {
             arbitrary {
                 field = arbitraryField
             }
@@ -64,7 +64,7 @@ class NodeBuilderExtensionsTests extends ElasticsearchTestCase {
         }
 
         // only testing the settings not the node
-        Settings settings = builder.settings.build()
+        Settings settings = builder.getSettings().build()
 
         assert settings.getAsBoolean("node.client", null) == clientNode
         assert settings.getAsBoolean("node.data", null) == dataNode
@@ -82,7 +82,7 @@ class NodeBuilderExtensionsTests extends ElasticsearchTestCase {
 
         builder.clusterName(clusterName).client(clientNode).data(dataNode).local(localNode)
 
-        Settings settings = builder.settings.build()
+        Settings settings = builder.getSettings().build()
 
         assert settings.getAsBoolean("node.client", null) == clientNode
         assert settings.getAsBoolean("node.data", null) == dataNode
@@ -92,7 +92,7 @@ class NodeBuilderExtensionsTests extends ElasticsearchTestCase {
 
     @Test
     void testNodeBuilder() {
-        builder.settings {
+        NodeBuilderExtensions.settings(builder) {
             node {
                 local = true
             }

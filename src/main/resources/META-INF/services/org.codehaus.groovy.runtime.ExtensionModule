@@ -35,6 +35,10 @@ moduleVersion = 1.0
 extensionClasses = \
   org.elasticsearch.groovy.ClosureExtensions,\
   org.elasticsearch.groovy.action.ListenableActionFutureExtensions,\
+  org.elasticsearch.groovy.action.admin.cluster.repositories.put.PutRepositoryRequestExtensions,\
+  org.elasticsearch.groovy.action.admin.cluster.settings.ClusterUpdateSettingsRequestExtensions,\
+  org.elasticsearch.groovy.action.admin.cluster.snapshots.create.CreateSnapshotRequestExtensions,\
+  org.elasticsearch.groovy.action.admin.cluster.snapshots.restore.RestoreSnapshotRequestExtensions,\
   org.elasticsearch.groovy.action.admin.indices.create.CreateIndexRequestExtensions,\
   org.elasticsearch.groovy.action.admin.indices.mapping.put.PutMappingRequestExtensions,\
   org.elasticsearch.groovy.action.admin.indices.settings.put.UpdateSettingsRequestExtensions,\

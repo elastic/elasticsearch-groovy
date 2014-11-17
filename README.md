@@ -111,6 +111,16 @@ script. As a result, any recommendation that suggests running `mvn clean test -D
 `gradle clean test -DsystemProp=xyz` (the only change was from `mvn` to `gradle`). This _only_ applies to the Groovy
 client.
 
+### Testing with IntelliJ
+
+By default, IntelliJ will place all of the `compile`-time dependencies above the `testCompile` dependencies. In the case
+of the test frameworks used, this presents issues that _occasionally_ trigger test failures (that tell you to fix your
+classpath with respect to "test-framework.jar"). To fix this behavior, put your test dependencies above any non-test
+dependencies within IntelliJ.
+
+1. Open `Project Structure`
+2. Select `Modules`
+
 Suggested Groovy Settings
 -------------------------
 

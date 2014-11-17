@@ -79,9 +79,13 @@ Node node = nodeBuilder().settings {
     client = true
   }
 }.node()
+// Get a usable Node Client
+Client client = node.client
 
 //// Purely Java way
 Node node = nodeBuilder().client(true).clusterName("my-cluster-name").node()
+// Get a usable Node Client
+Client client = node.client()
 ----------------------------
 
 The Groovy approach tends to be more useful only when applying settings that do not have Java methods already
@@ -96,7 +100,8 @@ http://www.elasticsearch.org/guide/en/elasticsearch/client/java-api/current/clie
 
 [source,groovy]
 ----------------------------
-import org.elasticsearch.client.transport.TransportClient // Note: is-a Client
+// Note: TransportClient is a Client
+import org.elasticsearch.client.transport.TransportClient
 import org.elasticsearch.common.settings.ImmutableSettings
 import org.elasticsearch.common.settings.Settings
 
@@ -213,14 +218,16 @@ http://www.elasticsearch.org/guide/en/elasticsearch/guide/current/near-real-time
 immediately after adding (indexing), updating, or deleting a document, you are _not_ guaranteed to be able to search for
 and find the document.
 
-In your own internal tests, you can guarantee the searchability of a document by invoking a `refresh` on the associated index (e.g., `"index1"` in the above example).
+In your own internal tests, you can guarantee the searchability of a document by invoking a `refresh` on the associated
+index (e.g., `"index1"` in the above example). This is _not_ recommended for use in production code as it causes a lot
+of overhead that would otherwise happen in the background automatically.
 
 [source,groovy]
 ----------------------------
 import org.elasticsearch.client.Client
 
 // Perform some operations that modify documents in "index1"
-client.index { /* ... */ }
+client.index { /* ... */ }.actionGet()
 
 client.admin.indices.refresh { indices "index1" }.actionGet()
 
@@ -322,7 +329,7 @@ BulkResponse response = client.bulk {
         }
       }
     }
-  }, // <- note the comma that implicitly uses the array of requests
+  }, // <- note the comma that uses the array of ActionRequests
   new UpdateRequest().with {
     index "my_index"
     type "my_type"
@@ -333,7 +340,7 @@ BulkResponse response = client.bulk {
       }
     }
   }
-  // note that there is no comma, so this separately calls add
+  // note that there is no comma, so this calls add again
   add new DeleteRequest().with {
     index "my_index"
     type "my_type"
