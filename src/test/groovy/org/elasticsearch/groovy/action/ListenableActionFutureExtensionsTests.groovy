@@ -22,7 +22,7 @@ import org.elasticsearch.ElasticsearchException
 import org.elasticsearch.action.ListenableActionFuture
 import org.elasticsearch.action.index.IndexResponse
 import org.elasticsearch.action.update.UpdateResponse
-import org.elasticsearch.test.ElasticsearchIntegrationTest
+import org.elasticsearch.groovy.AbstractElasticsearchIntegrationTest
 
 import org.junit.Rule
 import org.junit.Test
@@ -33,7 +33,7 @@ import java.util.concurrent.CountDownLatch
 /**
  * Tests {@link ListenableActionFutureExtensions}.
  */
-class ListenableActionFutureExtensionsTests extends ElasticsearchIntegrationTest {
+class ListenableActionFutureExtensionsTests extends AbstractElasticsearchIntegrationTest {
     /**
      * Timeout for each <em>individual</em> test (and non-static to avoid wasted test resources).
      */

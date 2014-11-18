@@ -24,11 +24,15 @@ import org.elasticsearch.action.count.CountResponse
 import org.elasticsearch.action.delete.DeleteResponse
 import org.elasticsearch.action.deletebyquery.DeleteByQueryResponse
 import org.elasticsearch.action.get.GetResponse
+import org.elasticsearch.action.get.MultiGetResponse
 import org.elasticsearch.action.index.IndexResponse
 import org.elasticsearch.action.indexedscripts.delete.DeleteIndexedScriptResponse
 import org.elasticsearch.action.indexedscripts.get.GetIndexedScriptResponse
 import org.elasticsearch.action.indexedscripts.put.PutIndexedScriptResponse
+import org.elasticsearch.action.search.ClearScrollResponse
+import org.elasticsearch.action.search.MultiSearchResponse
 import org.elasticsearch.action.search.SearchResponse
+import org.elasticsearch.action.search.SearchType
 import org.elasticsearch.action.update.UpdateResponse
 import org.elasticsearch.client.Requests
 
@@ -153,11 +157,49 @@ class ClientExtensionsActionTests extends AbstractClientTests {
     }
 
     @Test
+    void testMultiGetRequest() {
+        String userId1 = randomAsciiOfLengthBetween(1, 4)
+        String userId2 = randomAsciiOfLengthBetween(5, 8)
+        String userId3 = randomAsciiOfLengthBetween(9, 12)
+
+        // Three separate index operations
+        BulkResponse bulkResponse = bulkIndex(indexName, [
+            {
+                type typeName
+                source { user = userId1 }
+            },
+            {
+                type typeName
+                source {
+                    user = userId2
+                    field = randomInt()
+                }
+            },
+            {
+                type typeName
+                source { user = userId3 }
+            }
+        ])
+
+        // don't need a refresh, since we're not searching for it
+        MultiGetResponse response = client.multiGet {
+            for (BulkItemResponse bulkItemResponse : bulkResponse.items) {
+                add indexName, typeName, bulkItemResponse.id
+            }
+        }.actionGet()
+
+        assert response.responses.length == 3
+        assert response.responses[0].response.sourceAsMap.user == userId1
+        assert response.responses[1].response.sourceAsMap.user == userId2
+        assert response.responses[2].response.sourceAsMap.user == userId3
+    }
+
+    @Test
     void testBulkRequest() {
         List<String> ids = [randomAsciiOfLength(1), randomAsciiOfLength(2), randomAsciiOfLength(3)]
 
         BulkResponse response = client.bulk {
-            // note: this uses add(ActionRequest...) [note the comma between each request]
+            // Note: this uses add(ActionRequest...) [note the comma between each request]
             add Requests.indexRequest(indexName).with {
                 type typeName
                 id ids[0]
@@ -182,6 +224,7 @@ class ClientExtensionsActionTests extends AbstractClientTests {
         }.actionGet()
 
         assert ! response.hasFailures()
+        assert response.items.length == 3
         // ensure each item was indexed as expected
         response.items.eachWithIndex { BulkItemResponse item, int i ->
             assert item.index == indexName
@@ -202,21 +245,66 @@ class ClientExtensionsActionTests extends AbstractClientTests {
         // refresh the index to guarantee searchability
         client.admin.indices.refresh { indices indexName }.actionGet()
 
-        SearchResponse response = client.search {
-            indices indexName
-            types typeName
-            source {
+        SearchResponse response = client.search(Requests.searchRequest(indexName).types(typeName).source({
                 query {
                     match {
                         user = userId
                     }
                 }
-            }
-        }.actionGet()
+            }.asJsonString())).actionGet()
+
+//        SearchResponse response = client.search {
+//            indices indexName
+//            types typeName
+//            source {
+//                query {
+//                    match {
+//                        user = userId
+//                    }
+//                }
+//            }
+//        }.actionGet()
 
         assert response.hits.totalHits == 1
         assert response.hits.hits[0].id == docId
         assert response.hits.hits[0].source.user == userId
+    }
+
+    @Test
+    void testMultiSearchRequest() {
+        List<Integer> values = bulkIndexValues()
+        // the value that all must be greater than or equal to in the first search; less than in the second search
+        int gteValue = values[randomInt(values.size() - 1)]
+
+        // determine how many indexed documents have a value >= gteValue and, separately value < gteValue
+        MultiSearchResponse response = client.multiSearch {
+            add Requests.searchRequest(indexName).types(typeName).source {
+                query {
+                    range {
+                        value {
+                            gte = gteValue
+                        }
+                    }
+                }
+            }
+            add Requests.searchRequest().with {
+                indices indexName
+                types typeName
+                source {
+                    query {
+                        range {
+                            value {
+                                lt = gteValue
+                            }
+                        }
+                    }
+                }
+            }
+        }.actionGet()
+
+        // the counts should match exactly since they're doing the same operation
+        assert response.responses[0].response.hits.totalHits == values.count { it >= gteValue }
+        assert response.responses[1].response.hits.totalHits == values.count { it < gteValue }
     }
 
     @Test
@@ -283,6 +371,76 @@ class ClientExtensionsActionTests extends AbstractClientTests {
 
         // the counts should match exactly since we have the whole data set and are performing the opposite calculation
         assert countResponse.count == values.count { it < gteValue }
+    }
+
+    @Test
+    void testSearchScrollRequest() {
+        // index some arbitrary data
+        List<Integer> values =  bulkIndexValues()
+
+        // Open a new scroll ID
+        SearchResponse searchResponse = client.search {
+            source {
+                query {
+                    match_all { }
+                }
+                // Note: Size is per relevant shard!
+                size 1000
+            }
+            searchType SearchType.SCAN
+            scroll "60s"
+        }.actionGet()
+
+        // sanity check
+        assert searchResponse.hits.totalHits == values.size()
+        assert searchResponse.scrollId != null
+        assert searchResponse.hits.hits.length == 0
+
+        SearchResponse response = client.searchScroll {
+            scrollId searchResponse.scrollId
+            // keep the next window open
+            scroll "60s"
+        }.actionGet()
+
+        // Cleanup any open/locked resources
+        ClearScrollResponse clearResponse = client.clearScroll {
+            // NOTE: The response contains the _next_ scroll ID
+            addScrollId response.scrollId
+        }.actionGet()
+
+        // Ensure that it was successful
+        assert clearResponse.succeeded
+    }
+
+    @Test
+    void testClearScrollRequest() {
+        // index some arbitrary data
+        List<Integer> values =  bulkIndexValues()
+
+        // Open a new scroll ID
+        SearchResponse searchResponse = client.search {
+            source {
+                query {
+                    match_all { }
+                }
+                // Note: Size is per relevant shard!
+                size 1000
+            }
+            searchType SearchType.SCAN
+            scroll "60s"
+        }.actionGet()
+
+        // sanity check
+        assert searchResponse.hits.totalHits == values.size()
+        assert searchResponse.scrollId != null
+
+        // Cleanup any open/locked resources
+        ClearScrollResponse response = client.clearScroll {
+            addScrollId searchResponse.scrollId
+        }.actionGet()
+
+        // Ensure that it was successful
+        assert response.succeeded
     }
 
     @Test
@@ -424,6 +582,9 @@ class ClientExtensionsActionTests extends AbstractClientTests {
                 }
             }
         })
+
+        // refresh the index to guarantee searchability
+        assert client.admin.indices.refresh { indices indexName }.actionGet().failedShards == 0
 
         values
     }

@@ -32,7 +32,7 @@ Versions
 
 |     Groovy Client           |    Elasticsearch    |  Groovy  | Java | Release date |
 |-----------------------------|---------------------|----------|------|:------------:|
-| 1.4.0.0-SNAPSHOT            | 1.4.0               |  2.3.2   | 7+   | XXXX-XX-XX  |
+| 1.4.0.0-SNAPSHOT            | 1.4.0               |  2.3.7   | 7+   | XXXX-XX-XX  |
 
 Please read documentation relative to the version you are using:
 

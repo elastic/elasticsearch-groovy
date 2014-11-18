@@ -44,7 +44,7 @@ project.ext {
   // A map that is defined to contain version numbers for all dependencies in the current release.
   versions = [
     elasticsearch              : '1.4.0',
-    groovy                     : '2.3.2',
+    groovy                     : '2.3.7',
     java                       : '1.7',
     hamcrest                   : '1.3',
     log4j                      : '1.2.17',
@@ -158,9 +158,12 @@ tasks.withType(GroovyCompile) {
  * This can be very useful for when testing potential threading issues.
  * <p />
  * Note: Error output may suggest to run Maven for any test failure. Don't be fooled! Use the suggested system
- * properties  with <em>this</em> Gradle build!
+ * properties with <em>this</em> Gradle build!
  */
 tasks.withType(Test) {
+  // This TASK's temp dir (by default, Gradle will isolate each task's temp dirs)
+  def tempDir = it.temporaryDir.absolutePath
+
   // Many of the expected System Properties, which all come from Elasticsearch / Lucene / Randomized Runner:
   //
   //  tests.shuffle
@@ -193,4 +196,13 @@ tasks.withType(Test) {
       prop.key.startsWith(it)
     }
   }
+
+  // Default missing properties
+  if ( ! systemProperties.containsKey('es.path.data')) {
+    systemProperties 'es.path.data' : tempDir
+  }
+
+  // Always reset the temp dir to use the Gradle directory (gradle clean will cleanup resources rather than waiting for
+  //  the operating system
+  systemProperties 'java.io.tmpdir' : tempDir
 }

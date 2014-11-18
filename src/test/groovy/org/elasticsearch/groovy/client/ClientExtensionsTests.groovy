@@ -21,8 +21,8 @@ package org.elasticsearch.groovy.client
 import org.elasticsearch.client.AdminClient
 import org.elasticsearch.client.Client
 import org.elasticsearch.common.settings.Settings
+import org.elasticsearch.groovy.AbstractElasticsearchTestCase
 import org.elasticsearch.node.Node
-import org.elasticsearch.test.ElasticsearchTestCase
 
 import org.junit.Test
 
@@ -36,7 +36,7 @@ import static org.mockito.Mockito.when
 /**
  * Tests {@link ClientExtensions}.
  */
-class ClientExtensionsTests extends ElasticsearchTestCase {
+class ClientExtensionsTests extends AbstractElasticsearchTestCase {
     /**
      * Mock {@link Client} to ensure functionality.
      */

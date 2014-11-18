@@ -23,7 +23,7 @@ import org.elasticsearch.action.index.IndexRequest
 import org.elasticsearch.action.index.IndexResponse
 import org.elasticsearch.client.Client
 import org.elasticsearch.client.Requests
-import org.elasticsearch.test.ElasticsearchIntegrationTest
+import org.elasticsearch.groovy.AbstractElasticsearchIntegrationTest
 
 import org.junit.After
 import org.junit.Before
@@ -36,7 +36,7 @@ import java.text.SimpleDateFormat
  * {@code AbstractClientTests} provides helper functionality to tests that make use of {@code Client}s to perform
  * actions.
  */
-abstract class AbstractClientTests extends ElasticsearchIntegrationTest {
+abstract class AbstractClientTests extends AbstractElasticsearchIntegrationTest {
     /**
      * An optional temporary directory that can be created.
      * <p />
@@ -136,9 +136,10 @@ abstract class AbstractClientTests extends ElasticsearchIntegrationTest {
      * immediately searchable.
      *
      * @param indexConfigs The configuration of individual {@link IndexRequest}s.
+     * @return Never {@code null}.
      * @throws IllegalArgumentException if any of the {@code indexConfigs} call invoke invalid methods.
      */
-    void bulkIndex(List<Closure> indexConfigs) {
+    BulkResponse bulkIndex(List<Closure> indexConfigs) {
         bulkIndex(null, indexConfigs)
     }
 
@@ -167,9 +168,10 @@ abstract class AbstractClientTests extends ElasticsearchIntegrationTest {
      *
      * @param indexName The name of the index. This value <em>can</em> be overridden by each configuration per-request.
      * @param indexConfigs The configuration of individual {@link IndexRequest}s.
+     * @return Never {@code null}.
      * @throws IllegalArgumentException if any of the {@code indexConfigs} call invoke invalid methods.
      */
-    void bulkIndex(String indexName, List<Closure> indexConfigs) {
+    BulkResponse bulkIndex(String indexName, List<Closure> indexConfigs) {
         BulkResponse bulkResponse = client.bulk {
             // note: this adds a List<IndexRequest>
             add indexConfigs.collect {
@@ -180,7 +182,6 @@ abstract class AbstractClientTests extends ElasticsearchIntegrationTest {
         // sanity check
         assert ! bulkResponse.hasFailures()
 
-        // refresh the index to guarantee searchability
-        assert client.admin.indices.refresh { indices indexName }.actionGet().failedShards == 0
+        bulkResponse
     }
 }

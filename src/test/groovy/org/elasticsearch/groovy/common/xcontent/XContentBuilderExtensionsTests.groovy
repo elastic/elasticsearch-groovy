@@ -22,14 +22,14 @@ import org.elasticsearch.common.xcontent.XContentBuilder
 import org.elasticsearch.common.xcontent.XContentFactory
 import org.elasticsearch.common.xcontent.XContentParser
 import org.elasticsearch.common.xcontent.XContentType
-import org.elasticsearch.test.ElasticsearchTestCase
+import org.elasticsearch.groovy.AbstractElasticsearchTestCase
 
 import org.junit.Test
 
 /**
  * Tests {@link XContentBuilderExtensions}.
  */
-class XContentBuilderExtensionsTests extends ElasticsearchTestCase {
+class XContentBuilderExtensionsTests extends AbstractElasticsearchTestCase {
     /**
      * Get a random {@link XContentType} to ensure all types work.
      */
@@ -143,6 +143,7 @@ class XContentBuilderExtensionsTests extends ElasticsearchTestCase {
     }
 
     // simple tests to ensure accuracy (these are also covered in the ClosureExtension tests, though less specifically)
+    // all of these require that the extension module be configured
 
     @Test
     void testSingleProperty() {

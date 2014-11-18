@@ -20,11 +20,18 @@ package org.elasticsearch.groovy.client
 
 import org.elasticsearch.action.admin.cluster.health.ClusterHealthResponse
 import org.elasticsearch.action.admin.cluster.health.ClusterHealthStatus
+import org.elasticsearch.action.admin.cluster.repositories.get.GetRepositoriesResponse
+import org.elasticsearch.action.admin.cluster.repositories.put.PutRepositoryResponse
+import org.elasticsearch.action.admin.cluster.snapshots.create.CreateSnapshotResponse
+import org.elasticsearch.action.admin.cluster.snapshots.restore.RestoreSnapshotResponse
+import org.elasticsearch.action.get.GetResponse
 import org.elasticsearch.client.ClusterAdminClient
+import org.elasticsearch.snapshots.SnapshotState
 import org.elasticsearch.test.ElasticsearchIntegrationTest.ClusterScope
 import org.elasticsearch.test.ElasticsearchIntegrationTest.Scope
 
 import org.junit.Before
+import org.junit.Ignore
 import org.junit.Test
 
 /**
@@ -64,132 +71,129 @@ class ClusterAdminClientExtensionsActionTests extends AbstractClientTests {
         assert response.status != ClusterHealthStatus.RED
     }
 
-// TODO: using newTempDir() is triggering lingering static reference-based test failures ($staticClassInfo)
-//
-//    @Test
-//    void testPutRepositoryRequestAndGetRepositoryRequest() {
-//        String repoName = "test-repo"
-//        String absolutePath = newTempDir().absolutePath
-//
-//        // Create the repository
-//        PutRepositoryResponse response = clusterAdminClient.putRepository {
-//            name repoName
-//            type "fs"
-//            settings {
-//                compress = true
-//                location = absolutePath
-//            }
-//        }.actionGet()
-//
-//        assert response.acknowledged
-//
-//        // verify that it exists
-//        GetRepositoriesResponse getResponse = clusterAdminClient.getRepositories {
-//            repositories repoName
-//        }.actionGet()
-//
-//        assert getResponse.repositories()[0].name() == repoName
-//        assert getResponse.repositories()[0].settings().get("location") == absolutePath
-//    }
-//
-//    @Test
-//    void testCreateSnapshotRequest() {
-//        String repoName = "test-create-snapshot-repo"
-//        String snapshotName = "test-create-snapshot"
-//        String absolutePath = newTempDir().absolutePath
-//
-//        // Write a document
-//        indexDoc(indexName, typeName) { value = "ignored" }
-//        // flush the index to disk
-//        client.admin.indices.flush { indices indexName }.actionGet()
-//
-//        // Create the repository
-//        PutRepositoryResponse putResponse = clusterAdminClient.putRepository {
-//            name repoName
-//            type "fs"
-//            settings {
-//                location = absolutePath
-//            }
-//        }.actionGet()
-//
-//        // sanity check
-//        assert putResponse.acknowledged
-//
-//        // Create the snapshot
-//        CreateSnapshotResponse response = clusterAdminClient.createSnapshot {
-//            repository repoName
-//            snapshot snapshotName
-//            indices indexName
-//            waitForCompletion true
-//        }.actionGet()
-//
-//        assert response.snapshotInfo.name() == snapshotName
-//        assert response.snapshotInfo.state() == SnapshotState.SUCCESS
-//        assert response.snapshotInfo.indices()[0] == indexName
-//    }
-//
-//    @Test
-//    void testRestoreSnapshotRequest() {
-//        String repoName = "test-restore-snapshot-repo"
-//        String snapshotName = "test-restore-snapshot"
-//        String absolutePath = newTempDir().absolutePath
-//        String restoredIndexName = indexName + "-restored"
-//        String expectedValue = "expected"
-//
-//        // Write a document
-//        String docId = indexDoc(indexName, typeName) { value = expectedValue }
-//        // flush the index to disk
-//        client.admin.indices.flush { indices indexName }.actionGet()
-//
-//        // Create the repository
-//        PutRepositoryResponse putResponse = clusterAdminClient.putRepository {
-//            name repoName
-//            type "fs"
-//            settings {
-//                location = absolutePath
-//            }
-//        }.actionGet()
-//
-//        // sanity check
-//        assert putResponse.acknowledged
-//
-//        // Create the snapshot
-//        CreateSnapshotResponse createResponse = clusterAdminClient.createSnapshot {
-//            repository repoName
-//            snapshot snapshotName
-//            indices indexName
-//            waitForCompletion true
-//        }.actionGet()
-//
-//        // sanity check
-//        assert createResponse.snapshotInfo.state() == SnapshotState.SUCCESS
-//
-//        // Restore the snapshot to another index (indexName -> restoredIndexName)
-//        RestoreSnapshotResponse response = clusterAdminClient.restoreSnapshot {
-//            repository repoName
-//            snapshot snapshotName
-//            renamePattern indexName
-//            renameReplacement restoredIndexName
-//            waitForCompletion true
-//        }.actionGet()
-//
-//        assert response.restoreInfo.name() == snapshotName
-//        assert response.restoreInfo.failedShards() == 0
-//        assert response.restoreInfo.indices()[0] == restoredIndexName
-//
-//        // flush the index to disk
-//        client.admin.indices.flush { indices restoredIndexName }.actionGet()
-//        // Ensure that it's safe to read
-//        ensureGreen(restoredIndexName)
-//
-//        // Ensure that the restored index was expected renamed
-//        GetResponse getResponse = client.get {
-//            index restoredIndexName
-//            type typeName
-//            id docId
-//        }.actionGet()
-//
-//        assert getResponse.exists
-//        assert getResponse.sourceAsMap.value == expectedValue
-//    }
+    @Test
+    void testPutRepositoryRequestAndGetRepositoryRequest() {
+        String repoName = "test-repo"
+        String absolutePath = newTempDir().absolutePath
+
+        // Create the repository
+        PutRepositoryResponse response = clusterAdminClient.putRepository {
+            name repoName
+            type "fs"
+            settings {
+                compress = true
+                location = absolutePath
+            }
+        }.actionGet()
+
+        assert response.acknowledged
+
+        // verify that it exists
+        GetRepositoriesResponse getResponse = clusterAdminClient.getRepositories {
+            repositories repoName
+        }.actionGet()
+
+        assert getResponse.repositories()[0].name() == repoName
+        assert getResponse.repositories()[0].settings().get("location") == absolutePath
+    }
+
+    @Test
+    void testCreateSnapshotRequest() {
+        String repoName = "test-create-snapshot-repo"
+        String snapshotName = "test-create-snapshot"
+        String absolutePath = newTempDir().absolutePath
+
+        // Write a document
+        indexDoc(indexName, typeName) { value = "ignored" }
+        // flush the index to disk
+        client.admin.indices.flush { indices indexName }.actionGet()
+
+        // Create the repository
+        PutRepositoryResponse putResponse = clusterAdminClient.putRepository {
+            name repoName
+            type "fs"
+            settings {
+                location = absolutePath
+            }
+        }.actionGet()
+
+        // sanity check
+        assert putResponse.acknowledged
+
+        // Create the snapshot
+        CreateSnapshotResponse response = clusterAdminClient.createSnapshot {
+            repository repoName
+            snapshot snapshotName
+            indices indexName
+            waitForCompletion true
+        }.actionGet()
+
+        assert response.snapshotInfo.name() == snapshotName
+        assert response.snapshotInfo.state() == SnapshotState.SUCCESS
+        assert response.snapshotInfo.indices()[0] == indexName
+    }
+
+    // Restore occasionally fails at the GetRequest step (investigating on ES side)
+    // Hopefully this is fixed in 1.4.1 https://github.com/elasticsearch/elasticsearch/pull/8341
+    @Ignore
+    @Test
+    void testRestoreSnapshotRequest() {
+        String repoName = "test-restore-snapshot-repo"
+        String snapshotName = "test-restore-snapshot"
+        String absolutePath = newTempDir().absolutePath
+        String restoredIndexName = indexName + "-restored"
+        String expectedValue = "expected"
+
+        // Write a document
+        String docId = indexDoc(indexName, typeName) { value = expectedValue }
+        // force the index to be available
+        client.admin.indices.refresh { indices indexName }.actionGet()
+
+        // Create the repository
+        PutRepositoryResponse putResponse = clusterAdminClient.putRepository {
+            name repoName
+            type "fs"
+            settings {
+                location = absolutePath
+            }
+        }.actionGet()
+
+        // sanity check
+        assert putResponse.acknowledged
+
+        // Create the snapshot
+        CreateSnapshotResponse createResponse = clusterAdminClient.createSnapshot {
+            repository repoName
+            snapshot snapshotName
+            indices indexName
+            waitForCompletion true
+        }.actionGet()
+
+        // sanity check
+        assert createResponse.snapshotInfo.state() == SnapshotState.SUCCESS
+
+        // Restore the snapshot to another index (indexName -> restoredIndexName)
+        RestoreSnapshotResponse response = clusterAdminClient.restoreSnapshot {
+            repository repoName
+            snapshot snapshotName
+            renamePattern indexName
+            renameReplacement restoredIndexName
+            waitForCompletion true
+        }.actionGet()
+
+        assert response.restoreInfo.name() == snapshotName
+        assert response.restoreInfo.failedShards() == 0
+        assert response.restoreInfo.indices()[0] == restoredIndexName
+
+        // Ensure that the restored index was expected renamed
+        GetResponse getResponse = client.get {
+            index restoredIndexName
+            type typeName
+            id docId
+            refresh true
+        }.actionGet()
+
+        assert getResponse.exists
+        assert getResponse.sourceAsMap.value == expectedValue
+    }
 }

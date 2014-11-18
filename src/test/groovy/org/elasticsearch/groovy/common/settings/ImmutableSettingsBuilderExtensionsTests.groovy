@@ -20,14 +20,14 @@ package org.elasticsearch.groovy.common.settings
 
 import org.elasticsearch.common.settings.ImmutableSettings
 import org.elasticsearch.common.settings.Settings
-import org.elasticsearch.test.ElasticsearchTestCase
+import org.elasticsearch.groovy.AbstractElasticsearchTestCase
 
 import org.junit.Test
 
 /**
  * Tests {@link ImmutableSettingsBuilderExtensions}.
  */
-class ImmutableSettingsBuilderExtensionsTests extends ElasticsearchTestCase {
+class ImmutableSettingsBuilderExtensionsTests extends AbstractElasticsearchTestCase {
     /**
      * Tested {@link ImmutableSettings.Builder}.
      */

@@ -31,7 +31,7 @@ class UpdateRequestExtensions {
      * Sets the content {@code docSource} (partial document) to use with the update.
      *
      * @param self The {@code this} reference for the {@link UpdateRequest}.
-     * @param docSource The content params
+     * @param docSource The non-scripted, partial document source to update
      * @return Always {@code self}.
      * @throws NullPointerException if any parameter is {@code null}
      */
@@ -64,6 +64,42 @@ class UpdateRequestExtensions {
     }
 
     /**
+     * Sets the content {@code source} to use in the case that the document does <em>not</em> exist.
+     *
+     * @param self The {@code this} reference for the {@link UpdateRequest}.
+     * @param source The content source
+     * @return Always {@code self}.
+     * @throws NullPointerException if any parameter is {@code null}
+     */
+    static UpdateRequest upsert(UpdateRequest self, Closure source) throws Exception {
+        self.upsert(source.asMap())
+    }
+
+    /**
+     * Sets the content {@code params} to use with the update.
+     *
+     * @param self The {@code this} reference for the {@link UpdateRequestBuilder}.
+     * @param docSource The non-scripted, partial document source to update
+     * @return Always {@code self}.
+     * @throws NullPointerException if any parameter is {@code null}
+     */
+    static UpdateRequestBuilder setDoc(UpdateRequestBuilder self, Closure docSource) throws Exception {
+        self.setDoc(docSource.asMap())
+    }
+
+    /**
+     * Sets the content {@code params} to use with the update.
+     *
+     * @param self The {@code this} reference for the {@link UpdateRequestBuilder}.
+     * @param params The uncached script parameters
+     * @return Always {@code self}.
+     * @throws NullPointerException if any parameter is {@code null}
+     */
+    static UpdateRequestBuilder setScriptParams(UpdateRequestBuilder self, Closure params) throws Exception {
+        self.setScriptParams(params.asMap())
+    }
+
+    /**
      * Sets the content {@code source} to update.
      *
      * @param self The {@code this} reference for the {@link UpdateRequestBuilder}.
@@ -73,5 +109,17 @@ class UpdateRequestExtensions {
      */
     static UpdateRequestBuilder setSource(UpdateRequestBuilder self, Closure source) throws Exception {
         self.setSource(source.asJsonBytes())
+    }
+
+    /**
+     * Sets the content {@code source} to update if it is actually an insert.
+     *
+     * @param self The {@code this} reference for the {@link UpdateRequestBuilder}.
+     * @param source The content source
+     * @return Always {@code self}.
+     * @throws NullPointerException if any parameter is {@code null}
+     */
+    static UpdateRequestBuilder setUpsert(UpdateRequestBuilder self, Closure source) throws Exception {
+        self.setUpsert(source.asMap())
     }
 }

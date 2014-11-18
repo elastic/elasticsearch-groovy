@@ -18,8 +18,6 @@
  */
 package org.elasticsearch.groovy
 
-import org.elasticsearch.test.ElasticsearchTestCase
-
 import org.junit.Test
 
 import static org.elasticsearch.groovy.ClosureToMapConverter.mapClosure
@@ -27,7 +25,7 @@ import static org.elasticsearch.groovy.ClosureToMapConverter.mapClosure
 /**
  * Tests {@link ClosureToMapConverter}.
  */
-class ClosureToMapConverterTests extends ElasticsearchTestCase {
+class ClosureToMapConverterTests extends AbstractElasticsearchTestCase {
     @Test
     void testFlatMapConversion() {
         long value = randomLong()

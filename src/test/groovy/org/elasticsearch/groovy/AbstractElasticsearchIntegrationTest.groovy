@@ -18,34 +18,21 @@
  */
 package org.elasticsearch.groovy
 
-import org.junit.Test
+import groovy.transform.CompileStatic
+
+import org.elasticsearch.test.ElasticsearchIntegrationTest
 
 /**
- * Tests {@link ClosureExtensions}.
- * <p />
- * These tests assume that {@link ClosureToMapConverter} is appropriately tested.
+ * The basis for all Groovy client test classes that require a running Elasticsearch cluster / client (integration
+ * tests).
+ * @see AbstractElasticsearchTestCase
  */
-class ClosureExtensionsTests extends AbstractElasticsearchTestCase {
-    @Test
-    void testAsMap() {
-        String firstName = randomAsciiOfLengthBetween(1, 8)
-        String lastName = randomAsciiOfLengthBetween(1, 8)
-
-        Map<String, Object> map = ClosureExtensions.asMap {
-            name {
-                first = firstName
-                last = lastName
-            }
-        }
-
-        assert map.name.first == firstName
-        assert map.name.last == lastName
-    }
-
-    @Test
-    void testExtensionModuleConfigured() {
-        String randomName = randomAsciiOfLengthBetween(1, 8)
-
-        assert { name = randomName }.asMap().name == randomName
+@CompileStatic
+abstract class AbstractElasticsearchIntegrationTest extends ElasticsearchIntegrationTest {
+    /**
+     * Sanitize the test code to allow Groovy to cleanup after itself rather than forcing the onus onto everyone else.
+     */
+    static {
+        assert GroovyTestSanitizer.groovySanitized
     }
 }
