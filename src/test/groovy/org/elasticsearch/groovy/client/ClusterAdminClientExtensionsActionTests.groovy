@@ -26,14 +26,11 @@ import org.elasticsearch.action.admin.cluster.snapshots.create.CreateSnapshotRes
 import org.elasticsearch.action.admin.cluster.snapshots.restore.RestoreSnapshotResponse
 import org.elasticsearch.action.get.GetResponse
 import org.elasticsearch.client.ClusterAdminClient
-import org.elasticsearch.common.settings.ImmutableSettings
-import org.elasticsearch.node.internal.InternalNode
 import org.elasticsearch.snapshots.SnapshotState
 import org.elasticsearch.test.ElasticsearchIntegrationTest.ClusterScope
 import org.elasticsearch.test.ElasticsearchIntegrationTest.Scope
 
 import org.junit.Before
-import org.junit.Ignore
 import org.junit.Test
 
 /**
@@ -186,7 +183,7 @@ class ClusterAdminClientExtensionsActionTests extends AbstractClientTests {
         assert response.restoreInfo.failedShards() == 0
         assert response.restoreInfo.indices()[0] == restoredIndexName
 
-        ClusterHealthResponse healthResponse = client.admin.cluster.health {
+        ClusterHealthResponse healthResponse = clusterAdminClient.health {
             indices restoredIndexName
             waitForStatus ClusterHealthStatus.YELLOW
         }.actionGet()
