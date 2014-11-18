@@ -26,6 +26,8 @@ import org.elasticsearch.action.admin.cluster.snapshots.create.CreateSnapshotRes
 import org.elasticsearch.action.admin.cluster.snapshots.restore.RestoreSnapshotResponse
 import org.elasticsearch.action.get.GetResponse
 import org.elasticsearch.client.ClusterAdminClient
+import org.elasticsearch.common.settings.ImmutableSettings
+import org.elasticsearch.node.internal.InternalNode
 import org.elasticsearch.snapshots.SnapshotState
 import org.elasticsearch.test.ElasticsearchIntegrationTest.ClusterScope
 import org.elasticsearch.test.ElasticsearchIntegrationTest.Scope
@@ -133,9 +135,6 @@ class ClusterAdminClientExtensionsActionTests extends AbstractClientTests {
         assert response.snapshotInfo.indices()[0] == indexName
     }
 
-    // Restore occasionally fails at the GetRequest step (investigating on ES side)
-    // Hopefully this is fixed in 1.4.1 https://github.com/elasticsearch/elasticsearch/pull/8341
-    @Ignore
     @Test
     void testRestoreSnapshotRequest() {
         String repoName = "test-restore-snapshot-repo"
@@ -146,8 +145,9 @@ class ClusterAdminClientExtensionsActionTests extends AbstractClientTests {
 
         // Write a document
         String docId = indexDoc(indexName, typeName) { value = expectedValue }
-        // force the index to be available
-        client.admin.indices.refresh { indices indexName }.actionGet()
+
+        // ensure that the mapping exists before creating the snapshot (required for dynamic mapping!)
+        waitForConcreteMappingsOnAll(indexName, typeName, "value")
 
         // Create the repository
         PutRepositoryResponse putResponse = clusterAdminClient.putRepository {
@@ -181,16 +181,24 @@ class ClusterAdminClientExtensionsActionTests extends AbstractClientTests {
             waitForCompletion true
         }.actionGet()
 
+        // ensure that we appropriately restored from the snapshot
         assert response.restoreInfo.name() == snapshotName
         assert response.restoreInfo.failedShards() == 0
         assert response.restoreInfo.indices()[0] == restoredIndexName
+
+        ClusterHealthResponse healthResponse = client.admin.cluster.health {
+            indices restoredIndexName
+            waitForStatus ClusterHealthStatus.YELLOW
+        }.actionGet()
+
+        // sanity check
+        assert ! healthResponse.timedOut
 
         // Ensure that the restored index was expected renamed
         GetResponse getResponse = client.get {
             index restoredIndexName
             type typeName
             id docId
-            refresh true
         }.actionGet()
 
         assert getResponse.exists
