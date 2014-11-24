@@ -32,11 +32,11 @@ Versions
 
 |     Groovy Client           |    Elasticsearch    |  Groovy  | Java | Release date |
 |-----------------------------|---------------------|----------|------|:------------:|
-| 1.4.0.0-SNAPSHOT            | 1.4.0               |  2.3.7   | 7+   | XXXX-XX-XX  |
+| 1.4.0-SNAPSHOT              | 1.4.0               |  2.3.7   | 7+   | XXXX-XX-XX  |
 
 Please read documentation relative to the version you are using:
 
-* [1.4.0.0-SNAPSHOT](https://github.com/elasticsearch/elasticsearch-groovy/blob/master/README.md)
+* [1.4.0-SNAPSHOT](https://github.com/elasticsearch/elasticsearch-groovy/blob/master/README.md)
 
 JVM Warning
 -----------
@@ -65,7 +65,7 @@ repositories {
 }
 
 dependencies {
-    compile 'org.elasticsearch:elasticsearch-groovy:1.4.0.0-SNAPSHOT'
+    compile 'org.elasticsearch:elasticsearch-groovy:1.4.0-SNAPSHOT'
 }
 ```
 
@@ -76,7 +76,7 @@ dependencies {
   <dependency>
     <groupId>org.elasticsearch</groupId>
     <artifactId>elasticsearch-groovy</artifactId>
-    <version>1.4.0.0-SNAPSHOT</version>
+    <version>1.4.0-SNAPSHOT</version>
     <scope>compile</scope>
   </dependency>
 </dependencies>

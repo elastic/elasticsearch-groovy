@@ -114,9 +114,9 @@ description = 'Official Groovy client for Elasticsearch'
 
 // The group of the project. This is the same group that represents the "org.elasticsearch" in the Maven repository.
 group = 'org.elasticsearch'
-// The Groovy client adds an extra subversion to the Elasticsearch version number so that it is immediately obvious what
+// The Groovy client uses the same Elasticsearch version number so that it is immediately obvious what
 // version each release is compatible with.
-version = "${versions.elasticsearch}.0-SNAPSHOT"
+version = "${versions.elasticsearch}-SNAPSHOT"
 
 ///////////////////////////////////////////////////
 //                                               //

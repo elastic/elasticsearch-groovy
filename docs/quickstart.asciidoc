@@ -6,9 +6,7 @@ The quickstart section will give you a deeper overview of the Groovy client and 
 
 In the following examples, `${VERSION}` is used to represent the version of the Groovy client that your project depends
 on. You should _always_ use the same version as your Elasticsearch installation. For example, the initial release of
-the Groovy client supported Elasticsearch 1.4.0, so the Groovy client to use would be 1.4.0.0. The final version number
-represents the Groovy client's release version (e.g., bugfix version) and the 1.4.0 mirrors the supported Elasticsearch
-version. In this case, `${VERSION}` would be `1.4.0.0`.
+the Groovy client supported Elasticsearch 1.4.0, so the Groovy client to use would be 1.4.0.
 
 - Include the Groovy client as a dependency to your Groovy project.
 
