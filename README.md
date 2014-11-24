@@ -30,20 +30,28 @@ Besides the usage of `Closure`s, the above example should look very familiar to 
 Versions
 --------
 
-|     Groovy Client           |    Elasticsearch    |  Groovy  | Java | Release date |
-|-----------------------------|---------------------|----------|------|:------------:|
-| 1.4.0-SNAPSHOT              | 1.4.0               |  2.3.7   | 7+   | XXXX-XX-XX  |
+You need to install a version matching your Elasticsearch version:
 
-Please read documentation relative to the version you are using:
+|    Elasticsearch    |     Groovy Client           |    Java       | Groovy |
+|---------------------|-----------------------------|---------------|--------|
+| master              | Build from source           | See below     | 2.3.7  |
+| 1.x                 | Build from source           | 7u60 or later | 2.3.7  |
+| 1.4                 | [1.4](https://github.com/elasticsearch/elasticsearch-groovy/tree/1.4) | 7u60 or later | 2.3.7  |
 
-* [1.4.0-SNAPSHOT](https://github.com/elasticsearch/elasticsearch-groovy/blob/master/README.md)
+Please read documentation relative to the version that you are using!
+
+To build a SNAPSHOT version, you need to build it with Gradle (see below for further details):
+
+```bash
+$ gradle clean installDist
+```
 
 JVM Warning
 -----------
 
-Both Elasticsearch and the Elasticsearch Groovy client require Java 7. In addition, the Groovy client is compiled with
-`indy` support enabled, which means that it theoretically could cause issues if you are running with Java 7u22 to 7u55 
-due to a bug in the JVM related to `invokedynamic`. This is [reported directly from the Groovy
+Both Elasticsearch and the Elasticsearch Groovy client require at least Java 7. In addition, the Groovy client is
+compiled with `indy` support enabled, which means that it theoretically could cause issues if you are running with Java
+7u22 to 7u55 due to a bug in the JVM related to `invokedynamic`. This is [reported directly from the Groovy
 developers](http://groovy.codehaus.org/InvokeDynamic+support) and it is strongly suggested that you run Java 7u60 or
 later.
 
@@ -53,6 +61,9 @@ later.
 | Java 6             | *Unsupported*         | None                    |
 | Java 7u22 to 7u55  | *Unsupported*         | **Buggy**               |
 | Java 7u60 or later | Supported             | Supported               |
+| Java 8             | Supported             | Supported               |
+
+Groovy is supported on any JDK supported by Elasticsearch, which currently includes Oracle JDK and OpenJDK.
 
 Adding to your Groovy projects
 ------------------------------
