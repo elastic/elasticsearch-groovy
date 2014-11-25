@@ -60,7 +60,8 @@ Once it's done it will print all the remaining steps.
     - GITHUB (login/password) or key exported via ENV Variables (GITHUB_LOGIN,  GITHUB_PASSWORD or GITHUB_KEY)
     (see https://github.com/settings/applications#personal-access-tokens) - Optional: default to no authentication
     - SMTP_HOST - Optional: default to localhost
-    - MAIL_SENDER - Optional: default to 'david@pilato.fr': must be authorized to send emails to elasticsearch mailing list
+    - MAIL_SENDER - Optional: default to 'david@pilato.fr': must be authorized to send emails to elasticsearch mailing
+    list
     - MAIL_TO - Optional: default to 'elasticsearch@googlegroups.com'
 """
 env = os.environ
@@ -68,7 +69,8 @@ env = os.environ
 LOG = env.get('ES_RELEASE_LOG', '/tmp/elasticsearch_release.log')
 ROOT_DIR = os.path.join(abspath(dirname(__file__)), '../')
 README_FILE = ROOT_DIR + 'README.md'
-POM_FILE = ROOT_DIR + 'pom.xml'
+BUILD_FILE = ROOT_DIR + 'build.gradle'
+POM_FILE = ROOT_DIR + 'build/publications/mavenJava/pom-default.xml'
 
 def log(msg):
     log_plain('\n%s' % msg)
@@ -94,13 +96,9 @@ except KeyError:
   On OSX use: export JAVA_HOME=`/usr/libexec/java_home -v '1.6*'`""")
 
 try:
-    MVN='mvn'
-    # make sure mvn3 is used if mvn3 is available
-    # some systems use maven 2 as default
-    run('mvn3 --version', quiet=True)
-    MVN='mvn3'
+    GRADLE='gradle'
 except RuntimeError:
-    pass
+    raise RuntimeError('Please put gradle on your PATH.')
 
 
 def java_exe():
@@ -170,12 +168,12 @@ def guess_snapshot(version):
     return version.replace(source, destination)
 
 # Moves the pom.xml file from a snapshot to a release
-def remove_maven_snapshot(pom, release):
-    pattern = '<version>%s-SNAPSHOT</version>' % release
-    replacement = '<version>%s</version>' % release
+def remove_build_snapshot(build_file, release):
+    pattern = 'version = "\${versions.elasticsearch}-SNAPSHOT"' % release
+    replacement = 'version = "${versions.elasticsearch}"' % release
     def callback(line):
         return line.replace(pattern, replacement)
-    process_file(pom, callback)
+    process_file(build_file, callback)
 
 # Moves the README.md file from a snapshot to a release
 def remove_version_snapshot(readme_file, release):
@@ -185,13 +183,13 @@ def remove_version_snapshot(readme_file, release):
         return line.replace(pattern, replacement)
     process_file(readme_file, callback)
 
-# Moves the pom.xml file to the next snapshot
-def add_maven_snapshot(pom, release, snapshot):
-    pattern = '<version>%s</version>' % release
-    replacement = '<version>%s-SNAPSHOT</version>' % snapshot
+# Moves the build file to the next snapshot
+def add_build_snapshot(build_file, release, snapshot):
+    pattern = 'version = "\${versions.elasticsearch}"' % release
+    replacement = 'version = "${versions.elasticsearch}-SNAPSHOT"' % snapshot
     def callback(line):
         return line.replace(pattern, replacement)
-    process_file(pom, callback)
+    process_file(build_file, callback)
 
 # Add in README.md file the next snapshot
 def add_version_snapshot(readme_file, release, snapshot):
@@ -200,8 +198,7 @@ def add_version_snapshot(readme_file, release, snapshot):
     def callback(line):
         # If we find pattern, we copy the line and replace its content
         if line.find(pattern) >= 0:
-            return line.replace(pattern, replacement).replace('%s' % (datetime.datetime.now().strftime("%Y-%m-%d")),
-                                                              'XXXX-XX-XX')+line
+            return line.replace(pattern, replacement)+line
         else:
             return line
     process_file(readme_file, callback)
@@ -230,21 +227,18 @@ def add_documentation_snapshot(readme_file, repo_url, release, snapshot, branch)
             return line
     process_file(readme_file, callback)
 
-# Set release date in README.md file
-def set_date(readme_file):
-    pattern = 'XXXX-XX-XX'
-    replacement = '%s' % (datetime.datetime.now().strftime("%Y-%m-%d"))
-    def callback(line):
-        return line.replace(pattern, replacement)
-    process_file(readme_file, callback)
-
 # Update installation instructions in README.md file
-def set_install_instructions(readme_file, artifact_name, release):
-    pattern = 'compile \'org.elasticsearch:%s:.+\'' % artifact_name
-    replacement = 'compile \'org.elasticsearch:%s:%s\'' % (artifact_name, release)
-    def callback(line):
-        return re.sub(pattern, replacement, line)
-    process_file(readme_file, callback)
+def set_install_instructions(readme_file, release):
+    gradle_pattern = 'compile \'org.elasticsearch:elasticsearch-groovy:.+\''
+    gradle_replacement = 'compile \'org.elasticsearch:elasticsearch-groovy:%s\'' % release
+    maven_pattern = '<version>.+</version>'
+    maven_replacement = '<version>%s</version>' % release
+    def gradle_callback(line):
+        return re.sub(gradle_pattern, gradle_replacement, line)
+    def maven_callback(line):
+        return re.sub(maven_pattern, maven_replacement, line)
+    process_file(readme_file, gradle_callback)
+    process_file(readme_file, maven_callback)
 
 
 # Stages the given files for the next git commit
@@ -262,17 +256,20 @@ def commit_snapshot():
 def tag_release(release):
     run('git tag -a v%s -m "Tag release version %s"' % (release, release))
 
-def run_mvn(*cmd):
+def run_build(*cmd):
     for c in cmd:
-        run('%s; %s -f %s %s' % (java_exe(), MVN, POM_FILE, c))
+        run('%s; %s -b %s %s' % (java_exe(), GRADLE, BUILD_FILE, c))
+
+def generate_pom():
+    run_build('clean generatePomFileForMavenJavaPublication')
 
 def build_release(run_tests=False, dry_run=True):
-    target = 'deploy'
+    target = 'publish'
     if dry_run:
-        target = 'package'
+        target = 'installDist'
     if run_tests:
-        run_mvn('clean test')
-    run_mvn('clean %s -DskipTests' %(target))
+        run_build('clean test')
+    run_build('clean %s' %(target))
 
 # Checks the pom.xml for the release version. <version>2.0.0-SNAPSHOT</version>
 # This method fails if the pom file has no SNAPSHOT version set ie.
@@ -562,6 +559,8 @@ if __name__ == '__main__':
     parser.set_defaults(mail=True)
     args = parser.parse_args()
 
+    generate_pom()
+
     src_branch = args.branch
     remote = args.remote
     run_tests = args.tests
@@ -581,7 +580,7 @@ if __name__ == '__main__':
     print(''.join(['-' for _ in range(80)]))
     print('Preparing Release from branch [%s] running tests: [%s] dryrun: [%s]' % (src_branch, run_tests, dry_run))
     print('  JAVA_HOME is [%s]' % JAVA_HOME)
-    print('  Running with maven command: [%s] ' % (MVN))
+    print('  Running with Gradle command: [%s] ' % (GRADLE))
 
     release_version = find_release_version(src_branch)
     artifact_id = find_from_pom('artifactId')
@@ -608,17 +607,16 @@ if __name__ == '__main__':
     if not dry_run:
         smoke_test_version = release_version
     head_hash = get_head_hash()
-    run_mvn('clean') # clean the env!
+    run_build('clean') # clean the env!
     create_release_branch(remote, src_branch, release_version)
     print('  Created release branch [%s]' % (release_branch(release_version)))
     success = False
     try:
-        pending_files = [POM_FILE, README_FILE]
-        remove_maven_snapshot(POM_FILE, release_version)
+        pending_files = [BUILD_FILE, README_FILE]
+        remove_build_snapshot(BUILD_FILE, release_version)
         remove_documentation_snapshot(README_FILE, project_url, release_version, src_branch)
         remove_version_snapshot(README_FILE, release_version)
-        set_date(README_FILE)
-        set_install_instructions(README_FILE, artifact_id, release_version)
+        set_install_instructions(README_FILE, release_version)
         print('  Done removing snapshot version')
         add_pending_files(*pending_files) # expects var args use * to expand
         commit_release(artifact_id, release_version)
@@ -643,7 +641,7 @@ if __name__ == '__main__':
         print('  tag')
         tag_release(release_version)
 
-        add_maven_snapshot(POM_FILE, release_version, snapshot_version)
+        add_build_snapshot(BUILD_FILE, release_version, snapshot_version)
         add_version_snapshot(README_FILE, release_version, snapshot_version)
         add_documentation_snapshot(README_FILE, project_url, release_version, snapshot_version, src_branch)
         add_pending_files(*pending_files)
