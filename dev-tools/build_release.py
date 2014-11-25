@@ -491,14 +491,14 @@ def send_email(msg,
     msg['From'] = 'Elasticsearch Team <%s>' % sender
     msg['To'] = 'Elasticsearch Mailing List <%s>' % to
     # save mail on disk
-    with open(ROOT_DIR+'target/email.txt', 'w') as email_file:
+    with open(ROOT_DIR+'build/email.txt', 'w') as email_file:
         email_file.write(msg.as_string())
     if mail and not dry_run:
         s = smtplib.SMTP(smtp_server, 25)
         s.sendmail(sender, to, msg.as_string())
         s.quit()
     else:
-        print('generated email: open %starget/email.txt' % ROOT_DIR)
+        print('generated email: open %sbuild/email.txt' % ROOT_DIR)
 
 def print_sonatype_notice():
     settings = os.path.join(os.path.expanduser('~'), '.m2/settings.xml')
