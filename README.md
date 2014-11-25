@@ -30,17 +30,14 @@ Besides the usage of `Closure`s, the above example should look very familiar to 
 Versions
 --------
 
-You need to install a version matching your Elasticsearch version:
+In general, the version number will match the release of Elasticsearch.
 
-|    Elasticsearch    |     Groovy Client           |    Java       | Groovy |
-|---------------------|-----------------------------|---------------|--------|
-| master              | Build from source           | See below     | 2.3.7  |
-| 1.x                 | Build from source           | 7u60 or later | 2.3.7  |
-| 1.4                 | [1.4](https://github.com/elasticsearch/elasticsearch-groovy/tree/1.4) | 7u60 or later | 2.3.7  |
+|    Elasticsearch    | Groovy Client    |    Java       | Groovy |
+|---------------------|------------------|---------------|--------|
+| 1.4.1-SNAPSHOT      | 1.4.1-SNAPSHOT   | 7u60 or later | 2.3.7  |
+| 1.4.0               | 1.4.0            | 7u60 or later | 2.3.7  |
 
-Please read documentation relative to the version that you are using!
-
-To build a SNAPSHOT version, you need to build it with Gradle (see below for further details):
+To build a `SNAPSHOT` version, you need to build it with Gradle (see below for further details):
 
 ```bash
 $ gradle clean installDist
@@ -76,7 +73,7 @@ repositories {
 }
 
 dependencies {
-    compile 'org.elasticsearch:elasticsearch-groovy:1.4.0-SNAPSHOT'
+    compile 'org.elasticsearch:elasticsearch-groovy:1.4.0'
 }
 ```
 
@@ -87,7 +84,7 @@ dependencies {
   <dependency>
     <groupId>org.elasticsearch</groupId>
     <artifactId>elasticsearch-groovy</artifactId>
-    <version>1.4.0-SNAPSHOT</version>
+    <version>1.4.0</version>
     <scope>compile</scope>
   </dependency>
 </dependencies>
@@ -164,7 +161,7 @@ dependencies {
   <dependency>
     <groupId>org.codehaus.groovy</groupId>
     <artifactId>groovy-all</artifactId>
-    <version>2.3.2</version>
+    <version>1.4.0</version>
     <classifier>indy</classifier>
     <scope>compile</scope>
   </dependency>
