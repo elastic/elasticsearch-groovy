@@ -169,8 +169,8 @@ def guess_snapshot(version):
 
 # Moves the pom.xml file from a snapshot to a release
 def remove_build_snapshot(build_file, release):
-    pattern = 'version = "\${versions.elasticsearch}-SNAPSHOT"' % release
-    replacement = 'version = "${versions.elasticsearch}"' % release
+    pattern = 'version = "\${versions.elasticsearch}-SNAPSHOT"'
+    replacement = 'version = "${versions.elasticsearch}"'
     def callback(line):
         return line.replace(pattern, replacement)
     process_file(build_file, callback)
@@ -185,8 +185,8 @@ def remove_version_snapshot(readme_file, release):
 
 # Moves the build file to the next snapshot
 def add_build_snapshot(build_file, release, snapshot):
-    pattern = 'version = "\${versions.elasticsearch}"' % release
-    replacement = 'version = "${versions.elasticsearch}-SNAPSHOT"' % snapshot
+    pattern = 'version = "\${versions.elasticsearch}"'
+    replacement = 'version = "${versions.elasticsearch}-SNAPSHOT"'
     def callback(line):
         return line.replace(pattern, replacement)
     process_file(build_file, callback)
