@@ -25,6 +25,8 @@
 
 apply plugin: 'groovy'
 apply plugin: 'java-library-distribution'
+apply plugin: 'maven'
+apply plugin: 'signing'
 
 ///////////////////////////////////////////////////
 //                                               //
@@ -205,4 +207,106 @@ tasks.withType(Test) {
   // Always reset the temp dir to use the Gradle directory (gradle clean will cleanup resources rather than waiting for
   //  the operating system
   systemProperties 'java.io.tmpdir' : tempDir
+}
+
+///////////////////////////////////////////////////
+//                                               //
+//             Artifact Publishing               //
+//                                               //
+///////////////////////////////////////////////////
+
+File secretsConfiguration = file('secrets.gradle')
+
+// If there is a secrets configuration file, then use it to overwrite properties
+if (secretsConfiguration.exists()) {
+  // Meant to overwrite usernames/passwords and signing values
+  apply from: secretsConfiguration
+}
+
+/**
+ * Generate the source jar on demand.
+ */
+task sourcesJar(type: Jar) {
+  classifier = 'sources'
+  from sourceSets.main.allSource
+}
+
+/**
+ * Extra artifacts to publish along side the client jar.
+ */
+artifacts {
+  archives sourcesJar
+}
+
+/**
+ * Signing is a requirement for publishing the client jar to Sonatype.
+ */
+signing {
+  // if the closure result is false, then we don't sign anything
+  required { gradle.taskGraph.hasTask("uploadArchives") }
+
+  sign configurations.archives
+}
+
+/**
+ * Sets up the publishing of the jars to a Maven repository.
+ * <p />
+ * Archives and the POM file must be signed for full releases. They are less strict with snapshot releases, but they
+ * should also be signed.
+ */
+uploadArchives {
+  repositories {
+    mavenDeployer {
+      // sign the pom file
+      beforeDeployment {
+        signing.signPom(it)
+      }
+
+      // used to publish full releases
+      repository(url: "https://oss.sonatype.org/service/local/staging/deploy/maven2/") {
+        authentication(userName: project.property('sonatypeUsername'), password: project.property('sonatypePassword'))
+      }
+
+      // used to publish snapshot dependencies
+      snapshotRepository(url: "https://oss.sonatype.org/content/repositories/snapshots/") {
+        authentication(userName: project.property('sonatypeUsername'), password: project.property('sonatypePassword'))
+      }
+
+      // property names containing a period (easily searchable within the POM via publishing scripts)
+      def pomProperties =
+        [ 'elasticsearch.version' : versions.elasticsearch,
+          'groovy.version'        : versions.groovy,
+          'java.version.min'      : versions.java,
+          'lucene.version'        : versions.lucene ]
+
+      // Add other fields and values to the POM file
+      pom.project {
+        // root-level project details
+        name 'Elasticsearch Groovy Client'
+        packaging 'jar'
+        description project.description
+        url 'https://github.com/elasticsearch/elasticsearch-groovy'
+        inceptionYear '2014'
+
+        // Source Control details (GitHub)
+        scm {
+          connection 'scm:git:git@github.com:elasticsearch/elasticsearch-groovy.git'
+          developerConnection 'scm:git:git@github.com:elasticsearch/elasticsearch-groovy.git'
+          url 'https://github.com/elasticsearch/elasticsearch-groovy'
+        }
+
+        // Using Apache 2
+        licenses {
+          license {
+            name 'The Apache Software License, Version 2.0'
+            url 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+            distribution 'repo'
+          }
+        }
+
+        // Arbitrary key/values
+        properties pomProperties
+      }
+    }
+  }
 }
