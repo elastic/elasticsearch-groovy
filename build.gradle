@@ -45,7 +45,7 @@ apply plugin: 'signing'
 project.ext {
   // A map that is defined to contain version numbers for all dependencies in the current release.
   versions = [
-    elasticsearch              : '1.4.0',
+    elasticsearch              : '1.4.1',
     groovy                     : '2.3.7',
     java                       : '1.7',
     hamcrest                   : '1.3',
