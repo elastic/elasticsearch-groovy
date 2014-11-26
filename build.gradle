@@ -45,7 +45,7 @@ apply plugin: 'signing'
 project.ext {
   // A map that is defined to contain version numbers for all dependencies in the current release.
   versions = [
-    elasticsearch              : '1.4.1',
+    elasticsearch              : '1.4.2',
     groovy                     : '2.3.7',
     java                       : '1.7',
     hamcrest                   : '1.3',
@@ -118,7 +118,7 @@ description = 'Official Groovy client for Elasticsearch'
 group = 'org.elasticsearch'
 // The Groovy client uses the same Elasticsearch version number so that it is immediately obvious what
 // version each release is compatible with.
-version = "${versions.elasticsearch}"
+version = "${versions.elasticsearch}-SNAPSHOT"
 
 ///////////////////////////////////////////////////
 //                                               //
