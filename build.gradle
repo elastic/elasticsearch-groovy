@@ -118,7 +118,7 @@ description = 'Official Groovy client for Elasticsearch'
 group = 'org.elasticsearch'
 // The Groovy client uses the same Elasticsearch version number so that it is immediately obvious what
 // version each release is compatible with.
-version = "${versions.elasticsearch}-SNAPSHOT"
+version = "${versions.elasticsearch}"
 
 ///////////////////////////////////////////////////
 //                                               //
