@@ -55,10 +55,10 @@ import org.elasticsearch.action.search.SearchResponse
 import org.elasticsearch.action.search.SearchScrollRequest
 import org.elasticsearch.action.suggest.SuggestRequest
 import org.elasticsearch.action.suggest.SuggestResponse
-import org.elasticsearch.action.termvector.MultiTermVectorsRequest
-import org.elasticsearch.action.termvector.MultiTermVectorsResponse
-import org.elasticsearch.action.termvector.TermVectorRequest
-import org.elasticsearch.action.termvector.TermVectorResponse
+import org.elasticsearch.action.termvectors.MultiTermVectorsRequest
+import org.elasticsearch.action.termvectors.MultiTermVectorsResponse
+import org.elasticsearch.action.termvectors.TermVectorsRequest
+import org.elasticsearch.action.termvectors.TermVectorsResponse
 import org.elasticsearch.action.update.UpdateRequest
 import org.elasticsearch.action.update.UpdateResponse
 import org.elasticsearch.client.AdminClient
@@ -468,12 +468,24 @@ class ClientExtensions extends AbstractClientExtensions {
      * An action that is the term vectors for a specific document.
      *
      * @param self The {@code this} reference for the {@link Client}
-     * @param requestClosure The map-like closure that configures the {@link TermVectorRequest}.
+     * @param requestClosure The map-like closure that configures the {@link TermVectorsRequest}.
      * @return Never {@code null}.
      */
-    static ListenableActionFuture<TermVectorResponse> termVector(Client self, Closure requestClosure) {
-        // index, type and id are expected to be set by the closure
-        doRequest(self, new TermVectorRequest(null, null, null), requestClosure, self.&termVector)
+    @Deprecated
+    static ListenableActionFuture<TermVectorsResponse> termVectors(Client self, Closure requestClosure) {
+        doRequest(self, new TermVectorsRequest(), requestClosure, self.&termVectors)
+    }
+
+    /**
+     * An action that is the term vectors for a specific document.
+     *
+     * @param self The {@code this} reference for the {@link Client}
+     * @param requestClosure The map-like closure that configures the {@link TermVectorsRequest}.
+     * @return Never {@code null}.
+     */
+    @Deprecated
+    static ListenableActionFuture<TermVectorsResponse> termVector(Client self, Closure requestClosure) {
+        doRequest(self, new TermVectorsRequest(), requestClosure, self.&termVector)
     }
 
     /**
