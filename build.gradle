@@ -43,15 +43,23 @@ apply plugin: 'signing'
  * Within <em>that</em> {@code project}'s build.gradle file, it can be accessed directly as {@code version}".
  */
 project.ext {
+  // The Lucene snapshot is only used for "build from source" type builds (e.g. SNAPSHOT releases).
+  // It stays on the bleeding edge of Lucene releases as expected by the corresponding
+  // Elasticsearch version.
+  luceneSnapshotNumber = '1637985'
+
   // A map that is defined to contain version numbers for all dependencies in the current release.
   versions = [
-    elasticsearch              : '1.4.1',
+    elasticsearch              : '1.4.2-SNAPSHOT',
     'elasticsearch-groovy'     : '1.4.2-SNAPSHOT',
     groovy                     : '2.3.7',
     java                       : '1.7',
     hamcrest                   : '1.3',
     log4j                      : '1.2.17',
-    lucene                     : '4.10.2',
+    // Note: Avoid passing around a Groovy String (GString) to avoid issues when the version is
+    //       cloned during the uploadArchives step. (Not a problem when it's a constant, but
+    //       left alone when using non-snapshot releases to simplify switching)
+    lucene                     : "4.10.2".toString(),
     mockito                    : '1.10.5',
     'randomizedtesting-runner' : '2.1.10'
   ]
@@ -80,6 +88,18 @@ project.ext {
  */
 repositories {
   mavenCentral()
+  // Sonatype Snapshots (Elasticsearch)
+  maven {
+    url "https://oss.sonatype.org/content/repositories/snapshots/"
+  }
+  // Codehaus Snapshots
+  maven {
+    url "http://repository.codehaus.org/"
+  }
+  // Lucene Snapshots
+  maven {
+    url "https://download.elasticsearch.org/lucenesnapshots/${luceneSnapshotNumber}"
+  }
 }
 
 /**
