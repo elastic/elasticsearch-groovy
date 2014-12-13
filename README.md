@@ -34,8 +34,8 @@ You need to install a version matching your Elasticsearch version:
 
 |    Elasticsearch    |     Groovy Client           |    Java       | Groovy |
 |---------------------|-----------------------------|---------------|--------|
-| master              | Build from source           | See below     | 2.3.7  |
-| 1.x                 | Build from source           | 7u60 or later | 2.3.7  |
+| master              | Build from source           | See below     | 2.3.8  |
+| 1.x                 | [Build from source](https://github.com/elasticsearch/elasticsearch-groovy/tree/1.x) | 7u60 or later | 2.3.8  |
 | 1.4                 | [1.4](https://github.com/elasticsearch/elasticsearch-groovy/tree/1.4) | 7u60 or later | 2.3.7  |
 
 Please read documentation relative to the version that you are using!
@@ -153,7 +153,7 @@ repositories {
 }
 
 dependencies {
-    compile 'org.codehaus.groovy:groovy-all:2.3.7:indy'
+    compile 'org.codehaus.groovy:groovy-all:2.3.8:indy'
 }
 ```
 
@@ -164,7 +164,7 @@ dependencies {
   <dependency>
     <groupId>org.codehaus.groovy</groupId>
     <artifactId>groovy-all</artifactId>
-    <version>2.3.7</version>
+    <version>2.3.8</version>
     <classifier>indy</classifier>
     <scope>compile</scope>
   </dependency>
@@ -209,6 +209,8 @@ To change this setting:
 2. Select `Compiler`
 3. Select `Groovy Compiler`
 4. Check `Invoke dynamic support`
+
+With IntelliJ 13, I have noticed that it is sometimes necessary to manually rebuild the project because it loses track of the resource files. This happens infrequently, but it will cause practically every test to fail when it does happen.
 
 License
 -------
