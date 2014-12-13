@@ -30,21 +30,19 @@ Besides the usage of `Closure`s, the above example should look very familiar to 
 Versions
 --------
 
-You need to install a version matching your Elasticsearch version:
+In general, the version number will match the release of Elasticsearch.
 
 |    Elasticsearch    |     Groovy Client           |    Java       | Groovy |
 |---------------------|-----------------------------|---------------|--------|
-| master              | Build from source           | See below     | 2.3.7  |
-| 1.x                 | Build from source           | 7u60 or later | 2.3.7  |
-| 1.4                 | [1.4](https://github.com/elasticsearch/elasticsearch-groovy/tree/1.4) | 7u60 or later | 2.3.7  |
+| 1.5.0-SNAPSHOT      | 1.5.0-SNAPSHOT              | 7u60 or later | 2.3.8  |
 
-Please read documentation relative to the version that you are using!
-
-To build a SNAPSHOT version, you need to build it with Gradle (see below for further details):
+To build a `SNAPSHOT` version, you need to build it with Gradle (see below for further details):
 
 ```bash
 $ gradle clean installDist
 ```
+
+This is particularly relevant on the 1.x and master branches, which do make occassional snapshot releases, but they may be behind the most up-to-date snapshot release(s). In general, this is not a concern due to the way that the Groovy client is written using Groovy Extensions, but non-backwards compatible changes can still break those too.
 
 JVM Warning
 -----------
@@ -76,7 +74,7 @@ repositories {
 }
 
 dependencies {
-    compile 'org.elasticsearch:elasticsearch-groovy:1.4.1'
+    compile 'org.elasticsearch:elasticsearch-groovy:1.5.0-SNAPSHOT'
 }
 ```
 
@@ -87,7 +85,7 @@ dependencies {
   <dependency>
     <groupId>org.elasticsearch</groupId>
     <artifactId>elasticsearch-groovy</artifactId>
-    <version>1.4.1</version>
+    <version>1.5.0-SNAPSHOT</version>
     <scope>compile</scope>
   </dependency>
 </dependencies>
@@ -153,7 +151,7 @@ repositories {
 }
 
 dependencies {
-    compile 'org.codehaus.groovy:groovy-all:2.3.7:indy'
+    compile 'org.codehaus.groovy:groovy-all:2.3.8:indy'
 }
 ```
 
@@ -164,7 +162,7 @@ dependencies {
   <dependency>
     <groupId>org.codehaus.groovy</groupId>
     <artifactId>groovy-all</artifactId>
-    <version>2.3.7</version>
+    <version>2.3.8</version>
     <classifier>indy</classifier>
     <scope>compile</scope>
   </dependency>
