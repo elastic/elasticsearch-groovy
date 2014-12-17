@@ -50,8 +50,8 @@ project.ext {
 
   // A map that is defined to contain version numbers for all dependencies in the current release.
   versions = [
-    elasticsearch              : '1.4.2',
-    'elasticsearch-groovy'     : '1.4.2',
+    elasticsearch              : '1.4.3-SNAPSHOT',
+    'elasticsearch-groovy'     : '1.4.3-SNAPSHOT',
     groovy                     : '2.3.7',
     java                       : '1.7',
     hamcrest                   : '1.3',
