@@ -76,7 +76,7 @@ repositories {
 }
 
 dependencies {
-    compile 'org.elasticsearch:elasticsearch-groovy:1.4.1'
+    compile 'org.elasticsearch:elasticsearch-groovy:1.4.2'
 }
 ```
 
@@ -87,7 +87,7 @@ dependencies {
   <dependency>
     <groupId>org.elasticsearch</groupId>
     <artifactId>elasticsearch-groovy</artifactId>
-    <version>1.4.1</version>
+    <version>1.4.2</version>
     <scope>compile</scope>
   </dependency>
 </dependencies>
@@ -103,7 +103,7 @@ $ gradle clean installDist
 ```
 
 This will skip all tests and place the compiled jar in
-`./build/install/elasticsearch-groovy/elasticsearch-groovy-{version}.jar`. It will package all dependencies (e.g., 
+`./build/install/elasticsearch-groovy/elasticsearch-groovy-{version}.jar`. It will package all dependencies (e.g.,
 `elasticsearch-{version}.jar`) into `./build/install/elasticsearch-groovy/lib`.
 
 Testing Groovy Client
