@@ -11,5 +11,6 @@
 /.classpath
 /.settings
 .local-execution-hints.log
+/libs
 
 secrets.*
