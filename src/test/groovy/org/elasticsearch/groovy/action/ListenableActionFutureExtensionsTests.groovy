@@ -19,10 +19,17 @@
 package org.elasticsearch.groovy.action
 
 import org.elasticsearch.ElasticsearchException
+import org.elasticsearch.action.ActionListener
+import org.elasticsearch.action.ActionRequest
+import org.elasticsearch.action.ActionRequestValidationException
+import org.elasticsearch.action.ActionResponse
 import org.elasticsearch.action.ListenableActionFuture
-import org.elasticsearch.action.index.IndexResponse
-import org.elasticsearch.action.update.UpdateResponse
-import org.elasticsearch.groovy.AbstractElasticsearchIntegrationTest
+import org.elasticsearch.action.support.ActionFilters
+import org.elasticsearch.action.support.PlainListenableActionFuture
+import org.elasticsearch.action.support.TransportAction
+import org.elasticsearch.common.collect.ImmutableSet
+import org.elasticsearch.common.settings.ImmutableSettings
+import org.elasticsearch.groovy.AbstractElasticsearchTestCase
 
 import org.junit.Rule
 import org.junit.Test
@@ -33,35 +40,22 @@ import java.util.concurrent.CountDownLatch
 /**
  * Tests {@link ListenableActionFutureExtensions}.
  */
-class ListenableActionFutureExtensionsTests extends AbstractElasticsearchIntegrationTest {
+class ListenableActionFutureExtensionsTests extends AbstractElasticsearchTestCase {
     /**
      * Timeout for each <em>individual</em> test (and non-static to avoid wasted test resources).
      */
     @Rule
-    public Timeout timeout = new Timeout(180000)
-
-    /**
-     * The index to use for most tests.
-     */
-    String indexName = 'laf'
-    /**
-     * The index type to use for most tests.
-     */
-    String typeName = 'listeners'
-    /**
-     * The document ID used for most tests.
-     */
-    String docId = '1'
+    public Timeout timeout = new Timeout(60000)
 
     @Test
     void testListener_success() {
-        IndexResponse successResponse = null
+        NoOpResponse successResponse = null
 
         // wait until both callbacks have been invoked (also the reason for the timeout)
         CountDownLatch latch = new CountDownLatch(1)
 
         // arbitrary action performed to get a response
-        ListenableActionFuture<IndexResponse> future = indexRequestSuccess()
+        ListenableActionFuture<NoOpResponse> future = requestSuccess()
 
         // generic listener receives both success and failure messages:
         assert ListenableActionFutureExtensions.listener(future) { response, e ->
@@ -75,7 +69,7 @@ class ListenableActionFutureExtensionsTests extends AbstractElasticsearchIntegra
             latch.countDown()
         } == future
 
-        IndexResponse response = future.actionGet()
+        NoOpResponse response = future.actionGet()
 
         // wait for the listener to be invoked
         latch.await()
@@ -92,7 +86,7 @@ class ListenableActionFutureExtensionsTests extends AbstractElasticsearchIntegra
         CountDownLatch latch = new CountDownLatch(1)
 
         // arbitrary action performed to get a response
-        ListenableActionFuture<UpdateResponse> future = updateRequestFailure()
+        ListenableActionFuture<NoOpResponse> future = requestFailure()
 
         // generic listener receives both success and failure messages:
         assert ListenableActionFutureExtensions.listener(future) { response, e ->
@@ -122,13 +116,13 @@ class ListenableActionFutureExtensionsTests extends AbstractElasticsearchIntegra
 
     @Test
     void testSuccessListener() {
-        IndexResponse successResponse = null
+        NoOpResponse successResponse = null
 
         // wait until both callbacks have been invoked (also the reason for the timeout)
         CountDownLatch latch = new CountDownLatch(1)
 
         // arbitrary action performed to get a response
-        ListenableActionFuture<IndexResponse> future = indexRequestSuccess()
+        ListenableActionFuture<NoOpResponse> future = requestSuccess()
 
         // generic listener receives both success and failure messages:
         assert ListenableActionFutureExtensions.successListener(future) {
@@ -141,7 +135,7 @@ class ListenableActionFutureExtensionsTests extends AbstractElasticsearchIntegra
             latch.countDown()
         } == future
 
-        IndexResponse response = future.actionGet()
+        NoOpResponse response = future.actionGet()
 
         // wait for the listeners to be invoked
         latch.await()
@@ -157,7 +151,7 @@ class ListenableActionFutureExtensionsTests extends AbstractElasticsearchIntegra
         CountDownLatch latch = new CountDownLatch(1)
 
         // arbitrary action performed to get a response
-        ListenableActionFuture<UpdateResponse> future = updateRequestFailure()
+        ListenableActionFuture<NoOpResponse> future = requestFailure()
 
         // generic listener receives both success and failure messages:
         assert ListenableActionFutureExtensions.failureListener(future) {
@@ -190,12 +184,12 @@ class ListenableActionFutureExtensionsTests extends AbstractElasticsearchIntegra
         CountDownLatch latch = new CountDownLatch(3)
 
         // responses coming from the listeners
-        IndexResponse responseFromListener = null
-        IndexResponse responseFromSuccess1 = null
-        IndexResponse responseFromSuccess2 = null
+        NoOpResponse responseFromListener = null
+        NoOpResponse responseFromSuccess1 = null
+        NoOpResponse responseFromSuccess2 = null
 
         // arbitrary action performed to get a response
-        ListenableActionFuture<IndexResponse> future = indexRequestSuccess()
+        ListenableActionFuture<NoOpResponse> future = requestSuccess()
 
         // generic listener receives both success and failure messages:
         ListenableActionFutureExtensions.listener(future) { response, e ->
@@ -228,7 +222,7 @@ class ListenableActionFutureExtensionsTests extends AbstractElasticsearchIntegra
         }
 
         // run the future
-        IndexResponse response = future.actionGet()
+        NoOpResponse response = future.actionGet()
 
         // give the listeners the chance to be invoked
         latch.await()
@@ -243,15 +237,15 @@ class ListenableActionFutureExtensionsTests extends AbstractElasticsearchIntegra
     void testExtensionModuleConfigured() {
         CountDownLatch latch = new CountDownLatch(4)
 
-        ListenableActionFuture<IndexResponse> successfulFuture = indexRequestSuccess()
+        ListenableActionFuture<NoOpResponse> successfulFuture = requestSuccess()
         // note: this breaks because the mapping is invalid after running successfulFuture
-        ListenableActionFuture<UpdateResponse> failedFuture = updateRequestFailure()
+        ListenableActionFuture<NoOpResponse> failedFuture = requestFailure()
 
         // NOTE: Setting up to see success (with asserts) and failure (without)
         // Only checking the result for one of the listeners, then chaining the other
 
         // should return itself for chaining
-        assert successfulFuture.listener { IndexResponse response, Throwable e ->
+        assert successfulFuture.listener { NoOpResponse response, Throwable e ->
             if (response == null) {
                 fail("No response.")
             }
@@ -299,7 +293,7 @@ class ListenableActionFutureExtensionsTests extends AbstractElasticsearchIntegra
         }
 
         try {
-            assert successfulFuture.actionGet().created
+            assert successfulFuture.actionGet() != null
             failedFuture.actionGet()
 
             fail("Expected failure.")
@@ -311,42 +305,109 @@ class ListenableActionFutureExtensionsTests extends AbstractElasticsearchIntegra
     }
 
     /**
-     * Prepare an {@code IndexRequest} that contains a document with a {@code user} field.
-     * <p />
-     * This request should always succeed.
-     *
-     * @return Never {@code null}.
+     * Create a {@link ListenableActionFuture} always handles a {@link NoOpSuccessAction} (and therefore always
+     * succeeds).
      */
-    private ListenableActionFuture<IndexResponse> indexRequestSuccess() {
-        client().index {
-            index indexName
-            type typeName
-            id docId
-            source {
-                user = randomAsciiOfLength(2)
-            }
-        }
+    private ListenableActionFuture<NoOpResponse> requestSuccess() {
+        makeRequest(new NoOpSuccessAction())
     }
-
 
     /**
-     * Prepare an {@code UpdateRequest} that uses a non-existent script from a non-existent language.
-     * <p />
-     * This request should always fail.
+     * Create a {@link ListenableActionFuture} always handles a {@link NoOpFailureAction} (and therefore always fails).
+     */
+    private ListenableActionFuture<NoOpResponse> requestFailure() {
+        makeRequest(new NoOpFailureAction())
+    }
+
+    /**
+     * Create a {@link ListenableActionFuture} that is used to handle the execution of the {@code action}.
      *
+     * @param action The action to {@link TransportAction#execute} against the returned future
      * @return Never {@code null}.
      */
-    private ListenableActionFuture<UpdateResponse> updateRequestFailure() {
-        client().update {
-            index indexName
-            type typeName
-            id docId
-            source {
-                script_id 'does_not_exist'
-                lang 'does-not-exist'
-            }
+    private ListenableActionFuture<NoOpResponse> makeRequest(TransportAction<NoOpRequest, NoOpResponse> action) {
+        ListenableActionFuture<NoOpResponse> future = new PlainListenableActionFuture<>(false, null)
+
+        // invoke the action that sends a success/failure "response" to the future
+        action.execute(new NoOpRequest(), future)
+
+        future
+    }
+
+    /**
+     * A {@link TransportAction} without filters, settings, and a thread pool.
+     */
+    static abstract class AbstractNoOpAction extends TransportAction<NoOpRequest, NoOpResponse> {
+        protected AbstractNoOpAction(String actionName) {
+            super(ImmutableSettings.EMPTY, actionName, null, new ActionFilters(ImmutableSet.of()))
         }
     }
 
+    /**
+     * An {@link AbstractNoOpAction} that always succeeds.
+     */
+    static class NoOpSuccessAction extends AbstractNoOpAction {
+        /**
+         * Creates a {@code NoOpSuccessAction} named "Successful Action".
+         */
+        public NoOpSuccessAction() {
+            super("Successful Action")
+        }
 
+        /**
+         * Send the {@code listener} a new {@link NoOpResponse}.
+         *
+         * @param request Ignored.
+         * @param listener Given a new {@link NoOpResponse}.
+         */
+        @Override
+        protected void doExecute(NoOpRequest request, ActionListener<NoOpResponse> listener) {
+            listener.onResponse(new NoOpResponse())
+        }
+    }
+
+    /**
+     * An {@link AbstractNoOpAction} that always fails.
+     */
+    static class NoOpFailureAction extends AbstractNoOpAction {
+        /**
+         * Creates a {@code NoOpFailureAction} named "Failure Action".
+         */
+        public NoOpFailureAction() {
+            super("Failure Action")
+        }
+
+        /**
+         * Send the {@code listener} a new {@link ElasticsearchException}.
+         *
+         * @param request Ignored.
+         * @param listener Given a new {@link ElasticsearchException}.
+         */
+        @Override
+        protected void doExecute(NoOpRequest request, ActionListener<NoOpResponse> listener) {
+            listener.onFailure(new ElasticsearchException("NoOpFailureAction expected to fail"))
+        }
+    }
+
+    /**
+     * An {@link ActionRequest} that can be used to test asynchronous requests.
+     */
+    static class NoOpRequest extends ActionRequest {
+        /**
+         * No validation takes place.
+         *
+         * @return Always {@code null}.
+         */
+        @Override
+        public ActionRequestValidationException validate() {
+            return null;
+        }
+    }
+
+    /**
+     * An {@link ActionResponse} that can be used to test asynchronous responses.
+     */
+    static class NoOpResponse extends ActionResponse {
+        // intentionally empty
+    }
 }
