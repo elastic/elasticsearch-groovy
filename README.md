@@ -34,7 +34,7 @@ In general, the version number will match the release of Elasticsearch.
 
 |    Elasticsearch    |     Groovy Client           |    Java       | Groovy |
 |---------------------|-----------------------------|---------------|--------|
-| 1.5.0-SNAPSHOT      | 1.5.0-SNAPSHOT              | 7u60 or later | 2.3.8  |
+| 1.5.0-SNAPSHOT      | 1.5.0-SNAPSHOT              | 7u60 or later | 2.4.0  |
 
 To build a `SNAPSHOT` version, you need to build it with Gradle (see below for further details):
 
@@ -151,7 +151,7 @@ repositories {
 }
 
 dependencies {
-    compile 'org.codehaus.groovy:groovy-all:2.3.8:indy'
+    compile 'org.codehaus.groovy:groovy-all:2.4.0:indy'
 }
 ```
 
@@ -162,7 +162,7 @@ dependencies {
   <dependency>
     <groupId>org.codehaus.groovy</groupId>
     <artifactId>groovy-all</artifactId>
-    <version>2.3.8</version>
+    <version>2.4.0</version>
     <classifier>indy</classifier>
     <scope>compile</scope>
   </dependency>
