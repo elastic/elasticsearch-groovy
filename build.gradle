@@ -58,7 +58,7 @@ project.ext {
     log4j                      : '1.2.17',
     // Note: Avoid passing around a Groovy String (GString) to avoid issues when the version is
     //       cloned during the uploadArchives step.
-    lucene                     : "4.10.3-snapshot-${luceneSnapshotNumber}".toString(),
+    lucene                     : "4.10.3".toString(),
     mockito                    : '1.10.5',
     'randomizedtesting-runner' : '2.1.10'
   ]
