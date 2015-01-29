@@ -52,7 +52,7 @@ project.ext {
   versions = [
     elasticsearch              : '2.0.0-SNAPSHOT',
     'elasticsearch-groovy'     : '2.0.0-SNAPSHOT',
-    groovy                     : '2.3.8',
+    groovy                     : '2.4.0',
     java                       : '1.7',
     hamcrest                   : '1.3',
     log4j                      : '1.2.17',
