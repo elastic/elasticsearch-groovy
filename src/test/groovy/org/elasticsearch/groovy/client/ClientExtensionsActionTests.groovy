@@ -353,7 +353,7 @@ class ClientExtensionsActionTests extends AbstractClientTests {
         }.actionGet()
 
         // sanity check to ensure that we didn't screw up
-        assert response.indices[indexName].failedShards == 0
+        assert response.indices[indexName].shardInfo.failed == 0
 
         // guarantee that the deletes take effect
         assert client.admin.indices.refresh { indices indexName }.actionGet().failedShards == 0
