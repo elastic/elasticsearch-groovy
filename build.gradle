@@ -46,7 +46,7 @@ project.ext {
   // The Lucene snapshot is only used for "build from source" type builds (e.g. SNAPSHOT releases).
   // It stays on the bleeding edge of Lucene releases as expected by the corresponding
   // Elasticsearch version.
-  luceneSnapshotNumber = '1652032'
+  luceneSnapshotNumber = '1654549'
 
   // A map that is defined to contain version numbers for all dependencies in the current release.
   versions = [
