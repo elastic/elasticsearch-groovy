@@ -35,69 +35,83 @@ apply plugin: 'signing'
 ///////////////////////////////////////////////////
 
 /**
- * Extension properties are a Gradle feature that allow "extra" variables to be added to a project in a predictable way.
- * To define them, you must use the ".ext." go-between. Once defined, they are accessible directly from the associated
- * {@code project} object.
- * <p />
- * For example, <code>project.ext.version = '1.2.3-SNAPSHOT'</code> could be accessed as {@code project.version}.
- * Within <em>that</em> {@code project}'s build.gradle file, it can be accessed directly as {@code version}".
+ * Configuration for all projects in the codebase, which includes plugin tests.
  */
-project.ext {
-  // The Lucene snapshot is only used for "build from source" type builds (e.g. SNAPSHOT releases).
-  // It stays on the bleeding edge of Lucene releases as expected by the corresponding
-  // Elasticsearch version.
-  luceneSnapshotNumber = '1654549'
+allprojects {
+  /**
+   * Extension properties are a Gradle feature that allow "extra" variables to be added to a project in a predictable way.
+   * To define them, you must use the ".ext." go-between. Once defined, they are accessible directly from the associated
+   * {@code project} object.
+   * <p>
+   * For example, <code>project.ext.version = '1.2.3-SNAPSHOT'</code> could be accessed as {@code project.version}.
+   * Within <em>that</em> {@code project}'s build.gradle file, it can be accessed directly as {@code version}".
+   */
+  project.ext {
+    // The Lucene snapshot is only used for "build from source" type builds (e.g. SNAPSHOT releases).
+    // It stays on the bleeding edge of Lucene releases as expected by the corresponding
+    // Elasticsearch version.
+    luceneSnapshotNumber = '1660560'
 
-  // A map that is defined to contain version numbers for all dependencies in the current release.
-  versions = [
-    elasticsearch              : '2.0.0-SNAPSHOT',
-    'elasticsearch-groovy'     : '2.0.0-SNAPSHOT',
-    groovy                     : '2.4.0',
-    java                       : '1.7',
-    hamcrest                   : '1.3',
-    log4j                      : '1.2.17',
-    // Note: Avoid passing around a Groovy String (GString) to avoid issues when the version is
-    //       cloned during the uploadArchives step.
-    lucene                     : "5.1.0-snapshot-${luceneSnapshotNumber}".toString(),
-    mockito                    : '1.10.5',
-    'randomizedtesting-runner' : '2.1.10'
-  ]
+    // A map that is defined to contain version numbers for all dependencies in the current release.
+    versions = [
+      elasticsearch              : '2.0.0-SNAPSHOT',
+      'elasticsearch-groovy'     : '2.0.0-SNAPSHOT',
+      'elasticsearch-license'    : '1.0.0',
+      'elasticsearch-shield'     : '1.0.1',
+      groovy                     : '2.4.1',
+      java                       : '1.7',
+      hamcrest                   : '1.3',
+      log4j                      : '1.2.17',
+      // Note: Avoid passing around a Groovy String (GString) to avoid issues when the version is
+      //       cloned during the uploadArchives step. (Not a problem when it's a constant, but
+      //       left alone when using non-snapshot releases to simplify switching)
+      lucene                     : "5.1.0-snapshot-${luceneSnapshotNumber}".toString(),
+      mockito                    : '1.10.5',
+      'randomizedtesting-runner' : '2.1.10'
+    ]
 
-  // A map defining shorthand names to reference external dependencies.
-  //
-  // Note: Strings must use double quotes to expand "${var}" into its actual value. '${var}' is literally that string.
-  //  Similarly, keys that have spaces or dashes in their name must be quoted (single or double).
-  externalDeps = [
-    // Test Dependencies
-    'elasticsearch-tests'      : "org.elasticsearch:elasticsearch:${versions.elasticsearch}:tests",
-    hamcrest                   : "org.hamcrest:hamcrest-all:${versions.hamcrest}",
-    'lucene-test-framework'    : "org.apache.lucene:lucene-test-framework:${versions.lucene}",
-    mockito                    : "org.mockito:mockito-core:${versions.mockito}",
-    'randomizedtesting-runner' : "com.carrotsearch.randomizedtesting:randomizedtesting-runner:${versions['randomizedtesting-runner']}",
-    // Compile Dependencies
-    elasticsearch              : "org.elasticsearch:elasticsearch:${versions.elasticsearch}",
-    groovy                     : "org.codehaus.groovy:groovy-all:${versions.groovy}:indy",
-    // Test Runtime Dependencies
-    log4j                      : "log4j:log4j:${versions.log4j}"
-  ]
-}
-
-/**
- * Dependent on Maven Central to retrieve all external dependencies.
- */
-repositories {
-  mavenCentral()
-  // Sonatype Snapshots (Elasticsearch)
-  maven {
-    url "https://oss.sonatype.org/content/repositories/snapshots/"
+    // A map defining shorthand names to reference external dependencies.
+    //
+    // Note: Strings must use double quotes to expand "${var}" into its actual value. '${var}' is literally that string.
+    //  Similarly, keys that have spaces or dashes in their name must be quoted (single or double).
+    externalDeps = [
+      // Test Dependencies
+      'elasticsearch-tests'      : "org.elasticsearch:elasticsearch:${versions.elasticsearch}:tests",
+      hamcrest                   : "org.hamcrest:hamcrest-all:${versions.hamcrest}",
+      'lucene-test-framework'    : "org.apache.lucene:lucene-test-framework:${versions.lucene}",
+      mockito                    : "org.mockito:mockito-core:${versions.mockito}",
+      'randomizedtesting-runner' : "com.carrotsearch.randomizedtesting:randomizedtesting-runner:${versions['randomizedtesting-runner']}",
+      // Compile Dependencies
+      elasticsearch              : "org.elasticsearch:elasticsearch:${versions.elasticsearch}",
+      groovy                     : "org.codehaus.groovy:groovy-all:${versions.groovy}:indy",
+      'groovy-noindy'            : "org.codehaus.groovy:groovy-all:${versions.groovy}",
+      // Test Runtime Dependencies
+      'elasticsearch-license'    : "org.elasticsearch:elasticsearch-license-plugin:${versions['elasticsearch-license']}",
+      'elasticsearch-shield'     : "org.elasticsearch:elasticsearch-shield:${versions['elasticsearch-shield']}",
+      log4j                      : "log4j:log4j:${versions.log4j}"
+    ]
   }
-  // Codehaus Snapshots
-  maven {
-    url "http://repository.codehaus.org/"
-  }
-  // Lucene Snapshots
-  maven {
-    url "https://download.elasticsearch.org/lucenesnapshots/${luceneSnapshotNumber}"
+
+  /**
+   * Dependent on Maven Central to retrieve all external dependencies.
+   */
+  repositories {
+    mavenCentral()
+    // Sonatype Snapshots (Elasticsearch)
+    maven {
+      url "https://oss.sonatype.org/content/repositories/snapshots/"
+    }
+    // Codehaus Snapshots
+    maven {
+      url "http://repository.codehaus.org/"
+    }
+    maven {
+      url "http://maven.elasticsearch.org/releases"
+    }
+    // Lucene Snapshots
+    maven {
+      url "https://download.elasticsearch.org/lucenesnapshots/${luceneSnapshotNumber}"
+    }
   }
 }
 
@@ -105,7 +119,7 @@ repositories {
  * Associate external dependencies with this project. Gradle only requires this step, and it does not require the
  * {@code versions} and {@code externalDeps} {@code Map}s. I find that they make it much easier to eyeball what is
  * happening as well as to find mistakes.
- * <p />
+ * <p>
  * Where order does <em>not</em> matter for the dependencies, then they are sorted alphabetically.
  */
 dependencies {
@@ -121,24 +135,26 @@ dependencies {
   testRuntime externalDeps['log4j']
 }
 
-// The minimum required Java version (this matches the Elasticsearch minimum Java version)
-// Note: If we could supply the minimum Java update, then we would specify this as 1.7.0_60 (or 7u60 for short).
-sourceCompatibility = versions.java
-
 ///////////////////////////////////////////////////
 //                                               //
 //               Project Details                 //
 //                                               //
 ///////////////////////////////////////////////////
 
-// Project details
-description = 'Official Groovy client for Elasticsearch'
+allprojects {
+  // The minimum required Java version (this matches the Elasticsearch minimum Java version)
+  // Note: If we could supply the minimum Java update, then we would specify this as 1.7.0_60 (or 7u60 for short).
+  sourceCompatibility = versions.java
 
-// The group of the project. This is the same group that represents the "org.elasticsearch" in the Maven repository.
-group = 'org.elasticsearch'
-// The Groovy client uses the same Elasticsearch version number so that it is immediately obvious what
-// version each release is compatible with.
-version = versions['elasticsearch-groovy']
+  // Project details
+  description = 'Official Groovy client for Elasticsearch'
+
+  // The group of the project. This is the same group that represents the "org.elasticsearch" in the Maven repository.
+  group = 'org.elasticsearch'
+  // The Groovy client uses the same Elasticsearch version number so that it is immediately obvious what
+  // version each release is compatible with.
+  version = versions['elasticsearch-groovy']
+}
 
 ///////////////////////////////////////////////////
 //                                               //
@@ -146,13 +162,79 @@ version = versions['elasticsearch-groovy']
 //                                               //
 ///////////////////////////////////////////////////
 
-// Allow the system property to override the environment variable. However, if the system property is not defined and
-// the environment variable is defined, then use the environment variable's value.
-//
-// It's worth pointing out that if neither are set, then it will use Elasticsearch's default value at runtime. This is
-// currently `true`.
-if (System.getProperty('es.node.local') == null && System.getenv('ES_TEST_LOCAL') != null) {
-  System.setProperty('es.node.local', System.getenv('ES_TEST_LOCAL'))
+allprojects {
+  // Allow the system property to override the environment variable. However, if the system property is not defined and
+  // the environment variable is defined, then use the environment variable's value.
+  //
+  // It's worth pointing out that if neither are set, then it will use Elasticsearch's default value at runtime. This is
+  // currently `true`.
+  if (System.getProperty('es.node.local') == null && System.getenv('ES_TEST_LOCAL') != null) {
+    System.setProperty('es.node.local', System.getenv('ES_TEST_LOCAL'))
+  }
+
+  /**
+   * Pass on any system property that starts with "tests." or "es." to the test JVM.
+   * <p>
+   * For example, this includes "-Dtests.seed=3BE033A80EF93B56", which is used by the randomized runner to
+   * [unsurprisingly] seed a test so that it can be repeated with the same values each run. This is useful when the test
+   * fails.
+   * <p>
+   * To run tests the same way, with the same values (the seed), 100 times <em>or</em> until the first failure, then use
+   * the following command:
+   * <pre>
+   * $ gradle clean test -Dtests.seed=3BE033A80EF93B56 -Dtests.iters=100 -Dtests.failfast=true
+   * </pre>
+   * This can be very useful for when testing potential threading issues.
+   * <p>
+   * Note: Error output may suggest to run Maven for any test failure. Don't be fooled! Use the suggested system
+   * properties with <em>this</em> Gradle build!
+   */
+  tasks.withType(Test) {
+    // This TASK's temp dir (by default, Gradle will isolate each task's temp dirs)
+    def tempDir = temporaryDir.absolutePath
+
+    // Many of the expected System Properties, which all come from Elasticsearch / Lucene / Randomized Runner:
+    //
+    //  tests.shuffle
+    //  tests.verbose
+    //  tests.seed
+    //  tests.failfast
+    //  tests.iters
+    //  tests.maxfailures
+    //  tests.class   ; note this overlaps with the Gradle test filter feature (-Dtest.single=*)
+    //  tests.method
+    //  tests.nightly
+    //  tests.badapples
+    //  tests.weekly
+    //  tests.slow
+    //  tests.awaitsfix
+    //  tests.timeoutSuite
+    //  tests.showSuccess
+    //  tests.integration
+    //  tests.cluster_seed
+    //  tests.client.ratio
+    //  es.node.local OR environment variable ES_TEST_LOCAL
+    //  es.node.mode
+    //  es.logger.level
+    //  java.awt.headless
+
+    // Add any "tests." or "es." system properties to the test's JVM. These system properties control the randomized
+    // runner.
+    systemProperties System.properties.findAll { prop ->
+      ['tests.', 'es.', 'java.awt.headless'].any {
+        prop.key.startsWith(it)
+      }
+    }
+
+    // Default missing properties
+    if ( ! systemProperties.containsKey('es.path.data')) {
+      systemProperties 'es.path.data' : tempDir
+    }
+
+    // Always reset the temp dir to use the Gradle directory (gradle clean will cleanup resources rather than waiting for
+    //  the operating system
+    systemProperties 'java.io.tmpdir' : tempDir
+  }
 }
 
 /**
@@ -163,70 +245,6 @@ tasks.withType(GroovyCompile) {
   // NOTE: This requires the "indy" version of the Groovy jar to take effect _and_ this is the reason that Java 7u60
   //  or later is required by the Groovy client.
   groovyOptions.optimizationOptions.indy = true
-}
-
-/**
- * Pass on any system property that starts with "tests." or "es." to the test JVM.
- * <p />
- * For example, this includes "-Dtests.seed=3BE033A80EF93B56", which is used by the randomized runner to
- * [unsurprisingly] seed a test so that it can be repeated with the same values each run. This is useful when the test
- * fails.
- * <p />
- * To run tests the same way, with the same values (the seed), 100 times <em>or</em> until the first failure, then use
- * the following command:
- * <pre>
- * $ gradle clean test -Dtests.seed=3BE033A80EF93B56 -Dtests.iters=100 -Dtests.failfast=true
- * </pre>
- * This can be very useful for when testing potential threading issues.
- * <p />
- * Note: Error output may suggest to run Maven for any test failure. Don't be fooled! Use the suggested system
- * properties with <em>this</em> Gradle build!
- */
-tasks.withType(Test) {
-  // This TASK's temp dir (by default, Gradle will isolate each task's temp dirs)
-  def tempDir = it.temporaryDir.absolutePath
-
-  // Many of the expected System Properties, which all come from Elasticsearch / Lucene / Randomized Runner:
-  //
-  //  tests.shuffle
-  //  tests.verbose
-  //  tests.seed
-  //  tests.failfast
-  //  tests.iters
-  //  tests.maxfailures
-  //  tests.class   ; note this overlaps with the Gradle test filter feature (-Dtest.single=*)
-  //  tests.method
-  //  tests.nightly
-  //  tests.badapples
-  //  tests.weekly
-  //  tests.slow
-  //  tests.awaitsfix
-  //  tests.timeoutSuite
-  //  tests.showSuccess
-  //  tests.integration
-  //  tests.cluster_seed
-  //  tests.client.ratio
-  //  es.node.local OR environment variable ES_TEST_LOCAL
-  //  es.node.mode
-  //  es.logger.level
-  //  java.awt.headless
-
-  // Add any "tests." or "es." system properties to the test's JVM. These system properties control the randomized
-  // runner.
-  systemProperties System.properties.findAll { prop ->
-    ['tests.', 'es.', 'java.awt.headless'].any {
-      prop.key.startsWith(it)
-    }
-  }
-
-  // Default missing properties
-  if ( ! systemProperties.containsKey('es.path.data')) {
-    systemProperties 'es.path.data' : tempDir
-  }
-
-  // Always reset the temp dir to use the Gradle directory (gradle clean will cleanup resources rather than waiting for
-  //  the operating system
-  systemProperties 'java.io.tmpdir' : tempDir
 }
 
 ///////////////////////////////////////////////////
@@ -251,11 +269,26 @@ task sourcesJar(type: Jar) {
   from sourceSets.main.allSource
 }
 
+//
+// TODO: Remove 'evaluationDependsOn(':grails')' after removing the "grails" subproject
+//
+evaluationDependsOn(':grails')
+//
+// ENDTODO
+//
+
 /**
  * Extra artifacts to publish along side the client jar.
  */
 artifacts {
   archives sourcesJar
+  //
+  // TODO: Remove 'archives project(':grails').tasks['jar']' after removing the "grails" subproject
+  //
+  archives project(':grails').tasks['jar']
+  //
+  // ENDTODO
+  //
 }
 
 /**
@@ -270,7 +303,7 @@ signing {
 
 /**
  * Sets up the publishing of the jars to a Maven repository.
- * <p />
+ * <p>
  * Archives and the POM file must be signed for full releases. They are less strict with snapshot releases, but they
  * should also be signed.
  */

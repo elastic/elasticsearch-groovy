@@ -27,6 +27,7 @@ import org.elasticsearch.common.collect.ImmutableSet
 
 import org.junit.Ignore
 
+import java.lang.ref.SoftReference
 import java.lang.reflect.Field
 import java.lang.reflect.Modifier
 
@@ -83,6 +84,11 @@ class GroovyTestSanitizer {
          * static leak types to be ignored.
          */
         static {
+            // Types of static fields that are added by Groovy at runtime
+            // - SoftReferences are the $callSiteArrays and they should be removed from the safe list once we only
+            //   support running with invokedynamic support
+            ImmutableSet<String> safeGroovyTypes = ImmutableSet.of(ClassInfo.class.name, SoftReference.class.name)
+
             // this corresponds to a Set<String>
             Field field = AbstractRandomizedTest.class.getDeclaredField('STATIC_LEAK_IGNORED_TYPES')
 
@@ -97,7 +103,7 @@ class GroovyTestSanitizer {
             // read the field
             Set<String> staticLeakIgnoreTypes = (Set<String>)field.get(null)
             // replace the field: add our own class to it, then replace it
-            field.set(null, ImmutableSet.builder().addAll(staticLeakIgnoreTypes).add(ClassInfo.class.name).build())
+            field.set(null, ImmutableSet.builder().addAll(staticLeakIgnoreTypes).addAll(safeGroovyTypes).build())
 
             // reset it as final
             modifiersField.setInt(field, field.getModifiers() | Modifier.FINAL)
