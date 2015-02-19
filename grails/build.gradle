@@ -1,0 +1,99 @@
+/*
+ * Licensed to Elasticsearch under one or more contributor
+ * license agreements. See the NOTICE file distributed with
+ * this work for additional information regarding copyright
+ * ownership. Elasticsearch licenses this file to you under
+ * the Apache License, Version 2.0 (the "License"); you may
+ * not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
+ */
+
+///////////////////////////////////////////////////
+//                                               //
+//                Gradle Plugins                 //
+//                                               //
+///////////////////////////////////////////////////
+
+apply plugin: 'groovy'
+
+///////////////////////////////////////////////////
+//                                               //
+//             Dependency Details                //
+//                                               //
+///////////////////////////////////////////////////
+
+/**
+ * Associate external dependencies with this project. Gradle only requires this step, and it does not require the
+ * {@code versions} and {@code externalDeps} {@code Map}s. I find that they make it much easier to eyeball what is
+ * happening as well as to find mistakes.
+ * <p>
+ * Where order does <em>not</em> matter for the dependencies, then they are sorted alphabetically.
+ */
+dependencies {
+  testCompile externalDeps['hamcrest'],
+              externalDeps['lucene-test-framework'],
+              externalDeps['mockito'],
+              externalDeps['randomizedtesting-runner'],
+              externalDeps['elasticsearch-tests'] // Must come after lucene-test-framework
+
+  compile externalDeps['elasticsearch'],
+          externalDeps['groovy-noindy']
+
+  testRuntime externalDeps['elasticsearch-license'],
+              externalDeps['elasticsearch-shield'],
+              externalDeps['log4j']
+}
+
+///////////////////////////////////////////////////
+//                                               //
+//               Project Details                 //
+//                                               //
+///////////////////////////////////////////////////
+
+/**
+ * Force the jar's name to match the root project's jar name and add a classifier to it.
+ */
+jar {
+  // Force the name of the jar to be the same (and not the name of the subproject)
+  baseName = 'elasticsearch-groovy'
+  // This jar is generated exclusively for Grails compatibility prior to Grails 3.x (where you must use the
+  // bundled Groovy and it does not support invokedynamic)
+  classifier = 'grails'
+}
+
+///////////////////////////////////////////////////
+//                                               //
+//             Build Customization               //
+//                                               //
+///////////////////////////////////////////////////
+
+/**
+ * Change the source sets to copy from the parent project.
+ */
+sourceSets {
+  main {
+    groovy {
+      srcDir '../src/main/groovy'
+    }
+    resources {
+      srcDir '../src/main/resources'
+    }
+  }
+  test {
+    groovy {
+      srcDir '../src/test/groovy'
+    }
+    resources {
+      srcDir '../src/test/resources'
+    }
+  }
+}
