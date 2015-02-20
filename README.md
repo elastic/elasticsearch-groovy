@@ -69,7 +69,7 @@ Adding to your Groovy projects
 
 ### Gradle
 
-```groovy
+```gradle
 repositories {
   mavenCentral()
 }
@@ -94,7 +94,7 @@ dependencies {
 
 ### Grails 2.x
 
-```groovy
+```gradle
 repositories {
   mavenCentral()
 }
@@ -111,12 +111,12 @@ make it easy. A part of not being easy, Grails 2.x does not use the `invokedynam
 jar, which means that any Grails 2.x project requires a jar that is not compiled with `invokedynamic`.
 
 With the release of Elasticsearch Groovy 1.4.3, we have introduced a secondary jar with a new `grails`
-_classifier_ so that can be used by Grails users. All other users are _strongly_ recommended to use
+_classifier_ that can be used by Grails users. All other users are _strongly_ recommended to use
 the `invokedynamic`-compatible versions described above (it's both faster and slightly smaller!).
 
-Support for this is intended to assist the Grails community to use the Elasticsearch Groovy client prior to
-the release of Grails 3.0. If you are using Grails 3.0 or later, then you should use the `invokedynamic`
-version of Groovy and the Gradle dependency above.
+Support for this is intended to assist the Grails community to use the Elasticsearch Groovy client
+prior to the release of Grails 3.0. If you are using Grails 3.0 or later, then you should use the
+`invokedynamic` version of Groovy and the Gradle dependency above.
 
 Compiling Groovy Client
 -----------------------
@@ -172,7 +172,7 @@ Groovy jar, which the Groovy developers call the `indy` (`in`voke`dy`namic) jar.
 
 #### Gradle
 
-```groovy
+```gradle
 repositories {
     mavenCentral()
 }
@@ -205,7 +205,7 @@ compiled jar(s).
 
 #### Gradle
 
-```groovy
+```gradle
 apply plugin: 'groovy'
 
 // ...
