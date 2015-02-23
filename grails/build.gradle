@@ -48,9 +48,7 @@ dependencies {
   compile externalDeps['elasticsearch'],
           externalDeps['groovy-noindy']
 
-  testRuntime externalDeps['elasticsearch-license'],
-              externalDeps['elasticsearch-shield'],
-              externalDeps['log4j']
+  testRuntime externalDeps['log4j']
 }
 
 ///////////////////////////////////////////////////
