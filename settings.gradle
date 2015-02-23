@@ -22,7 +22,7 @@
 // This is used in lieu of the directory name, which has the same name by default.
 rootProject.name = 'elasticsearch-groovy'
 
-// The noindy subproject exists exclusively for Grails 2.x support. At least currently, it does not contain
+// The grails subproject exists exclusively for Grails 2.x support. At least currently, it does not contain
 // any extra code, rather it is compiled without invokedynamic support. This is necessary because Grails 2.x
 // does not make it easy to select the version of Groovy bundled with it, which makes it difficult to use
 // an invokedynamic-compatible version of Groovy with Grails.

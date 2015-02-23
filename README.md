@@ -34,7 +34,7 @@ In general, the version number will match the release of Elasticsearch.
 
 |    Elasticsearch    |     Groovy Client           |    Java       | Groovy |
 |---------------------|-----------------------------|---------------|--------|
-| 1.5.0-SNAPSHOT      | 1.5.0-SNAPSHOT              | 7u60 or later | 2.4.0  |
+| 1.5.0-SNAPSHOT      | 1.5.0-SNAPSHOT              | 7u60 or later | 2.4.1  |
 
 To build a `SNAPSHOT` version, you need to build it with Gradle (see below for further details):
 
@@ -70,17 +70,27 @@ Adding to your Groovy projects
 
 ```gradle
 repositories {
-    mavenCentral()
+  mavenCentral()
+  maven {
+    url "https://oss.sonatype.org/content/repositories/snapshots/"
+  }
 }
 
 dependencies {
-    compile 'org.elasticsearch:elasticsearch-groovy:1.5.0-SNAPSHOT'
+  compile 'org.elasticsearch:elasticsearch-groovy:1.5.0-SNAPSHOT'
 }
 ```
 
 ### Maven
 
-```
+```xml
+<repositories>
+  <repository>
+    <id>oss-snapshots</id>
+    <name>Sonatype OSS Snapshots</name>
+    <url>https://oss.sonatype.org/content/repositories/snapshots/</url>
+  </repository>
+</repositories>
 <dependencies>
   <dependency>
     <groupId>org.elasticsearch</groupId>
@@ -90,6 +100,37 @@ dependencies {
   </dependency>
 </dependencies>
 ```
+
+### Grails 2.x
+
+Out-of-the-box support for Grails is limited to Grails 2.4.4 or later. To use with earlier versions,
+[you must follow the instructions found in GRAILS-10652](https://jira.grails.org/browse/GRAILS-10652)
+to load Groovy extension modules.
+
+```gradle
+repositories {
+  mavenCentral()
+  mavenRepo "https://oss.sonatype.org/content/repositories/snapshots/"
+}
+
+dependencies {
+  // You may be able to use the 'runtime' scope
+  compile group: 'org.elasticsearch', name: 'elasticsearch-groovy', version: '1.4.4', classifier: 'grails'
+}
+```
+
+Grails 3.x has overhauled their build system to use Gradle, which makes it easy for you to select the
+version of Groovy to use with it, including the use of `invokedynamic`. However, Grails 2.x did not
+make it easy. A part of not being easy, Grails 2.x does not use the `invokedynamic`-compatible Groovy
+jar, which means that any Grails 2.x project requires a jar that is not compiled with `invokedynamic`.
+
+With the release of Elasticsearch Groovy 1.4.3, we have introduced a secondary jar with a new `grails`
+_classifier_ that can be used by Grails users. All other users are _strongly_ recommended to use
+the `invokedynamic`-compatible versions described above (it's both faster and slightly smaller!).
+
+Support for this is intended to assist the Grails community to use the Elasticsearch Groovy client
+prior to the release of Grails 3.0. If you are using Grails 3.0 or later, then you should use the
+`invokedynamic` version of Groovy and the Gradle dependency above.
 
 Compiling Groovy Client
 -----------------------
@@ -151,7 +192,7 @@ repositories {
 }
 
 dependencies {
-    compile 'org.codehaus.groovy:groovy-all:2.4.0:indy'
+    compile 'org.codehaus.groovy:groovy-all:2.4.1:indy'
 }
 ```
 
@@ -162,7 +203,7 @@ dependencies {
   <dependency>
     <groupId>org.codehaus.groovy</groupId>
     <artifactId>groovy-all</artifactId>
-    <version>2.4.0</version>
+    <version>2.4.1</version>
     <classifier>indy</classifier>
     <scope>compile</scope>
   </dependency>
