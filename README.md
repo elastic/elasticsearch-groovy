@@ -188,17 +188,17 @@ Groovy jar, which the Groovy developers call the `indy` (`in`voke`dy`namic) jar.
 
 ```gradle
 repositories {
-    mavenCentral()
+  mavenCentral()
 }
 
 dependencies {
-    compile 'org.codehaus.groovy:groovy-all:2.4.1:indy'
+  compile 'org.codehaus.groovy:groovy-all:2.4.1:indy'
 }
 ```
 
 #### Maven
 
-```
+```xml
 <dependencies>
   <dependency>
     <groupId>org.codehaus.groovy</groupId>
