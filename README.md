@@ -34,7 +34,8 @@ In general, the version number will match the release of Elasticsearch.
 
 |    Elasticsearch    | Groovy Client    |    Java       | Groovy |
 |---------------------|------------------|---------------|--------|
-| 1.4.3               | 1.4.3-SNAPSHOT   | 7u60 or later | 2.3.7  |
+| 1.4.4-SNAPSHOT      | 1.4.4-SNAPSHOT   | 7u60 or later | 2.3.7  |
+| 1.4.3               | 1.4.3            | 7u60 or later | 2.3.7  |
 | 1.4.2               | 1.4.2            | 7u60 or later | 2.3.7  |
 | 1.4.1               | 1.4.1            | 7u60 or later | 2.3.7  |
 | 1.4.0               | 1.4.0            | 7u60 or later | 2.3.7  |
@@ -94,6 +95,10 @@ dependencies {
 
 ### Grails 2.x
 
+Out-of-the-box support for Grails is limited to 2.4.4 or later. To use with earlier versions, [you must
+follow the instructions found in GRAILS-10652](https://jira.grails.org/browse/GRAILS-10652) to load
+Groovy extension modules.
+
 ```gradle
 repositories {
   mavenCentral()
@@ -101,7 +106,7 @@ repositories {
 
 dependencies {
   // You may be able to use the 'runtime' scope
-  compile group: 'org.elasticsearch', name: 'elasticsearch-groovy', version: '1.4.3-SNAPSHOT', classifier: 'grails'
+  compile group: 'org.elasticsearch', name: 'elasticsearch-groovy', version: '1.4.3', classifier: 'grails'
 }
 ```
 
