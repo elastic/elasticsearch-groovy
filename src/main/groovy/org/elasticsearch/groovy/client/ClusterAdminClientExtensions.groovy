@@ -25,8 +25,6 @@ import org.elasticsearch.action.admin.cluster.node.hotthreads.NodesHotThreadsReq
 import org.elasticsearch.action.admin.cluster.node.hotthreads.NodesHotThreadsResponse
 import org.elasticsearch.action.admin.cluster.node.info.NodesInfoRequest
 import org.elasticsearch.action.admin.cluster.node.info.NodesInfoResponse
-import org.elasticsearch.action.admin.cluster.node.restart.NodesRestartRequest
-import org.elasticsearch.action.admin.cluster.node.restart.NodesRestartResponse
 import org.elasticsearch.action.admin.cluster.node.shutdown.NodesShutdownRequest
 import org.elasticsearch.action.admin.cluster.node.shutdown.NodesShutdownResponse
 import org.elasticsearch.action.admin.cluster.node.stats.NodesStatsRequest
@@ -169,18 +167,6 @@ class ClusterAdminClientExtensions extends AbstractClientExtensions {
     static ListenableActionFuture<NodesHotThreadsResponse> nodesHotThreads(ClusterAdminClient self,
                                                                            Closure requestClosure) {
         doRequest(self, new NodesHotThreadsRequest(), requestClosure, self.&nodesHotThreads)
-    }
-
-    /**
-     * Restart nodes in the cluster.
-     *
-     * @param self The {@code this} reference for the {@link ClusterAdminClient}.
-     * @param requestClosure The map-like closure that configures the {@link NodesRestartRequest}.
-     * @return Never {@code null}.
-     * @throws NullPointerException if any parameter is {@code null}
-     */
-    static ListenableActionFuture<NodesRestartResponse> nodesRestart(ClusterAdminClient self, Closure requestClosure) {
-        doRequest(self, Requests.nodesRestartRequest(), requestClosure, self.&nodesRestart)
     }
 
     /**
