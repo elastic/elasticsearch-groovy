@@ -34,7 +34,7 @@ In general, the version number will match the release of Elasticsearch.
 
 |    Elasticsearch    |     Groovy Client           |    Java       | Groovy |
 |---------------------|-----------------------------|---------------|--------|
-| 1.5.0-SNAPSHOT      | 1.5.0-SNAPSHOT              | 7u60 or later | 2.4.1  |
+| 1.6.0-SNAPSHOT      | 1.6.0-SNAPSHOT              | 7u60 or later | 2.4.1  |
 
 To build a `SNAPSHOT` version, you need to build it with Gradle (see below for further details):
 
@@ -77,7 +77,7 @@ repositories {
 }
 
 dependencies {
-  compile 'org.elasticsearch:elasticsearch-groovy:1.5.0-SNAPSHOT'
+  compile 'org.elasticsearch:elasticsearch-groovy:1.6.0-SNAPSHOT'
 }
 ```
 
@@ -95,7 +95,7 @@ dependencies {
   <dependency>
     <groupId>org.elasticsearch</groupId>
     <artifactId>elasticsearch-groovy</artifactId>
-    <version>1.5.0-SNAPSHOT</version>
+    <version>1.6.0-SNAPSHOT</version>
     <scope>compile</scope>
   </dependency>
 </dependencies>
@@ -115,7 +115,7 @@ repositories {
 
 dependencies {
   // You may be able to use the 'runtime' scope
-  compile group: 'org.elasticsearch', name: 'elasticsearch-groovy', version: '1.5.0-SNAPSHOT', classifier: 'grails'
+  compile group: 'org.elasticsearch', name: 'elasticsearch-groovy', version: '1.6.0-SNAPSHOT', classifier: 'grails'
 }
 ```
 
