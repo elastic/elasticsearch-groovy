@@ -109,7 +109,7 @@ allprojects {
       url "http://maven.elasticsearch.org/releases"
     }
     // Lucene Snapshots (if any are in use!)
-    if (luceneSnapshotNumber != null) {
+    if (project.luceneSnapshotNumber != null) {
       maven {
         url "https://download.elasticsearch.org/lucenesnapshots/${luceneSnapshotNumber}"
       }
