@@ -40,8 +40,6 @@ import org.elasticsearch.action.admin.indices.exists.types.TypesExistsRequest
 import org.elasticsearch.action.admin.indices.exists.types.TypesExistsResponse
 import org.elasticsearch.action.admin.indices.flush.FlushRequest
 import org.elasticsearch.action.admin.indices.flush.FlushResponse
-import org.elasticsearch.action.admin.indices.mapping.delete.DeleteMappingRequest
-import org.elasticsearch.action.admin.indices.mapping.delete.DeleteMappingResponse
 import org.elasticsearch.action.admin.indices.mapping.get.GetFieldMappingsRequest
 import org.elasticsearch.action.admin.indices.mapping.get.GetFieldMappingsResponse
 import org.elasticsearch.action.admin.indices.mapping.get.GetMappingsRequest
@@ -287,19 +285,6 @@ class IndicesAdminClientExtensions extends AbstractClientExtensions {
      */
     static ListenableActionFuture<PutMappingResponse> putMapping(IndicesAdminClient self, Closure requestClosure) {
         doRequest(self, Requests.putMappingRequest(), requestClosure, self.&putMapping)
-    }
-
-    /**
-     * Delete the mapping definition for a type in one or more indices.
-     *
-     * @param self The {@code this} reference for the {@link IndicesAdminClient}.
-     * @param requestClosure The map-like closure that configures the {@link DeleteMappingRequest}.
-     * @return Never {@code null}.
-     * @throws NullPointerException if any parameter is {@code null}
-     */
-    static ListenableActionFuture<DeleteMappingResponse> deleteMapping(IndicesAdminClient self,
-                                                                       Closure requestClosure) {
-        doRequest(self, Requests.deleteMappingRequest(), requestClosure, self.&deleteMapping)
     }
 
     /**
