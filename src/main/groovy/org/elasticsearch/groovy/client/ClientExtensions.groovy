@@ -150,7 +150,7 @@ class ClientExtensions extends AbstractClientExtensions {
      * @throws NullPointerException if any parameter is {@code null}
      */
     static ListenableActionFuture<IndexResponse> index(Client self, Closure requestClosure) {
-        doRequest(self, Requests.indexRequest(), requestClosure, self.&index)
+        doRequestAsync(self, Requests.indexRequest(), requestClosure, self.&index)
     }
 
     /**
@@ -206,7 +206,7 @@ class ClientExtensions extends AbstractClientExtensions {
      * @throws NullPointerException if any parameter is {@code null}
      */
     static ListenableActionFuture<BulkResponse> bulk(Client self, Closure requestClosure) {
-        doRequest(self, new BulkRequest(), requestClosure, self.&bulk)
+        doRequestAsync(self, new BulkRequest(), requestClosure, self.&bulk)
     }
 
     /**
@@ -252,7 +252,7 @@ class ClientExtensions extends AbstractClientExtensions {
      * @return Never {@code null}.
      */
     static ListenableActionFuture<UpdateResponse> update(Client self, Closure requestClosure) {
-        doRequest(self, new UpdateRequest(), requestClosure, self.&update)
+        doRequestAsync(self, new UpdateRequest(), requestClosure, self.&update)
     }
 
     /**
@@ -270,7 +270,7 @@ class ClientExtensions extends AbstractClientExtensions {
      * @return Never {@code null}.
      */
     static ListenableActionFuture<DeleteResponse> delete(Client self, Closure requestClosure) {
-        doRequest(self, new DeleteRequest(), requestClosure, self.&delete)
+        doRequestAsync(self, new DeleteRequest(), requestClosure, self.&delete)
     }
 
     /**
@@ -297,7 +297,7 @@ class ClientExtensions extends AbstractClientExtensions {
      * @return Never {@code null}.
      */
     static ListenableActionFuture<DeleteByQueryResponse> deleteByQuery(Client self, Closure requestClosure) {
-        doRequest(self, Requests.deleteByQueryRequest(), requestClosure, self.&deleteByQuery)
+        doRequestAsync(self, Requests.deleteByQueryRequest(), requestClosure, self.&deleteByQuery)
     }
 
     /**
@@ -318,7 +318,7 @@ class ClientExtensions extends AbstractClientExtensions {
      */
     static ListenableActionFuture<GetResponse> get(Client self, Closure requestClosure) {
         // index is expected to be set by the closure
-        doRequest(self, Requests.getRequest(null), requestClosure, self.&get)
+        doRequestAsync(self, Requests.getRequest(null), requestClosure, self.&get)
     }
 
     /**
@@ -339,7 +339,7 @@ class ClientExtensions extends AbstractClientExtensions {
      * @return Never {@code null}.
      */
     static ListenableActionFuture<MultiGetResponse> multiGet(Client self, Closure requestClosure) {
-        doRequest(self, new MultiGetRequest(), requestClosure, self.&multiGet)
+        doRequestAsync(self, new MultiGetRequest(), requestClosure, self.&multiGet)
     }
 
     /**
@@ -350,7 +350,7 @@ class ClientExtensions extends AbstractClientExtensions {
      * @return Never {@code null}.
      */
     static ListenableActionFuture<SuggestResponse> suggest(Client self, Closure requestClosure) {
-        doRequest(self, new SuggestRequest(), requestClosure, self.&suggest)
+        doRequestAsync(self, new SuggestRequest(), requestClosure, self.&suggest)
     }
 
     /**
@@ -372,7 +372,7 @@ class ClientExtensions extends AbstractClientExtensions {
      * @return Never {@code null}.
      */
     static ListenableActionFuture<SearchResponse> search(Client self, Closure requestClosure) {
-        doRequest(self, Requests.searchRequest(), requestClosure, self.&search)
+        doRequestAsync(self, Requests.searchRequest(), requestClosure, self.&search)
     }
 
     /**
@@ -383,7 +383,7 @@ class ClientExtensions extends AbstractClientExtensions {
      * @return Never {@code null}.
      */
     static ListenableActionFuture<MultiSearchResponse> multiSearch(Client self, Closure requestClosure) {
-        doRequest(self, new MultiSearchRequest(), requestClosure, self.&multiSearch)
+        doRequestAsync(self, new MultiSearchRequest(), requestClosure, self.&multiSearch)
     }
 
     /**
@@ -405,7 +405,7 @@ class ClientExtensions extends AbstractClientExtensions {
      * @return Never {@code null}.
      */
     static ListenableActionFuture<CountResponse> count(Client self, Closure requestClosure) {
-        doRequest(self, Requests.countRequest(), requestClosure, self.&count)
+        doRequestAsync(self, Requests.countRequest(), requestClosure, self.&count)
     }
 
     /**
@@ -443,7 +443,7 @@ class ClientExtensions extends AbstractClientExtensions {
      * @return Never {@code null}.
      */
     static ListenableActionFuture<SearchResponse> searchScroll(Client self, Closure requestClosure) {
-        doRequest(self, new SearchScrollRequest(), requestClosure, self.&searchScroll)
+        doRequestAsync(self, new SearchScrollRequest(), requestClosure, self.&searchScroll)
     }
 
     /**
@@ -461,7 +461,7 @@ class ClientExtensions extends AbstractClientExtensions {
      * @return Never {@code null}.
      */
     static ListenableActionFuture<ClearScrollResponse> clearScroll(Client self, Closure requestClosure) {
-        doRequest(self, new ClearScrollRequest(), requestClosure, self.&clearScroll)
+        doRequestAsync(self, new ClearScrollRequest(), requestClosure, self.&clearScroll)
     }
 
     /**
@@ -471,9 +471,8 @@ class ClientExtensions extends AbstractClientExtensions {
      * @param requestClosure The map-like closure that configures the {@link TermVectorsRequest}.
      * @return Never {@code null}.
      */
-    @Deprecated
     static ListenableActionFuture<TermVectorsResponse> termVectors(Client self, Closure requestClosure) {
-        doRequest(self, new TermVectorsRequest(), requestClosure, self.&termVectors)
+        doRequestAsync(self, new TermVectorsRequest(), requestClosure, self.&termVectors)
     }
 
     /**
@@ -482,10 +481,11 @@ class ClientExtensions extends AbstractClientExtensions {
      * @param self The {@code this} reference for the {@link Client}
      * @param requestClosure The map-like closure that configures the {@link TermVectorsRequest}.
      * @return Never {@code null}.
+     * @deprecated As of 2.0, this has been replaced by {@link Client#termVectors}.
      */
     @Deprecated
     static ListenableActionFuture<TermVectorsResponse> termVector(Client self, Closure requestClosure) {
-        doRequest(self, new TermVectorsRequest(), requestClosure, self.&termVector)
+        termVectors(self, requestClosure)
     }
 
     /**
@@ -496,7 +496,7 @@ class ClientExtensions extends AbstractClientExtensions {
      * @return Never {@code null}.
      */
     static ListenableActionFuture<MultiTermVectorsResponse> multiTermVectors(Client self, Closure requestClosure) {
-        doRequest(self, new MultiTermVectorsRequest(), requestClosure, self.&multiTermVectors)
+        doRequestAsync(self, new MultiTermVectorsRequest(), requestClosure, self.&multiTermVectors)
     }
 
     /**
@@ -507,7 +507,7 @@ class ClientExtensions extends AbstractClientExtensions {
      * @return Never {@code null}.
      */
     static ListenableActionFuture<PercolateResponse> percolate(Client self, Closure requestClosure) {
-        doRequest(self, new PercolateRequest(), requestClosure, self.&percolate)
+        doRequestAsync(self, new PercolateRequest(), requestClosure, self.&percolate)
     }
 
     /**
@@ -518,7 +518,7 @@ class ClientExtensions extends AbstractClientExtensions {
      * @return Never {@code null}.
      */
     static ListenableActionFuture<MultiPercolateResponse> multiPercolate(Client self, Closure requestClosure) {
-        doRequest(self, new MultiPercolateRequest(), requestClosure, self.&multiPercolate)
+        doRequestAsync(self, new MultiPercolateRequest(), requestClosure, self.&multiPercolate)
     }
 
     /**
@@ -530,7 +530,7 @@ class ClientExtensions extends AbstractClientExtensions {
      * @throws NullPointerException if any parameter is {@code null}
      */
     static ListenableActionFuture<ExplainResponse> explain(Client self, Closure requestClosure) {
-        doRequest(self, new ExplainRequest(null, null, null), requestClosure, self.&explain)
+        doRequestAsync(self, new ExplainRequest(null, null, null), requestClosure, self.&explain)
     }
 
     /**
@@ -572,7 +572,7 @@ class ClientExtensions extends AbstractClientExtensions {
      * @throws NullPointerException if any parameter is {@code null}
      */
     static ListenableActionFuture<PutIndexedScriptResponse> putIndexedScript(Client self, Closure requestClosure) {
-        doRequest(self, new PutIndexedScriptRequest(), requestClosure, self.&putIndexedScript)
+        doRequestAsync(self, new PutIndexedScriptRequest(), requestClosure, self.&putIndexedScript)
     }
 
     /**
@@ -590,7 +590,7 @@ class ClientExtensions extends AbstractClientExtensions {
      * @throws NullPointerException if any parameter is {@code null}
      */
     static ListenableActionFuture<GetIndexedScriptResponse> getIndexedScript(Client self, Closure requestClosure) {
-        doRequest(self, new GetIndexedScriptRequest(), requestClosure, self.&getIndexedScript)
+        doRequestAsync(self, new GetIndexedScriptRequest(), requestClosure, self.&getIndexedScript)
     }
 
     /**
@@ -609,7 +609,7 @@ class ClientExtensions extends AbstractClientExtensions {
      */
     static ListenableActionFuture<DeleteIndexedScriptResponse> deleteIndexedScript(Client self,
                                                                                    Closure requestClosure) {
-        doRequest(self, new DeleteIndexedScriptRequest(), requestClosure, self.&deleteIndexedScript)
+        doRequestAsync(self, new DeleteIndexedScriptRequest(), requestClosure, self.&deleteIndexedScript)
     }
 
     /**
@@ -626,6 +626,6 @@ class ClientExtensions extends AbstractClientExtensions {
      */
     static ListenableActionFuture<SearchResponse> moreLikeThis(Client self, String index, Closure requestClosure) {
         // the only one that _requires_ the index as a parameter/constructor arg (no public setter)
-        doRequest(self, Requests.moreLikeThisRequest(index), requestClosure, self.&moreLikeThis)
+        doRequestAsync(self, Requests.moreLikeThisRequest(index), requestClosure, self.&moreLikeThis)
     }
 }

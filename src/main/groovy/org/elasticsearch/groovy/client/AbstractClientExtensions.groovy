@@ -42,9 +42,9 @@ abstract class AbstractClientExtensions {
     protected static
         <Request extends ActionRequest,
          Response extends ActionResponse,
-         Client extends ElasticsearchClient<Client>> PlainListenableActionFuture<Response> doRequest(Client client,
-                                                                                                     Request request,
-                                                                                                     Closure<Response> requestClosure) {
+         Client extends ElasticsearchClient<Client>> PlainListenableActionFuture<Response> doRequestAsync(Client client,
+                                                                                                          Request request,
+                                                                                                          Closure<Response> requestClosure) {
         PlainListenableActionFuture<Response> responseFuture =
                 new PlainListenableActionFuture<>(request.listenerThreaded(), client.threadPool())
 
@@ -69,15 +69,15 @@ abstract class AbstractClientExtensions {
     protected static
         <Request extends ActionRequest,
          Response extends ActionResponse,
-         Client extends ElasticsearchClient<Client>> PlainListenableActionFuture<Response> doRequest(Client client,
-                                                                                                     Request request,
-                                                                                                     Closure requestConfig,
-                                                                                                     Closure<Response> requestClosure) {
+         Client extends ElasticsearchClient<Client>> PlainListenableActionFuture<Response> doRequestAsync(Client client,
+                                                                                                          Request request,
+                                                                                                          Closure requestConfig,
+                                                                                                          Closure<Response> requestClosure) {
         // configure the request
         if (requestConfig != null) {
             request.with(requestConfig)
         }
 
-        doRequest(client, request, requestClosure)
+        doRequestAsync(client, request, requestClosure)
     }
 }

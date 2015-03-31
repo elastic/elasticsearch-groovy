@@ -78,7 +78,7 @@ class ClusterAdminClientExtensions extends AbstractClientExtensions {
      * @throws NullPointerException if any parameter is {@code null}
      */
     static ListenableActionFuture<ClusterHealthResponse> health(ClusterAdminClient self, Closure requestClosure) {
-        doRequest(self, Requests.clusterHealthRequest(), requestClosure, self.&health)
+        doRequestAsync(self, Requests.clusterHealthRequest(), requestClosure, self.&health)
     }
 
     /**
@@ -90,7 +90,7 @@ class ClusterAdminClientExtensions extends AbstractClientExtensions {
      * @throws NullPointerException if any parameter is {@code null}
      */
     static ListenableActionFuture<ClusterStateResponse> state(ClusterAdminClient self, Closure requestClosure) {
-        doRequest(self, Requests.clusterStateRequest(), requestClosure, self.&state)
+        doRequestAsync(self, Requests.clusterStateRequest(), requestClosure, self.&state)
     }
 
     /**
@@ -103,7 +103,7 @@ class ClusterAdminClientExtensions extends AbstractClientExtensions {
      */
     static ListenableActionFuture<ClusterUpdateSettingsResponse> updateSettings(ClusterAdminClient self,
                                                                                 Closure requestClosure) {
-        doRequest(self, Requests.clusterUpdateSettingsRequest(), requestClosure, self.&updateSettings)
+        doRequestAsync(self, Requests.clusterUpdateSettingsRequest(), requestClosure, self.&updateSettings)
     }
 
     /**
@@ -117,7 +117,7 @@ class ClusterAdminClientExtensions extends AbstractClientExtensions {
      * @throws NullPointerException if any parameter is {@code null}
      */
     static ListenableActionFuture<ClusterRerouteResponse> reroute(ClusterAdminClient self, Closure requestClosure) {
-        doRequest(self, Requests.clusterRerouteRequest(), requestClosure, self.&reroute)
+        doRequestAsync(self, Requests.clusterRerouteRequest(), requestClosure, self.&reroute)
     }
 
     /**
@@ -129,7 +129,7 @@ class ClusterAdminClientExtensions extends AbstractClientExtensions {
      * @throws NullPointerException if any parameter is {@code null}
      */
     static ListenableActionFuture<ClusterStatsResponse> clusterStats(ClusterAdminClient self, Closure requestClosure) {
-        doRequest(self, Requests.clusterStatsRequest(), requestClosure, self.&clusterStats)
+        doRequestAsync(self, Requests.clusterStatsRequest(), requestClosure, self.&clusterStats)
     }
 
     /**
@@ -141,7 +141,7 @@ class ClusterAdminClientExtensions extends AbstractClientExtensions {
      * @throws NullPointerException if any parameter is {@code null}
      */
     static ListenableActionFuture<NodesInfoResponse> nodesInfo(ClusterAdminClient self, Closure requestClosure) {
-        doRequest(self, Requests.nodesInfoRequest(), requestClosure, self.&nodesInfo)
+        doRequestAsync(self, Requests.nodesInfoRequest(), requestClosure, self.&nodesInfo)
     }
 
     /**
@@ -153,7 +153,7 @@ class ClusterAdminClientExtensions extends AbstractClientExtensions {
      * @throws NullPointerException if any parameter is {@code null}
      */
     static ListenableActionFuture<NodesStatsResponse> nodesStats(ClusterAdminClient self, Closure requestClosure) {
-        doRequest(self, Requests.nodesStatsRequest(), requestClosure, self.&nodesStats)
+        doRequestAsync(self, Requests.nodesStatsRequest(), requestClosure, self.&nodesStats)
     }
 
     /**
@@ -166,7 +166,7 @@ class ClusterAdminClientExtensions extends AbstractClientExtensions {
      */
     static ListenableActionFuture<NodesHotThreadsResponse> nodesHotThreads(ClusterAdminClient self,
                                                                            Closure requestClosure) {
-        doRequest(self, new NodesHotThreadsRequest(), requestClosure, self.&nodesHotThreads)
+        doRequestAsync(self, new NodesHotThreadsRequest(), requestClosure, self.&nodesHotThreads)
     }
 
     /**
@@ -179,7 +179,7 @@ class ClusterAdminClientExtensions extends AbstractClientExtensions {
      */
     static ListenableActionFuture<NodesShutdownResponse> nodesShutdown(ClusterAdminClient self,
                                                                        Closure requestClosure) {
-        doRequest(self, Requests.nodesShutdownRequest(), requestClosure, self.&nodesShutdown)
+        doRequestAsync(self, Requests.nodesShutdownRequest(), requestClosure, self.&nodesShutdown)
     }
 
     /**
@@ -192,7 +192,7 @@ class ClusterAdminClientExtensions extends AbstractClientExtensions {
      */
     static ListenableActionFuture<ClusterSearchShardsResponse> searchShards(ClusterAdminClient self,
                                                                             Closure requestClosure) {
-        doRequest(self, Requests.clusterSearchShardsRequest(), requestClosure, self.&searchShards)
+        doRequestAsync(self, Requests.clusterSearchShardsRequest(), requestClosure, self.&searchShards)
     }
 
     /**
@@ -206,7 +206,7 @@ class ClusterAdminClientExtensions extends AbstractClientExtensions {
     static ListenableActionFuture<PutRepositoryResponse> putRepository(ClusterAdminClient self,
                                                                        Closure requestClosure) {
         // closure is expected to set the repo name
-        doRequest(self, Requests.putRepositoryRequest(null), requestClosure, self.&putRepository)
+        doRequestAsync(self, Requests.putRepositoryRequest(null), requestClosure, self.&putRepository)
     }
 
     /**
@@ -220,7 +220,7 @@ class ClusterAdminClientExtensions extends AbstractClientExtensions {
     static ListenableActionFuture<DeleteRepositoryResponse> deleteRepository(ClusterAdminClient self,
                                                                              Closure requestClosure) {
         // closure is expected to set the repo name
-        doRequest(self, Requests.deleteRepositoryRequest(null), requestClosure, self.&deleteRepository)
+        doRequestAsync(self, Requests.deleteRepositoryRequest(null), requestClosure, self.&deleteRepository)
     }
 
     /**
@@ -233,7 +233,7 @@ class ClusterAdminClientExtensions extends AbstractClientExtensions {
      */
     static ListenableActionFuture<GetRepositoriesResponse> getRepositories(ClusterAdminClient self,
                                                                            Closure requestClosure) {
-        doRequest(self, Requests.getRepositoryRequest(), requestClosure, self.&getRepositories)
+        doRequestAsync(self, Requests.getRepositoryRequest(), requestClosure, self.&getRepositories)
     }
 
     /**
@@ -247,7 +247,7 @@ class ClusterAdminClientExtensions extends AbstractClientExtensions {
     static ListenableActionFuture<CreateSnapshotResponse> createSnapshot(ClusterAdminClient self,
                                                                          Closure requestClosure) {
         // closure is expected to set the repo and snapshot names
-        doRequest(self, Requests.createSnapshotRequest(null, null), requestClosure, self.&createSnapshot)
+        doRequestAsync(self, Requests.createSnapshotRequest(null, null), requestClosure, self.&createSnapshot)
     }
 
     /**
@@ -261,7 +261,7 @@ class ClusterAdminClientExtensions extends AbstractClientExtensions {
     static ListenableActionFuture<SnapshotsStatusResponse> snapshotsStatus(ClusterAdminClient self,
                                                                            Closure requestClosure) {
         // closure is expected to set the repo name
-        doRequest(self, Requests.snapshotsStatusRequest(null), requestClosure, self.&snapshotsStatus)
+        doRequestAsync(self, Requests.snapshotsStatusRequest(null), requestClosure, self.&snapshotsStatus)
     }
 
     /**
@@ -274,7 +274,7 @@ class ClusterAdminClientExtensions extends AbstractClientExtensions {
      */
     static ListenableActionFuture<GetSnapshotsResponse> getSnapshots(ClusterAdminClient self, Closure requestClosure) {
         // closure is expected to set the repo name
-        doRequest(self, Requests.getSnapshotsRequest(null), requestClosure, self.&getSnapshots)
+        doRequestAsync(self, Requests.getSnapshotsRequest(null), requestClosure, self.&getSnapshots)
     }
 
     /**
@@ -288,7 +288,7 @@ class ClusterAdminClientExtensions extends AbstractClientExtensions {
     static ListenableActionFuture<RestoreSnapshotResponse> restoreSnapshot(ClusterAdminClient self,
                                                                            Closure requestClosure) {
         // closure is expected to set the repo and snapshot names
-        doRequest(self, Requests.restoreSnapshotRequest(null, null), requestClosure, self.&restoreSnapshot)
+        doRequestAsync(self, Requests.restoreSnapshotRequest(null, null), requestClosure, self.&restoreSnapshot)
     }
 
     /**
@@ -305,7 +305,7 @@ class ClusterAdminClientExtensions extends AbstractClientExtensions {
     static ListenableActionFuture<DeleteSnapshotResponse> deleteSnapshot(ClusterAdminClient self,
                                                                          Closure requestClosure) {
         // closure is expected to set the repo and snapshot names
-        doRequest(self, Requests.deleteSnapshotRequest(null, null), requestClosure, self.&deleteSnapshot)
+        doRequestAsync(self, Requests.deleteSnapshotRequest(null, null), requestClosure, self.&deleteSnapshot)
     }
 
     /**
@@ -320,6 +320,6 @@ class ClusterAdminClientExtensions extends AbstractClientExtensions {
      */
     static ListenableActionFuture<PendingClusterTasksResponse> pendingClusterTasks(ClusterAdminClient self,
                                                                                    Closure requestClosure) {
-        doRequest(self, new PendingClusterTasksRequest(), requestClosure, self.&pendingClusterTasks)
+        doRequestAsync(self, new PendingClusterTasksRequest(), requestClosure, self.&pendingClusterTasks)
     }
 }
