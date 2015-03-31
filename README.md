@@ -34,7 +34,8 @@ In general, the version number will match the release of Elasticsearch.
 
 |    Elasticsearch    |     Groovy Client           |    Java       | Groovy |
 |---------------------|-----------------------------|---------------|--------|
-| 1.5.0-SNAPSHOT      | 1.5.0-SNAPSHOT              | 7u60 or later | 2.4.1  |
+| 1.5.1-SNAPSHOT      | 1.5.1-SNAPSHOT              | 7u60 or later | 2.4.1  |
+| 1.5.0               | 1.5.0                       | 7u60 or later | 2.4.1  |
 
 To build a `SNAPSHOT` version, you need to build it with Gradle (see below for further details):
 
@@ -42,7 +43,7 @@ To build a `SNAPSHOT` version, you need to build it with Gradle (see below for f
 $ gradle clean installDist
 ```
 
-This is particularly relevant on the 1.x and master branches, which do make occassional snapshot releases, but they may be behind the most up-to-date snapshot release(s). In general, this is not a concern due to the way that the Groovy client is written using Groovy Extensions, but non-backwards compatible changes can still break those too.
+This is particularly relevant on the 1.x and master branches, which do make occasional snapshot releases, but they may be behind the most up-to-date snapshot release(s). In general, this is not a concern due to the way that the Groovy client is written using Groovy Extensions, but non-backwards compatible changes can still break those too.
 
 JVM Warning
 -----------
@@ -71,31 +72,21 @@ Adding to your Groovy projects
 ```gradle
 repositories {
   mavenCentral()
-  maven {
-    url "https://oss.sonatype.org/content/repositories/snapshots/"
-  }
 }
 
 dependencies {
-  compile 'org.elasticsearch:elasticsearch-groovy:1.5.0-SNAPSHOT'
+  compile 'org.elasticsearch:elasticsearch-groovy:1.5.0'
 }
 ```
 
 ### Maven
 
 ```xml
-<repositories>
-  <repository>
-    <id>oss-snapshots</id>
-    <name>Sonatype OSS Snapshots</name>
-    <url>https://oss.sonatype.org/content/repositories/snapshots/</url>
-  </repository>
-</repositories>
 <dependencies>
   <dependency>
     <groupId>org.elasticsearch</groupId>
     <artifactId>elasticsearch-groovy</artifactId>
-    <version>1.5.0-SNAPSHOT</version>
+    <version>1.5.0</version>
     <scope>compile</scope>
   </dependency>
 </dependencies>
@@ -110,12 +101,11 @@ to load Groovy extension modules.
 ```gradle
 repositories {
   mavenCentral()
-  mavenRepo "https://oss.sonatype.org/content/repositories/snapshots/"
 }
 
 dependencies {
   // You may be able to use the 'runtime' scope
-  compile group: 'org.elasticsearch', name: 'elasticsearch-groovy', version: '1.5.0-SNAPSHOT', classifier: 'grails'
+  compile group: 'org.elasticsearch', name: 'elasticsearch-groovy', version: '1.5.0', classifier: 'grails'
 }
 ```
 
