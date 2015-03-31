@@ -57,13 +57,24 @@ class ClusterAdminClientExtensionsActionTests extends AbstractClientTests {
         clusterAdminClient = client.admin.cluster
     }
 
-    // REPLACE WITH non-Async variants in 2.0
-
     @Test
     void testHealthRequest() {
         indexDoc(indexName, typeName) { name = "ignored" }
 
         ClusterHealthResponse response = clusterAdminClient.health {
+            indices indexName
+            waitForStatus ClusterHealthStatus.YELLOW
+        }
+
+        // waited for Yellow, so it had better not be Red
+        assert response.status != ClusterHealthStatus.RED
+    }
+
+    @Test
+    void testHealthRequestAsync() {
+        indexDoc(indexName, typeName) { name = "ignored" }
+
+        ClusterHealthResponse response = clusterAdminClient.healthAsync {
             indices indexName
             waitForStatus ClusterHealthStatus.YELLOW
         }.actionGet()
@@ -85,140 +96,17 @@ class ClusterAdminClientExtensionsActionTests extends AbstractClientTests {
                 compress = true
                 location = absolutePath
             }
-        }.actionGet()
+        }
 
         assert response.acknowledged
 
         // verify that it exists
         GetRepositoriesResponse getResponse = clusterAdminClient.getRepositories {
             repositories repoName
-        }.actionGet()
+        }
 
         assert getResponse.repositories()[0].name() == repoName
         assert getResponse.repositories()[0].settings().get("location") == absolutePath
-    }
-
-    @Test
-    void testCreateSnapshotRequest() {
-        String repoName = "test-create-snapshot-repo"
-        String snapshotName = "test-create-snapshot"
-        String absolutePath = newTempDir().absolutePath
-
-        // Write a document
-        indexDoc(indexName, typeName) { value = "ignored" }
-        // flush the index to disk
-        client.admin.indices.flush { indices indexName }.actionGet()
-
-        // Create the repository
-        PutRepositoryResponse putResponse = clusterAdminClient.putRepository {
-            name repoName
-            type "fs"
-            settings {
-                location = absolutePath
-            }
-        }.actionGet()
-
-        // sanity check
-        assert putResponse.acknowledged
-
-        // Create the snapshot
-        CreateSnapshotResponse response = clusterAdminClient.createSnapshot {
-            repository repoName
-            snapshot snapshotName
-            indices indexName
-            waitForCompletion true
-        }.actionGet()
-
-        assert response.snapshotInfo.name() == snapshotName
-        assert response.snapshotInfo.state() == SnapshotState.SUCCESS
-        assert response.snapshotInfo.indices()[0] == indexName
-    }
-
-    @Test
-    void testRestoreSnapshotRequest() {
-        String repoName = "test-restore-snapshot-repo"
-        String snapshotName = "test-restore-snapshot"
-        String absolutePath = newTempDir().absolutePath
-        String restoredIndexName = indexName + "-restored"
-        String expectedValue = "expected"
-
-        // Write a document
-        String docId = indexDoc(indexName, typeName) { value = expectedValue }
-
-        // ensure that the mapping exists before creating the snapshot (required for dynamic mapping!)
-        waitForConcreteMappingsOnAll(indexName, typeName, "value")
-
-        // Create the repository
-        PutRepositoryResponse putResponse = clusterAdminClient.putRepository {
-            name repoName
-            type "fs"
-            settings {
-                location = absolutePath
-            }
-        }.actionGet()
-
-        // sanity check
-        assert putResponse.acknowledged
-
-        // Create the snapshot
-        CreateSnapshotResponse createResponse = clusterAdminClient.createSnapshot {
-            repository repoName
-            snapshot snapshotName
-            indices indexName
-            waitForCompletion true
-        }.actionGet()
-
-        // sanity check
-        assert createResponse.snapshotInfo.state() == SnapshotState.SUCCESS
-
-        // Restore the snapshot to another index (indexName -> restoredIndexName)
-        RestoreSnapshotResponse response = clusterAdminClient.restoreSnapshot {
-            repository repoName
-            snapshot snapshotName
-            renamePattern indexName
-            renameReplacement restoredIndexName
-            waitForCompletion true
-        }.actionGet()
-
-        // ensure that we appropriately restored from the snapshot
-        assert response.restoreInfo.name() == snapshotName
-        assert response.restoreInfo.failedShards() == 0
-        assert response.restoreInfo.indices()[0] == restoredIndexName
-
-        ClusterHealthResponse healthResponse = clusterAdminClient.health {
-            indices restoredIndexName
-            waitForStatus ClusterHealthStatus.YELLOW
-        }.actionGet()
-
-        // sanity check
-        assert ! healthResponse.timedOut
-
-        // Ensure that the restored index was expected renamed
-        GetResponse getResponse = client.get {
-            index restoredIndexName
-            type typeName
-            id docId
-        }.actionGet()
-
-        assert getResponse.exists
-        assert getResponse.sourceAsMap.value == expectedValue
-    }
-
-    //
-    // START OF requestAsync test variants (combine sections with sync versus async variant side-by-side in 2.0)
-    //
-
-    @Test
-    void testHealthRequestAsync() {
-        indexDoc(indexName, typeName) { name = "ignored" }
-
-        ClusterHealthResponse response = clusterAdminClient.healthAsync {
-            indices indexName
-            waitForStatus ClusterHealthStatus.YELLOW
-        }.actionGet()
-
-        // waited for Yellow, so it had better not be Red
-        assert response.status != ClusterHealthStatus.RED
     }
 
     @Test
@@ -245,6 +133,42 @@ class ClusterAdminClientExtensionsActionTests extends AbstractClientTests {
 
         assert getResponse.repositories()[0].name() == repoName
         assert getResponse.repositories()[0].settings().get("location") == absolutePath
+    }
+
+    @Test
+    void testCreateSnapshotRequest() {
+        String repoName = "test-create-snapshot-repo"
+        String snapshotName = "test-create-snapshot"
+        String absolutePath = newTempDir().absolutePath
+
+        // Write a document
+        indexDoc(indexName, typeName) { value = "ignored" }
+        // flush the index to disk
+        client.admin.indices.flush { indices indexName }
+
+        // Create the repository
+        PutRepositoryResponse putResponse = clusterAdminClient.putRepository {
+            name repoName
+            type "fs"
+            settings {
+                location = absolutePath
+            }
+        }
+
+        // sanity check
+        assert putResponse.acknowledged
+
+        // Create the snapshot
+        CreateSnapshotResponse response = clusterAdminClient.createSnapshot {
+            repository repoName
+            snapshot snapshotName
+            indices indexName
+            waitForCompletion true
+        }
+
+        assert response.snapshotInfo.name() == snapshotName
+        assert response.snapshotInfo.state() == SnapshotState.SUCCESS
+        assert response.snapshotInfo.indices()[0] == indexName
     }
 
     @Test
@@ -281,6 +205,76 @@ class ClusterAdminClientExtensionsActionTests extends AbstractClientTests {
         assert response.snapshotInfo.name() == snapshotName
         assert response.snapshotInfo.state() == SnapshotState.SUCCESS
         assert response.snapshotInfo.indices()[0] == indexName
+    }
+
+    @Test
+    void testRestoreSnapshotRequest() {
+        String repoName = "test-restore-snapshot-repo"
+        String snapshotName = "test-restore-snapshot"
+        String absolutePath = newTempDir().absolutePath
+        String restoredIndexName = indexName + "-restored"
+        String expectedValue = "expected"
+
+        // Write a document
+        String docId = indexDoc(indexName, typeName) { value = expectedValue }
+
+        // ensure that the mapping exists before creating the snapshot (required for dynamic mapping!)
+        waitForConcreteMappingsOnAll(indexName, typeName, "value")
+
+        // Create the repository
+        PutRepositoryResponse putResponse = clusterAdminClient.putRepository {
+            name repoName
+            type "fs"
+            settings {
+                location = absolutePath
+            }
+        }
+
+        // sanity check
+        assert putResponse.acknowledged
+
+        // Create the snapshot
+        CreateSnapshotResponse createResponse = clusterAdminClient.createSnapshot {
+            repository repoName
+            snapshot snapshotName
+            indices indexName
+            waitForCompletion true
+        }
+
+        // sanity check
+        assert createResponse.snapshotInfo.state() == SnapshotState.SUCCESS
+
+        // Restore the snapshot to another index (indexName -> restoredIndexName)
+        RestoreSnapshotResponse response = clusterAdminClient.restoreSnapshot {
+            repository repoName
+            snapshot snapshotName
+            renamePattern indexName
+            renameReplacement restoredIndexName
+            waitForCompletion true
+        }
+
+        // ensure that we appropriately restored from the snapshot
+        assert response.restoreInfo.name() == snapshotName
+        assert response.restoreInfo.failedShards() == 0
+        assert response.restoreInfo.indices()[0] == restoredIndexName
+
+        ClusterHealthResponse healthResponse = clusterAdminClient.health {
+            indices restoredIndexName
+            waitForStatus ClusterHealthStatus.YELLOW
+        }
+
+        // sanity check
+        assert ! healthResponse.timedOut
+
+        // Ensure that the restored index was expected renamed
+        GetResponse getResponse = client.get {
+            index restoredIndexName
+            type typeName
+            id docId
+        }
+
+        assert getResponse.exists
+        assert getResponse.sourceAsMap.value == expectedValue
     }
 
     @Test

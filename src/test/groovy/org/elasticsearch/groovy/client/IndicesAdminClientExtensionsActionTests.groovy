@@ -52,8 +52,6 @@ class IndicesAdminClientExtensionsActionTests extends AbstractClientTests {
         indicesAdminClient = client.admin.indices
     }
 
-    // REPLACE WITH non-Async variants in 2.0
-
     @Test
     void testRefreshRequest() {
         String docId = indexDoc(indexName, typeName) {
@@ -63,7 +61,7 @@ class IndicesAdminClientExtensionsActionTests extends AbstractClientTests {
         // refresh the index to guarantee searchability
         RefreshResponse response = indicesAdminClient.refresh {
             indices indexName
-        }.actionGet()
+        }
 
         assert response.failedShards == 0
 
@@ -78,15 +76,11 @@ class IndicesAdminClientExtensionsActionTests extends AbstractClientTests {
                     }
                 }
             }
-        }.actionGet()
+        }
 
         assert searchResponse.hits.totalHits == 1
         assert searchResponse.hits.hits[0].id == docId
     }
-
-    //
-    // START OF requestAsync test variants (combine sections with sync versus async variant side-by-side in 2.0)
-    //
 
     @Test
     void testRefreshRequestAsync() {
@@ -130,13 +124,13 @@ class IndicesAdminClientExtensionsActionTests extends AbstractClientTests {
         // refresh the index to guarantee searchability
         RefreshResponse refreshResponse = indicesAdminClient.refresh {
             indices indexName
-        }.actionGet()
+        }
 
         assert refreshResponse.failedShards == 0
 
         GetMappingsResponse response = indicesAdminClient.getMappings {
             indices indexName
-        }.actionGet()
+        }
 
         // extra the mapping for the current index/type
         MappingMetaData mappingMetaData = response.mappings.get(indexName).get(typeName)

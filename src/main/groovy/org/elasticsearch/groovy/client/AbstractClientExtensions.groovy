@@ -29,6 +29,54 @@ import org.elasticsearch.client.ElasticsearchClient
  */
 abstract class AbstractClientExtensions {
     /**
+     * Uses the {@code request} and creates an {@link ActionResponse} using the {@code requestClosure} to generate it.
+     *
+     * @param client The client to perform the {@code request}
+     * @param request The request to make
+     * @param requestClosure The method/closure to invoke given the sole argument of {@code request}.
+     * @return Never {@code null}.
+     * @throws NullPointerException if any parameter is {@code null}.
+     */
+    protected static
+        <Request extends ActionRequest,
+         Response extends ActionResponse,
+         Client extends ElasticsearchClient<Client>> Response doRequest(Client client,
+                                                                        Request request,
+                                                                        Closure<Response> requestClosure) {
+        // TODO: After https://github.com/elastic/elasticsearch/issues/9201 is merged, then we can change this to avoid
+        //       unnecessary threading (and simplify this method by potentially dropping parameters)!
+        doRequestAsync(client, request, requestClosure).actionGet()
+    }
+
+    /**
+     * Configures the {@code request} and creates an {@link ActionResponse} using the {@code requestClosure} to
+     * generate it.
+     * <p>
+     * The {@code request} is configured using the {@code requestConfig} if it is non-{@code null}.
+     *
+     * @param client The client to perform the {@code request}
+     * @param request The request to make
+     * @param requestConfig The configuration of the {@code request}
+     * @param requestClosure The method/closure to invoke given the sole argument of {@code request}.
+     * @return Never {@code null}.
+     * @throws NullPointerException if any parameter except {@code requestConfig} is {@code null}.
+     */
+    protected static
+        <Request extends ActionRequest,
+         Response extends ActionResponse,
+         Client extends ElasticsearchClient<Client>> Response doRequest(Client client,
+                                                                        Request request,
+                                                                        Closure requestConfig,
+                                                                        Closure<Response> requestClosure) {
+        // configure the request
+        if (requestConfig != null) {
+            request.with(requestConfig)
+        }
+
+        doRequest(client, request, requestClosure)
+    }
+
+    /**
      * Uses the {@code request} and creates a {@link PlainListenableActionFuture} associated with the {@link
      * ActionResponse} using the {@code requestClosure} to generate it.
      *
@@ -48,7 +96,7 @@ abstract class AbstractClientExtensions {
         PlainListenableActionFuture<Response> responseFuture =
                 new PlainListenableActionFuture<>(request.listenerThreaded(), client.threadPool())
 
-        // invoke the response closure (method) that takes the request/response future to respond to
+        // invoke the request closure (method) that takes the request/response future to respond to
         requestClosure.call(request, responseFuture)
 
         responseFuture
@@ -57,6 +105,8 @@ abstract class AbstractClientExtensions {
     /**
      * Configures the {@code request} and creates a {@link PlainListenableActionFuture} associated with the {@link
      * ActionResponse} using the {@code requestClosure} to generate it.
+     * <p>
+     * The {@code request} is configured using the {@code requestConfig} if it is non-{@code null}.
      *
      * @param client The client to perform the {@code request}
      * @param request The request to make

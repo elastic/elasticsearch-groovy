@@ -95,11 +95,9 @@ class IndicesAdminClientExtensions extends AbstractClientExtensions {
      * @param requestClosure The map-like closure that configures the {@link RefreshRequest}.
      * @return Never {@code null}.
      * @throws NullPointerException if any parameter is {@code null}
-     * @deprecated As of 1.5, replaced by {@link IndicesAdminClientExtensions#refreshAsync}.
      */
-    @Deprecated
-    static ListenableActionFuture<RefreshResponse> refresh(IndicesAdminClient self, Closure requestClosure) {
-        refreshAsync(self, requestClosure)
+    static RefreshResponse refresh(IndicesAdminClient self, Closure requestClosure) {
+        doRequest(self, Requests.refreshRequest(), requestClosure, self.&refresh)
     }
 
     /**
@@ -121,11 +119,9 @@ class IndicesAdminClientExtensions extends AbstractClientExtensions {
      * @param requestClosure The map-like closure that configures the {@link IndicesExistsRequest}.
      * @return Never {@code null}.
      * @throws NullPointerException if any parameter is {@code null}
-     * @deprecated As of 1.5, replaced by {@link IndicesAdminClientExtensions#existsAsync}.
      */
-    @Deprecated
-    static ListenableActionFuture<IndicesExistsResponse> exists(IndicesAdminClient self, Closure requestClosure) {
-        existsAsync(self, requestClosure)
+    static IndicesExistsResponse exists(IndicesAdminClient self, Closure requestClosure) {
+        doRequest(self, Requests.indicesExistsRequest(), requestClosure, self.&exists)
     }
 
     /**
@@ -147,11 +143,10 @@ class IndicesAdminClientExtensions extends AbstractClientExtensions {
      * @param requestClosure The map-like closure that configures the {@link TypesExistsRequest}.
      * @return Never {@code null}.
      * @throws NullPointerException if any parameter is {@code null}
-     * @deprecated As of 1.5, replaced by {@link IndicesAdminClientExtensions#typesExistsAsync}.
      */
-    @Deprecated
-    static ListenableActionFuture<TypesExistsResponse> typesExists(IndicesAdminClient self, Closure requestClosure) {
-        typesExistsAsync(self, requestClosure)
+    static TypesExistsResponse typesExists(IndicesAdminClient self, Closure requestClosure) {
+        // indices must be supplied by the closure
+        doRequest(self, new TypesExistsRequest(null), requestClosure, self.&typesExists)
     }
 
     /**
@@ -175,11 +170,9 @@ class IndicesAdminClientExtensions extends AbstractClientExtensions {
      * @param requestClosure The map-like closure that configures the {@link IndicesStatsRequest}.
      * @return Never {@code null}.
      * @throws NullPointerException if any parameter is {@code null}
-     * @deprecated As of 1.5, replaced by {@link IndicesAdminClientExtensions#statsAsync}.
      */
-    @Deprecated
-    static ListenableActionFuture<IndicesStatsResponse> stats(IndicesAdminClient self, Closure requestClosure) {
-        statsAsync(self, requestClosure)
+    static IndicesStatsResponse stats(IndicesAdminClient self, Closure requestClosure) {
+        doRequest(self, new IndicesStatsRequest(), requestClosure, self.&stats)
     }
 
     /**
@@ -201,11 +194,9 @@ class IndicesAdminClientExtensions extends AbstractClientExtensions {
      * @param requestClosure The map-like closure that configures the {@link RecoveryRequest}.
      * @return Never {@code null}.
      * @throws NullPointerException if any parameter is {@code null}
-     * @deprecated As of 1.5, replaced by {@link IndicesAdminClientExtensions#recoveriesAsync}.
      */
-    @Deprecated
-    static ListenableActionFuture<RecoveryResponse> recoveries(IndicesAdminClient self, Closure requestClosure) {
-        recoveriesAsync(self, requestClosure)
+    static RecoveryResponse recoveries(IndicesAdminClient self, Closure requestClosure) {
+        doRequest(self, new RecoveryRequest(), requestClosure, self.&recoveries)
     }
 
     /**
@@ -227,11 +218,9 @@ class IndicesAdminClientExtensions extends AbstractClientExtensions {
      * @param requestClosure The map-like closure that configures the {@link IndicesSegmentsRequest}.
      * @return Never {@code null}.
      * @throws NullPointerException if any parameter is {@code null}
-     * @deprecated As of 1.5, replaced by {@link IndicesAdminClientExtensions#segmentsAsync}.
      */
-    @Deprecated
-    static ListenableActionFuture<IndicesSegmentResponse> segments(IndicesAdminClient self, Closure requestClosure) {
-        segmentsAsync(self, requestClosure)
+    static IndicesSegmentResponse segments(IndicesAdminClient self, Closure requestClosure) {
+        doRequest(self, Requests.indicesExistsRequest(), requestClosure, self.&segments)
     }
 
     /**
@@ -254,11 +243,10 @@ class IndicesAdminClientExtensions extends AbstractClientExtensions {
      * @param requestClosure The map-like closure that configures the {@link CreateIndexRequest}.
      * @return Never {@code null}.
      * @throws NullPointerException if any parameter is {@code null}
-     * @deprecated As of 1.5, replaced by {@link IndicesAdminClientExtensions#createAsync}.
      */
-    @Deprecated
-    static ListenableActionFuture<CreateIndexResponse> create(IndicesAdminClient self, Closure requestClosure) {
-        createAsync(self, requestClosure)
+    static CreateIndexResponse create(IndicesAdminClient self, Closure requestClosure) {
+        // index must be set by the closure
+        doRequest(self, Requests.createIndexRequest(null), requestClosure, self.&create)
     }
 
     /**
@@ -283,11 +271,10 @@ class IndicesAdminClientExtensions extends AbstractClientExtensions {
      * @param requestClosure The map-like closure that configures the {@link DeleteIndexRequest}.
      * @return Never {@code null}.
      * @throws NullPointerException if any parameter is {@code null}
-     * @deprecated As of 1.5, replaced by {@link IndicesAdminClientExtensions#deleteAsync}.
      */
-    @Deprecated
-    static ListenableActionFuture<DeleteIndexResponse> delete(IndicesAdminClient self, Closure requestClosure) {
-        deleteAsync(self, requestClosure)
+    static DeleteIndexResponse delete(IndicesAdminClient self, Closure requestClosure) {
+        // index must be set by the closure
+        doRequest(self, Requests.deleteIndexRequest(null), requestClosure, self.&delete)
     }
 
     /**
@@ -313,11 +300,10 @@ class IndicesAdminClientExtensions extends AbstractClientExtensions {
      * @param requestClosure The map-like closure that configures the {@link CloseIndexRequest}.
      * @return Never {@code null}.
      * @throws NullPointerException if any parameter is {@code null}
-     * @deprecated As of 1.5, replaced by {@link IndicesAdminClientExtensions#closeAsync}.
      */
-    @Deprecated
-    static ListenableActionFuture<CloseIndexResponse> close(IndicesAdminClient self, Closure requestClosure) {
-        closeAsync(self, requestClosure)
+    static CloseIndexResponse close(IndicesAdminClient self, Closure requestClosure) {
+        // index must be set by the closure
+        doRequest(self, Requests.closeIndexRequest(null), requestClosure, self.&close)
     }
 
     /**
@@ -341,11 +327,10 @@ class IndicesAdminClientExtensions extends AbstractClientExtensions {
      * @param requestClosure The map-like closure that configures the {@link OpenIndexRequest}.
      * @return Never {@code null}.
      * @throws NullPointerException if any parameter is {@code null}
-     * @deprecated As of 1.5, replaced by {@link IndicesAdminClientExtensions#openAsync}.
      */
-    @Deprecated
-    static ListenableActionFuture<OpenIndexResponse> open(IndicesAdminClient self, Closure requestClosure) {
-        openAsync(self, requestClosure)
+    static OpenIndexResponse open(IndicesAdminClient self, Closure requestClosure) {
+        // index must be set by the closure
+        doRequest(self, Requests.openIndexRequest(null), requestClosure, self.&open)
     }
 
     /**
@@ -371,11 +356,9 @@ class IndicesAdminClientExtensions extends AbstractClientExtensions {
      * @param requestClosure The map-like closure that configures the {@link FlushRequest}.
      * @return Never {@code null}.
      * @throws NullPointerException if any parameter is {@code null}
-     * @deprecated As of 1.5, replaced by {@link IndicesAdminClientExtensions#flushAsync}.
      */
-    @Deprecated
-    static ListenableActionFuture<FlushResponse> flush(IndicesAdminClient self, Closure requestClosure) {
-        flushAsync(self, requestClosure)
+    static FlushResponse flush(IndicesAdminClient self, Closure requestClosure) {
+        doRequest(self, Requests.flushRequest(), requestClosure, self.&flush)
     }
 
     /**
@@ -407,11 +390,9 @@ class IndicesAdminClientExtensions extends AbstractClientExtensions {
      * @param requestClosure The map-like closure that configures the {@link OptimizeRequest}.
      * @return Never {@code null}.
      * @throws NullPointerException if any parameter is {@code null}
-     * @deprecated As of 1.5, replaced by {@link IndicesAdminClientExtensions#optimizeAsync}.
      */
-    @Deprecated
-    static ListenableActionFuture<OptimizeResponse> optimize(IndicesAdminClient self, Closure requestClosure) {
-        optimizeAsync(self, requestClosure)
+    static OptimizeResponse optimize(IndicesAdminClient self, Closure requestClosure) {
+        doRequest(self, Requests.optimizeRequest(), requestClosure, self.&optimize)
     }
 
     /**
@@ -440,11 +421,9 @@ class IndicesAdminClientExtensions extends AbstractClientExtensions {
      * @param requestClosure The map-like closure that configures the {@link GetMappingsRequest}.
      * @return Never {@code null}.
      * @throws NullPointerException if any parameter is {@code null}
-     * @deprecated As of 1.5, replaced by {@link IndicesAdminClientExtensions#getMappingsAsync}.
      */
-    @Deprecated
-    static ListenableActionFuture<GetMappingsResponse> getMappings(IndicesAdminClient self, Closure requestClosure) {
-        getMappingsAsync(self, requestClosure)
+    static GetMappingsResponse getMappings(IndicesAdminClient self, Closure requestClosure) {
+        doRequest(self, new GetMappingsRequest(), requestClosure, self.&getMappings)
     }
 
     /**
@@ -466,12 +445,9 @@ class IndicesAdminClientExtensions extends AbstractClientExtensions {
      * @param requestClosure The map-like closure that configures the {@link GetFieldMappingsRequest}.
      * @return Never {@code null}.
      * @throws NullPointerException if any parameter is {@code null}
-     * @deprecated As of 1.5, replaced by {@link IndicesAdminClientExtensions#getFieldMappingsAsync}.
      */
-    @Deprecated
-    static ListenableActionFuture<GetFieldMappingsResponse> getFieldMappings(IndicesAdminClient self,
-                                                                             Closure requestClosure) {
-        getFieldMappingsAsync(self, requestClosure)
+    static GetFieldMappingsResponse getFieldMappings(IndicesAdminClient self, Closure requestClosure) {
+        doRequest(self, new GetFieldMappingsRequest(), requestClosure, self.&getFieldMappings)
     }
 
     /**
@@ -494,11 +470,9 @@ class IndicesAdminClientExtensions extends AbstractClientExtensions {
      * @param requestClosure The map-like closure that configures the {@link PutMappingRequest}.
      * @return Never {@code null}.
      * @throws NullPointerException if any parameter is {@code null}
-     * @deprecated As of 1.5, replaced by {@link IndicesAdminClientExtensions#putMappingAsync}.
      */
-    @Deprecated
-    static ListenableActionFuture<PutMappingResponse> putMapping(IndicesAdminClient self, Closure requestClosure) {
-        putMappingAsync(self, requestClosure)
+    static PutMappingResponse putMapping(IndicesAdminClient self, Closure requestClosure) {
+        doRequest(self, Requests.putMappingRequest(), requestClosure, self.&putMapping)
     }
 
     /**
@@ -520,11 +494,9 @@ class IndicesAdminClientExtensions extends AbstractClientExtensions {
      * @param requestClosure The map-like closure that configures the {@link IndicesAliasesRequest}.
      * @return Never {@code null}.
      * @throws NullPointerException if any parameter is {@code null}
-     * @deprecated As of 1.5, replaced by {@link IndicesAdminClientExtensions#aliasesAsync}.
      */
-    @Deprecated
-    static ListenableActionFuture<IndicesAliasesResponse> aliases(IndicesAdminClient self, Closure requestClosure) {
-        aliasesAsync(self, requestClosure)
+    static IndicesAliasesResponse aliases(IndicesAdminClient self, Closure requestClosure) {
+        doRequest(self, Requests.indexAliasesRequest(), requestClosure, self.&aliases)
     }
 
     /**
@@ -547,11 +519,9 @@ class IndicesAdminClientExtensions extends AbstractClientExtensions {
      * @param requestClosure The map-like closure that configures the {@link GetAliasesRequest}.
      * @return Never {@code null}.
      * @throws NullPointerException if any parameter is {@code null}
-     * @deprecated As of 1.5, replaced by {@link IndicesAdminClientExtensions#getAliasesAsync}.
      */
-    @Deprecated
-    static ListenableActionFuture<GetAliasesResponse> getAliases(IndicesAdminClient self, Closure requestClosure) {
-        getAliasesAsync(self, requestClosure)
+    static GetAliasesResponse getAliases(IndicesAdminClient self, Closure requestClosure) {
+        doRequest(self, new GetAliasesRequest(), requestClosure, self.&getAliases)
     }
 
     /**
@@ -573,11 +543,9 @@ class IndicesAdminClientExtensions extends AbstractClientExtensions {
      * @param requestClosure The map-like closure that configures the {@link GetAliasesRequest}.
      * @return Never {@code null}.
      * @throws NullPointerException if any parameter is {@code null}
-     * @deprecated As of 1.5, replaced by {@link IndicesAdminClientExtensions#aliasesExistAsync}.
      */
-    @Deprecated
-    static ListenableActionFuture<AliasesExistResponse> aliasesExist(IndicesAdminClient self, Closure requestClosure) {
-        aliasesExistAsync(self, requestClosure)
+    static AliasesExistResponse aliasesExist(IndicesAdminClient self, Closure requestClosure) {
+        doRequest(self, new GetAliasesRequest(), requestClosure, self.&aliasesExist)
     }
 
     /**
@@ -600,12 +568,9 @@ class IndicesAdminClientExtensions extends AbstractClientExtensions {
      * @param requestClosure The map-like closure that configures the {@link ClearIndicesCacheRequest}.
      * @return Never {@code null}.
      * @throws NullPointerException if any parameter is {@code null}
-     * @deprecated As of 1.5, replaced by {@link IndicesAdminClientExtensions#clearCacheAsync}.
      */
-    @Deprecated
-    static ListenableActionFuture<ClearIndicesCacheResponse> clearCache(IndicesAdminClient self,
-                                                                        Closure requestClosure) {
-        clearCacheAsync(self, requestClosure)
+    static ClearIndicesCacheResponse clearCache(IndicesAdminClient self, Closure requestClosure) {
+        doRequest(self, Requests.clearIndicesCacheRequest(), requestClosure, self.&clearCache)
     }
 
     /**
@@ -630,12 +595,9 @@ class IndicesAdminClientExtensions extends AbstractClientExtensions {
      * @param requestClosure The map-like closure that configures the {@link UpdateSettingsRequest}.
      * @return Never {@code null}.
      * @throws NullPointerException if any parameter is {@code null}
-     * @deprecated As of 1.5, replaced by {@link IndicesAdminClientExtensions#updateSettingsAsync}.
      */
-    @Deprecated
-    static ListenableActionFuture<UpdateSettingsResponse> updateSettings(IndicesAdminClient self,
-                                                                         Closure requestClosure) {
-        updateSettingsAsync(self, requestClosure)
+    static UpdateSettingsResponse updateSettings(IndicesAdminClient self, Closure requestClosure) {
+        doRequest(self, new UpdateSettingsRequest(), requestClosure, self.&updateSettings)
     }
 
     /**
@@ -660,12 +622,10 @@ class IndicesAdminClientExtensions extends AbstractClientExtensions {
      * @param requestClosure The map-like closure that configures the {@link PutIndexTemplateRequest}.
      * @return Never {@code null}.
      * @throws NullPointerException if any parameter is {@code null}
-     * @deprecated As of 1.5, replaced by {@link IndicesAdminClientExtensions#putTemplateAsync}.
      */
-    @Deprecated
-    static ListenableActionFuture<PutIndexTemplateResponse> putTemplate(IndicesAdminClient self,
-                                                                        Closure requestClosure) {
-        putTemplateAsync(self, requestClosure)
+    static PutIndexTemplateResponse putTemplate(IndicesAdminClient self, Closure requestClosure) {
+        // template name expected be supplied by the closure
+        doRequest(self, new PutIndexTemplateRequest(null), requestClosure, self.&putTemplate)
     }
 
     /**
@@ -691,11 +651,9 @@ class IndicesAdminClientExtensions extends AbstractClientExtensions {
      * @param name The name of the index template to delete.
      * @return Never {@code null}.
      * @throws NullPointerException if {@code self} is {@code null}
-     * @deprecated As of 1.5, replaced by {@link IndicesAdminClientExtensions#deleteTemplateAsync}.
      */
-    @Deprecated
-    static ListenableActionFuture<DeleteIndexTemplateResponse> deleteTemplate(IndicesAdminClient self, String name) {
-        deleteTemplateAsync(self, name)
+    static DeleteIndexTemplateResponse deleteTemplate(IndicesAdminClient self, String name) {
+        doRequest(self, new DeleteIndexTemplateRequest(name), self.&deleteTemplate)
     }
 
     /**
@@ -720,12 +678,9 @@ class IndicesAdminClientExtensions extends AbstractClientExtensions {
      * @param requestClosure The map-like closure that configures the {@link GetIndexTemplatesRequest}.
      * @return Never {@code null}.
      * @throws NullPointerException if any parameter is {@code null}
-     * @deprecated As of 1.5, replaced by {@link IndicesAdminClientExtensions#getTemplatesAsync}.
      */
-    @Deprecated
-    static ListenableActionFuture<GetIndexTemplatesResponse> getTemplates(IndicesAdminClient self,
-                                                                          Closure requestClosure) {
-        getTemplatesAsync(self, requestClosure)
+    static GetIndexTemplatesResponse getTemplates(IndicesAdminClient self, Closure requestClosure) {
+        doRequest(self, new GetIndexTemplatesRequest(), requestClosure, self.&getTemplates)
     }
 
     /**
@@ -748,12 +703,9 @@ class IndicesAdminClientExtensions extends AbstractClientExtensions {
      * @param requestClosure The map-like closure that configures the {@link ValidateQueryRequest}.
      * @return Never {@code null}.
      * @throws NullPointerException if any parameter is {@code null}
-     * @deprecated As of 1.5, replaced by {@link IndicesAdminClientExtensions#validateQueryAsync}.
      */
-    @Deprecated
-    static ListenableActionFuture<ValidateQueryResponse> validateQuery(IndicesAdminClient self,
-                                                                       Closure requestClosure) {
-        validateQueryAsync(self, requestClosure)
+    static ValidateQueryResponse validateQuery(IndicesAdminClient self, Closure requestClosure) {
+        doRequest(self, new ValidateQueryRequest(), requestClosure, self.&validateQuery)
     }
 
     /**
@@ -776,11 +728,10 @@ class IndicesAdminClientExtensions extends AbstractClientExtensions {
      * @param requestClosure The map-like closure that configures the {@link PutWarmerRequest}.
      * @return Never {@code null}.
      * @throws NullPointerException if any parameter is {@code null}
-     * @deprecated As of 1.5, replaced by {@link IndicesAdminClientExtensions#putWarmerAsync}.
      */
-    @Deprecated
-    static ListenableActionFuture<PutWarmerResponse> putWarmer(IndicesAdminClient self, Closure requestClosure) {
-        putWarmerAsync(self, requestClosure)
+    static PutWarmerResponse putWarmer(IndicesAdminClient self, Closure requestClosure) {
+        // warmer name is expected to be set by the closure
+        doRequest(self, new PutWarmerRequest(null), requestClosure, self.&putWarmer)
     }
 
     /**
@@ -803,11 +754,9 @@ class IndicesAdminClientExtensions extends AbstractClientExtensions {
      * @param requestClosure The map-like closure that configures the {@link DeleteWarmerRequest}.
      * @return Never {@code null}.
      * @throws NullPointerException if any parameter is {@code null}
-     * @deprecated As of 1.5, replaced by {@link IndicesAdminClientExtensions#deleteWarmerAsync}.
      */
-    @Deprecated
-    static ListenableActionFuture<DeleteWarmerResponse> deleteWarmer(IndicesAdminClient self, Closure requestClosure) {
-        deleteWarmerAsync(self, requestClosure)
+    static DeleteWarmerResponse deleteWarmer(IndicesAdminClient self, Closure requestClosure) {
+        doRequest(self, new DeleteWarmerRequest(), requestClosure, self.&deleteWarmer)
     }
 
     /**
@@ -830,11 +779,9 @@ class IndicesAdminClientExtensions extends AbstractClientExtensions {
      * @param requestClosure The map-like closure that configures the {@link GetWarmersRequest}.
      * @return Never {@code null}.
      * @throws NullPointerException if any parameter is {@code null}
-     * @deprecated As of 1.5, replaced by {@link IndicesAdminClientExtensions#getWarmersAsync}.
      */
-    @Deprecated
-    static ListenableActionFuture<GetWarmersResponse> getWarmers(IndicesAdminClient self, Closure requestClosure) {
-        getWarmersAsync(self, requestClosure)
+    static GetWarmersResponse getWarmers(IndicesAdminClient self, Closure requestClosure) {
+        doRequest(self, new GetWarmersRequest(), requestClosure, self.&getWarmers)
     }
 
     /**
@@ -856,11 +803,9 @@ class IndicesAdminClientExtensions extends AbstractClientExtensions {
      * @param requestClosure The map-like closure that configures the {@link GetSettingsRequest}.
      * @return Never {@code null}.
      * @throws NullPointerException if any parameter is {@code null}
-     * @deprecated As of 1.5, replaced by {@link IndicesAdminClientExtensions#getSettingsAsync}.
      */
-    @Deprecated
-    static ListenableActionFuture<GetSettingsResponse> getSettings(IndicesAdminClient self, Closure requestClosure) {
-        getSettingsAsync(self, requestClosure)
+    static GetSettingsResponse getSettings(IndicesAdminClient self, Closure requestClosure) {
+        doRequest(self, new GetSettingsRequest(), requestClosure, self.&getSettings)
     }
 
     /**
@@ -883,13 +828,10 @@ class IndicesAdminClientExtensions extends AbstractClientExtensions {
      * @param requestClosure The map-like closure that configures the {@link AnalyzeRequest}.
      * @return Never {@code null}.
      * @throws NullPointerException if any parameter is {@code null} except {@code text}
-     * @deprecated As of 1.5, replaced by {@link IndicesAdminClientExtensions#analyzeAsync}.
      */
-    @Deprecated
-    static ListenableActionFuture<AnalyzeResponse> analyze(IndicesAdminClient self,
-                                                           String text,
-                                                           Closure requestClosure) {
-        analyzeAsync(self, text, requestClosure)
+    static AnalyzeResponse analyze(IndicesAdminClient self, String text, Closure requestClosure) {
+        // text must currently be supplied to the constructor
+        doRequest(self, new AnalyzeRequest(text), requestClosure, self.&analyze)
     }
 
     /**

@@ -25,8 +25,6 @@ import org.elasticsearch.action.count.CountRequest
 import org.elasticsearch.action.count.CountResponse
 import org.elasticsearch.action.delete.DeleteRequest
 import org.elasticsearch.action.delete.DeleteResponse
-import org.elasticsearch.action.deletebyquery.DeleteByQueryRequest
-import org.elasticsearch.action.deletebyquery.DeleteByQueryResponse
 import org.elasticsearch.action.explain.ExplainRequest
 import org.elasticsearch.action.explain.ExplainResponse
 import org.elasticsearch.action.get.GetRequest
@@ -141,18 +139,16 @@ class ClientExtensions extends AbstractClientExtensions {
      *       }
      *     }
      *   }
-     * }.actionGet()
+     * }
      * </pre>
      *
      * @param self The {@code this} reference for the {@link Client}
      * @param requestClosure The map-like closure that configures the {@link IndexRequest}.
      * @return Never {@code null}.
      * @throws NullPointerException if any parameter is {@code null}
-     * @deprecated As of 1.5, replaced by {@link ClientExtensions#indexAsync}.
      */
-    @Deprecated
-    static ListenableActionFuture<IndexResponse> index(Client self, Closure requestClosure) {
-        indexAsync(self, requestClosure)
+    static IndexResponse index(Client self, Closure requestClosure) {
+        doRequest(self, Requests.indexRequest(), requestClosure, self.&index)
     }
 
     /**
@@ -200,7 +196,7 @@ class ClientExtensions extends AbstractClientExtensions {
      *         add sources.collect {
      *             Requests.indexRequest(indexName).type(typeName).source(it)
      *         }
-     *     }.actionGet()
+     *     }
      * }
      * </pre>
      * Such a method could then be used to build {@code List}s of {@code Closure}s to more clearly bulk index.
@@ -237,11 +233,9 @@ class ClientExtensions extends AbstractClientExtensions {
      * @param requestClosure The map-like closure that configures the {@link BulkRequest}.
      * @return Never {@code null}.
      * @throws NullPointerException if any parameter is {@code null}
-     * @deprecated As of 1.5, replaced by {@link ClientExtensions#bulkAsync}.
      */
-    @Deprecated
-    static ListenableActionFuture<BulkResponse> bulk(Client self, Closure requestClosure) {
-        bulkAsync(self, requestClosure)
+    static BulkResponse bulk(Client self, Closure requestClosure) {
+        doRequest(self, new BulkRequest(), requestClosure, self.&bulk)
     }
 
     /**
@@ -313,7 +307,7 @@ class ClientExtensions extends AbstractClientExtensions {
      *     doc {
      *         new_field = 456.7
      *     }
-     * }.actionGet()
+     * }
      * </pre>
      * For a scripted example, you might do something like:
      * <pre>
@@ -333,7 +327,7 @@ class ClientExtensions extends AbstractClientExtensions {
      *         }
      *         counter = 1
      *     }
-     * }.actionGet()
+     * }
      * </pre>
      * Note: All updates are really delete-then-index operations and partial updates <em>require</em> that the
      * document's source be stored (defaults to {@code true}, but changeable in the type's mapping).
@@ -341,11 +335,9 @@ class ClientExtensions extends AbstractClientExtensions {
      * @param self The {@code this} reference for the {@link Client}
      * @param requestClosure The map-like closure that configures the {@link UpdateRequest}.
      * @return Never {@code null}.
-     * @deprecated As of 1.5, replaced by {@link ClientExtensions#updateAsync}.
      */
-    @Deprecated
-    static ListenableActionFuture<UpdateResponse> update(Client self, Closure requestClosure) {
-        updateAsync(self, requestClosure)
+    static UpdateResponse update(Client self, Closure requestClosure) {
+        doRequest(self, new UpdateRequest(), requestClosure, self.&update)
     }
 
     /**
@@ -401,17 +393,15 @@ class ClientExtensions extends AbstractClientExtensions {
      *     index "my-index"
      *     type "my-type"
      *     id "my-id"
-     * }.actionGet()
+     * }
      * </pre>
      *
      * @param self The {@code this} reference for the {@link Client}
      * @param requestClosure The map-like closure that configures the {@link DeleteRequest}.
      * @return Never {@code null}.
-     * @deprecated As of 1.5, replaced by {@link ClientExtensions#deleteAsync}.
      */
-    @Deprecated
-    static ListenableActionFuture<DeleteResponse> delete(Client self, Closure requestClosure) {
-        deleteAsync(self, requestClosure)
+    static DeleteResponse delete(Client self, Closure requestClosure) {
+        doRequest(self, new DeleteRequest(), requestClosure, self.&delete)
     }
 
     /**
@@ -433,62 +423,6 @@ class ClientExtensions extends AbstractClientExtensions {
     }
 
     /**
-     * Deletes all documents from one or more indices based on a query.
-     * <pre>
-     * DeleteByQueryResponse response = client.deleteByQuery {
-     *     indices "my-index"
-     *     types "my-type"
-     *     source {
-     *         query {
-     *             range {
-     *                 // Note: "value" is the field name
-     *                 value {
-     *                     gte = 100
-     *                 }
-     *             }
-     *         }
-     *     }
-     * }.actionGet()
-     * </pre>
-     *
-     * @param self The {@code this} reference for the {@link Client}
-     * @param requestClosure The map-like closure that configures the {@link DeleteByQueryRequest}.
-     * @return Never {@code null}.
-     * @deprecated As of 1.5, replaced by {@link ClientExtensions#deleteByQueryAsync}.
-     */
-    @Deprecated
-    static ListenableActionFuture<DeleteByQueryResponse> deleteByQuery(Client self, Closure requestClosure) {
-        deleteByQueryAsync(self, requestClosure)
-    }
-
-    /**
-     * Deletes all documents from one or more indices based on a query.
-     * <pre>
-     * DeleteByQueryResponse response = client.deleteByQueryAsync {
-     *     indices "my-index"
-     *     types "my-type"
-     *     source {
-     *         query {
-     *             range {
-     *                 // Note: "value" is the field name
-     *                 value {
-     *                     gte = 100
-     *                 }
-     *             }
-     *         }
-     *     }
-     * }.actionGet()
-     * </pre>
-     *
-     * @param self The {@code this} reference for the {@link Client}
-     * @param requestClosure The map-like closure that configures the {@link DeleteByQueryRequest}.
-     * @return Never {@code null}.
-     */
-    static ListenableActionFuture<DeleteByQueryResponse> deleteByQueryAsync(Client self, Closure requestClosure) {
-        doRequestAsync(self, Requests.deleteByQueryRequest(), requestClosure, self.&deleteByQuery)
-    }
-
-    /**
      * Gets a document from the index based on the index, type and id.
      * <p />
      * Note: Get retrievals are performed in real time.
@@ -497,17 +431,16 @@ class ClientExtensions extends AbstractClientExtensions {
      *     index "my-index"
      *     type "my-type"
      *     id "my-id"
-     * }.actionGet()
+     * }
      * </pre>
      *
      * @param self The {@code this} reference for the {@link Client}
      * @param requestClosure The map-like closure that configures the {@link GetRequest}.
      * @return Never {@code null}.
-     * @deprecated As of 1.5, replaced by {@link ClientExtensions#getAsync}.
      */
-    @Deprecated
-    static ListenableActionFuture<GetResponse> get(Client self, Closure requestClosure) {
-        getAsync(self, requestClosure)
+    static GetResponse get(Client self, Closure requestClosure) {
+        // index is expected to be set by the closure
+        doRequest(self, Requests.getRequest(null), requestClosure, self.&get)
     }
 
     /**
@@ -541,17 +474,15 @@ class ClientExtensions extends AbstractClientExtensions {
      *     for (String id : ["my-id1", "my-id2", "my-id3"]) {
      *         add "my-index", "my-type", id
      *     }
-     * }.actionGet()
+     * }
      * </pre>
      *
      * @param self The {@code this} reference for the {@link Client}
      * @param requestClosure The map-like closure that configures the {@link MultiGetRequest}.
      * @return Never {@code null}.
-     * @deprecated As of 1.5, replaced by {@link ClientExtensions#multiGetAsync}.
      */
-    @Deprecated
-    static ListenableActionFuture<MultiGetResponse> multiGet(Client self, Closure requestClosure) {
-        multiGetAsync(self, requestClosure)
+    static MultiGetResponse multiGet(Client self, Closure requestClosure) {
+        doRequest(self, new MultiGetRequest(), requestClosure, self.&multiGet)
     }
 
     /**
@@ -581,11 +512,9 @@ class ClientExtensions extends AbstractClientExtensions {
      * @param self The {@code this} reference for the {@link Client}
      * @param requestClosure The map-like closure that configures the {@link SuggestRequest}.
      * @return Never {@code null}.
-     * @deprecated As of 1.5, replaced by {@link ClientExtensions#suggestAsync}.
      */
-    @Deprecated
-    static ListenableActionFuture<SuggestResponse> suggest(Client self, Closure requestClosure) {
-        suggestAsync(self, requestClosure)
+    static SuggestResponse suggest(Client self, Closure requestClosure) {
+        doRequest(self, new SuggestRequest(), requestClosure, self.&suggest)
     }
 
     /**
@@ -610,17 +539,15 @@ class ClientExtensions extends AbstractClientExtensions {
      *             match_all { }
      *         }
      *     }
-     * }.actionGet()
+     * }
      * </pre>
      *
      * @param self The {@code this} reference for the {@link Client}
      * @param requestClosure The map-like closure that configures the {@link SearchRequest}.
      * @return Never {@code null}.
-     * @deprecated As of 1.5, replaced by {@link ClientExtensions#searchAsync}.
      */
-    @Deprecated
-    static ListenableActionFuture<SearchResponse> search(Client self, Closure requestClosure) {
-        searchAsync(self, requestClosure)
+    static SearchResponse search(Client self, Closure requestClosure) {
+        doRequest(self, Requests.searchRequest(), requestClosure, self.&search)
     }
 
     /**
@@ -651,11 +578,9 @@ class ClientExtensions extends AbstractClientExtensions {
      * @param self The {@code this} reference for the {@link Client}
      * @param requestClosure The map-like closure that configures the {@link MultiSearchRequest}.
      * @return Never {@code null}.
-     * @deprecated As of 1.5, replaced by {@link ClientExtensions#multiSearchAsync}.
      */
-    @Deprecated
-    static ListenableActionFuture<MultiSearchResponse> multiSearch(Client self, Closure requestClosure) {
-        multiSearchAsync(self, requestClosure)
+    static MultiSearchResponse multiSearch(Client self, Closure requestClosure) {
+        doRequest(self, new MultiSearchRequest(), requestClosure, self.&multiSearch)
     }
 
     /**
@@ -680,17 +605,15 @@ class ClientExtensions extends AbstractClientExtensions {
      *             match_all { }
      *         }
      *     }
-     * }.actionGet()
+     * }
      * </pre>
      *
      * @param self The {@code this} reference for the {@link Client}
      * @param requestClosure The map-like closure that configures the {@link CountRequest}.
      * @return Never {@code null}.
-     * @deprecated As of 1.5, replaced by {@link ClientExtensions#countAsync}.
      */
-    @Deprecated
-    static ListenableActionFuture<CountResponse> count(Client self, Closure requestClosure) {
-        countAsync(self, requestClosure)
+    static CountResponse count(Client self, Closure requestClosure) {
+        doRequest(self, Requests.countRequest(), requestClosure, self.&count)
     }
 
     /**
@@ -733,7 +656,7 @@ class ClientExtensions extends AbstractClientExtensions {
      *     // The time that the scroll stays open should be the minimum duration
      *     //  required
      *     scroll "10s"
-     * }.actionGet()
+     * }
      *
      * // Scroll through the results (like a database cursor)
      * SearchResponse response = client.searchScroll {
@@ -741,18 +664,16 @@ class ClientExtensions extends AbstractClientExtensions {
      *     scrollId searchResponse.scrollId
      *     // keep the _next_ window open
      *     scroll "10s"
-     * }.actionGet()
+     * }
      * </pre>
      * Note: Each {@link SearchResponse} will contain a new ID to use for subsequent requests.
      *
      * @param self The {@code this} reference for the {@link Client}
      * @param requestClosure The map-like closure that configures the {@link SearchScrollRequest}.
      * @return Never {@code null}.
-     * @deprecated As of 1.5, replaced by {@link ClientExtensions#searchScrollAsync}.
      */
-    @Deprecated
-    static ListenableActionFuture<SearchResponse> searchScroll(Client self, Closure requestClosure) {
-        searchScrollAsync(self, requestClosure)
+    static SearchResponse searchScroll(Client self, Closure requestClosure) {
+        doRequest(self, new SearchScrollRequest(), requestClosure, self.&searchScroll)
     }
 
     /**
@@ -798,7 +719,7 @@ class ClientExtensions extends AbstractClientExtensions {
      * <pre>
      * ClearScrollResponse response = client.clearScroll {
      *     addScrollId lastScrollId
-     * }.actionGet()
+     * }
      * </pre>
      * Technically, this is not a necessary action following any scan/scroll action, but you should <em>always</em> do
      * it to optimistically clean up resources.
@@ -806,11 +727,9 @@ class ClientExtensions extends AbstractClientExtensions {
      * @param self The {@code this} reference for the {@link Client}
      * @param requestClosure The map-like closure that configures the {@link ClearScrollRequest}.
      * @return Never {@code null}.
-     * @deprecated As of 1.5, replaced by {@link ClientExtensions#clearScrollAsync}.
      */
-    @Deprecated
-    static ListenableActionFuture<ClearScrollResponse> clearScroll(Client self, Closure requestClosure) {
-        clearScrollAsync(self, requestClosure)
+    static ClearScrollResponse clearScroll(Client self, Closure requestClosure) {
+        doRequest(self, new ClearScrollRequest(), requestClosure, self.&clearScroll)
     }
 
     /**
@@ -837,11 +756,9 @@ class ClientExtensions extends AbstractClientExtensions {
      * @param self The {@code this} reference for the {@link Client}
      * @param requestClosure The map-like closure that configures the {@link TermVectorsRequest}.
      * @return Never {@code null}.
-     * @deprecated As of 1.5, replaced by {@link ClientExtensions#termVectorsAsync}.
      */
-    @Deprecated
-    static ListenableActionFuture<TermVectorsResponse> termVectors(Client self, Closure requestClosure) {
-        termVectorsAsync(self, requestClosure)
+    static TermVectorsResponse termVectors(Client self, Closure requestClosure) {
+        doRequest(self, new TermVectorsRequest(), requestClosure, self.&termVectors)
     }
 
     /**
@@ -852,7 +769,6 @@ class ClientExtensions extends AbstractClientExtensions {
      * @return Never {@code null}.
      */
     static ListenableActionFuture<TermVectorsResponse> termVectorsAsync(Client self, Closure requestClosure) {
-        // index, type and id are expected to be set by the closure
         doRequestAsync(self, new TermVectorsRequest(), requestClosure, self.&termVectors)
     }
 
@@ -865,8 +781,8 @@ class ClientExtensions extends AbstractClientExtensions {
      * @deprecated As of 2.0, replaced by {@link ClientExtensions#termVectors}.
      */
     @Deprecated
-    static ListenableActionFuture<TermVectorsResponse> termVector(Client self, Closure requestClosure) {
-        termVectorsAsync(self, requestClosure)
+    static TermVectorsResponse termVector(Client self, Closure requestClosure) {
+        termVectors(self, requestClosure)
     }
 
     /**
@@ -888,11 +804,9 @@ class ClientExtensions extends AbstractClientExtensions {
      * @param self The {@code this} reference for the {@link Client}
      * @param requestClosure The map-like closure that configures the {@link MultiTermVectorsRequest}.
      * @return Never {@code null}.
-     * @deprecated As of 1.5, replaced by {@link ClientExtensions#multiTermVectorsAsync}.
      */
-    @Deprecated
-    static ListenableActionFuture<MultiTermVectorsResponse> multiTermVectors(Client self, Closure requestClosure) {
-        multiTermVectorsAsync(self, requestClosure)
+    static MultiTermVectorsResponse multiTermVectors(Client self, Closure requestClosure) {
+        doRequest(self, new MultiTermVectorsRequest(), requestClosure, self.&multiTermVectors)
     }
 
     /**
@@ -912,11 +826,9 @@ class ClientExtensions extends AbstractClientExtensions {
      * @param self The {@code this} reference for the {@link Client}
      * @param requestClosure The map-like closure that configures the {@link PercolateRequest}.
      * @return Never {@code null}.
-     * @deprecated As of 1.5, replaced by {@link ClientExtensions#percolateAsync}.
      */
-    @Deprecated
-    static ListenableActionFuture<PercolateResponse> percolate(Client self, Closure requestClosure) {
-        percolateAsync(self, requestClosure)
+    static PercolateResponse percolate(Client self, Closure requestClosure) {
+        doRequest(self, new PercolateRequest(), requestClosure, self.&percolate)
     }
 
     /**
@@ -936,11 +848,9 @@ class ClientExtensions extends AbstractClientExtensions {
      * @param self The {@code this} reference for the {@link Client}
      * @param requestClosure The map-like closure that configures the {@link MultiPercolateRequest}.
      * @return Never {@code null}.
-     * @deprecated As of 1.5, replaced by {@link ClientExtensions#multiPercolateAsync}.
      */
-    @Deprecated
-    static ListenableActionFuture<MultiPercolateResponse> multiPercolate(Client self, Closure requestClosure) {
-        multiPercolateAsync(self, requestClosure)
+    static MultiPercolateResponse multiPercolate(Client self, Closure requestClosure) {
+        doRequest(self, new MultiPercolateRequest(), requestClosure, self.&multiPercolate)
     }
 
     /**
@@ -961,11 +871,9 @@ class ClientExtensions extends AbstractClientExtensions {
      * @param requestClosure The map-like closure that configures the {@link ExplainRequest}.
      * @return Never {@code null}.
      * @throws NullPointerException if any parameter is {@code null}
-     * @deprecated As of 1.5, replaced by {@link ClientExtensions#explainAsync}.
      */
-    @Deprecated
-    static ListenableActionFuture<ExplainResponse> explain(Client self, Closure requestClosure) {
-        explainAsync(self, requestClosure)
+    static ExplainResponse explain(Client self, Closure requestClosure) {
+        doRequest(self, new ExplainRequest(null, null, null), requestClosure, self.&explain)
     }
 
     /**
@@ -996,7 +904,7 @@ class ClientExtensions extends AbstractClientExtensions {
      *         //        use of this script
      *         script = "ctx._source.count += count"
      *     }
-     * }.actionGet()
+     * }
      * </pre>
      * Once the above script is added, then you could make use of it by using it with an {@link UpdateRequest}.
      * <pre>
@@ -1011,17 +919,15 @@ class ClientExtensions extends AbstractClientExtensions {
      *             count = 5
      *         }
      *     }
-     * }.actionGet()
+     * }
      *
      * @param self The {@code this} reference for the {@link Client}
      * @param requestClosure The map-like closure that configures the {@link PutIndexedScriptRequest}.
      * @return Never {@code null}.
      * @throws NullPointerException if any parameter is {@code null}
-     * @deprecated As of 1.5, replaced by {@link ClientExtensions#putIndexedScriptAsync}.
      */
-    @Deprecated
-    static ListenableActionFuture<PutIndexedScriptResponse> putIndexedScript(Client self, Closure requestClosure) {
-        putIndexedScriptAsync(self, requestClosure)
+    static PutIndexedScriptResponse putIndexedScript(Client self, Closure requestClosure) {
+        doRequest(self, new PutIndexedScriptRequest(), requestClosure, self.&putIndexedScript)
     }
 
     /**
@@ -1072,18 +978,16 @@ class ClientExtensions extends AbstractClientExtensions {
      * GetIndexedScriptResponse response = client.getIndexedScript {
      *     id 'my-script-name'
      *     scriptLang 'groovy'
-     * }.actionGet()
+     * }
      * </pre>
      *
      * @param self The {@code this} reference for the {@link Client}
      * @param requestClosure The map-like closure that configures the {@link GetIndexedScriptRequest}.
      * @return Never {@code null}.
      * @throws NullPointerException if any parameter is {@code null}
-     * @deprecated As of 1.5, replaced by {@link ClientExtensions#getIndexedScriptAsync}.
      */
-    @Deprecated
-    static ListenableActionFuture<GetIndexedScriptResponse> getIndexedScript(Client self, Closure requestClosure) {
-        getIndexedScriptAsync(self, requestClosure)
+    static GetIndexedScriptResponse getIndexedScript(Client self, Closure requestClosure) {
+        doRequest(self, new GetIndexedScriptRequest(), requestClosure, self.&getIndexedScript)
     }
 
     /**
@@ -1117,12 +1021,9 @@ class ClientExtensions extends AbstractClientExtensions {
      * @param requestClosure The map-like closure that configures the {@link DeleteIndexedScriptRequest}.
      * @return Never {@code null}.
      * @throws NullPointerException if any parameter is {@code null}
-     * @deprecated As of 1.5, replaced by {@link ClientExtensions#deleteIndexedScriptAsync}.
      */
-    @Deprecated
-    static ListenableActionFuture<DeleteIndexedScriptResponse> deleteIndexedScript(Client self,
-                                                                                   Closure requestClosure) {
-        deleteIndexedScriptAsync(self, requestClosure)
+    static DeleteIndexedScriptResponse deleteIndexedScript(Client self, Closure requestClosure) {
+        doRequest(self, new DeleteIndexedScriptRequest(), requestClosure, self.&deleteIndexedScript)
     }
 
     /**
@@ -1155,11 +1056,10 @@ class ClientExtensions extends AbstractClientExtensions {
      * @param requestClosure The map-like closure that configures the {@link MoreLikeThisRequest}.
      * @return Never {@code null}.
      * @throws NullPointerException if any parameter is {@code null} except {@code index}
-     * @deprecated As of 1.5, replaced by {@link ClientExtensions#moreLikeThisAsync}.
      */
-    @Deprecated
-    static ListenableActionFuture<SearchResponse> moreLikeThis(Client self, String index, Closure requestClosure) {
-        moreLikeThisAsync(self, index, requestClosure)
+    static SearchResponse moreLikeThis(Client self, String index, Closure requestClosure) {
+        // the only one that _requires_ the index as a parameter/constructor arg (no public setter)
+        doRequest(self, Requests.moreLikeThisRequest(index), requestClosure, self.&moreLikeThis)
     }
 
     /**
