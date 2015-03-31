@@ -52,6 +52,8 @@ class IndicesAdminClientExtensionsActionTests extends AbstractClientTests {
         indicesAdminClient = client.admin.indices
     }
 
+    // REPLACE WITH non-Async variants in 2.0
+
     @Test
     void testRefreshRequest() {
         String docId = indexDoc(indexName, typeName) {
@@ -67,6 +69,40 @@ class IndicesAdminClientExtensionsActionTests extends AbstractClientTests {
 
         // because we have refreshed the index, we should now be able to search for documents guaranteed
         SearchResponse searchResponse = client.search {
+            indices indexName
+            types typeName
+            source {
+                query {
+                    match {
+                        name = "needle"
+                    }
+                }
+            }
+        }.actionGet()
+
+        assert searchResponse.hits.totalHits == 1
+        assert searchResponse.hits.hits[0].id == docId
+    }
+
+    //
+    // START OF requestAsync test variants (combine sections with sync versus async variant side-by-side in 2.0)
+    //
+
+    @Test
+    void testRefreshRequestAsync() {
+        String docId = indexDoc(indexName, typeName) {
+            name = "needle"
+        }
+
+        // refresh the index to guarantee searchability
+        RefreshResponse response = indicesAdminClient.refreshAsync {
+            indices indexName
+        }.actionGet()
+
+        assert response.failedShards == 0
+
+        // because we have refreshed the index, we should now be able to search for documents guaranteed
+        SearchResponse searchResponse = client.searchAsync {
             indices indexName
             types typeName
             source {
