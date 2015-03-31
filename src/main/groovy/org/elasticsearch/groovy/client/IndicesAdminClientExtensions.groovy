@@ -99,7 +99,7 @@ class IndicesAdminClientExtensions extends AbstractClientExtensions {
      * @throws NullPointerException if any parameter is {@code null}
      */
     static ListenableActionFuture<RefreshResponse> refresh(IndicesAdminClient self, Closure requestClosure) {
-        doRequest(self, Requests.refreshRequest(), requestClosure, self.&refresh)
+        doRequestAsync(self, Requests.refreshRequest(), requestClosure, self.&refresh)
     }
 
     /**
@@ -111,7 +111,7 @@ class IndicesAdminClientExtensions extends AbstractClientExtensions {
      * @throws NullPointerException if any parameter is {@code null}
      */
     static ListenableActionFuture<IndicesExistsResponse> exists(IndicesAdminClient self, Closure requestClosure) {
-        doRequest(self, Requests.indicesExistsRequest(), requestClosure, self.&exists)
+        doRequestAsync(self, Requests.indicesExistsRequest(), requestClosure, self.&exists)
     }
 
     /**
@@ -124,7 +124,7 @@ class IndicesAdminClientExtensions extends AbstractClientExtensions {
      */
     static ListenableActionFuture<TypesExistsResponse> typesExists(IndicesAdminClient self, Closure requestClosure) {
         // indices must be supplied by the closure
-        doRequest(self, new TypesExistsRequest(null), requestClosure, self.&typesExists)
+        doRequestAsync(self, new TypesExistsRequest(null), requestClosure, self.&typesExists)
     }
 
     /**
@@ -136,7 +136,7 @@ class IndicesAdminClientExtensions extends AbstractClientExtensions {
      * @throws NullPointerException if any parameter is {@code null}
      */
     static ListenableActionFuture<IndicesStatsResponse> stats(IndicesAdminClient self, Closure requestClosure) {
-        doRequest(self, new IndicesStatsRequest(), requestClosure, self.&stats)
+        doRequestAsync(self, new IndicesStatsRequest(), requestClosure, self.&stats)
     }
 
     /**
@@ -148,7 +148,7 @@ class IndicesAdminClientExtensions extends AbstractClientExtensions {
      * @throws NullPointerException if any parameter is {@code null}
      */
     static ListenableActionFuture<RecoveryResponse> recoveries(IndicesAdminClient self, Closure requestClosure) {
-        doRequest(self, new RecoveryRequest(), requestClosure, self.&recoveries)
+        doRequestAsync(self, new RecoveryRequest(), requestClosure, self.&recoveries)
     }
 
     /**
@@ -160,7 +160,7 @@ class IndicesAdminClientExtensions extends AbstractClientExtensions {
      * @throws NullPointerException if any parameter is {@code null}
      */
     static ListenableActionFuture<IndicesSegmentResponse> segments(IndicesAdminClient self, Closure requestClosure) {
-        doRequest(self, Requests.indicesExistsRequest(), requestClosure, self.&segments)
+        doRequestAsync(self, Requests.indicesExistsRequest(), requestClosure, self.&segments)
     }
 
     /**
@@ -173,7 +173,7 @@ class IndicesAdminClientExtensions extends AbstractClientExtensions {
      */
     static ListenableActionFuture<CreateIndexResponse> create(IndicesAdminClient self, Closure requestClosure) {
         // index must be set by the closure
-        doRequest(self, Requests.createIndexRequest(null), requestClosure, self.&create)
+        doRequestAsync(self, Requests.createIndexRequest(null), requestClosure, self.&create)
     }
 
     /**
@@ -188,7 +188,7 @@ class IndicesAdminClientExtensions extends AbstractClientExtensions {
      */
     static ListenableActionFuture<DeleteIndexResponse> delete(IndicesAdminClient self, Closure requestClosure) {
         // index must be set by the closure
-        doRequest(self, Requests.deleteIndexRequest(null), requestClosure, self.&delete)
+        doRequestAsync(self, Requests.deleteIndexRequest(null), requestClosure, self.&delete)
     }
 
     /**
@@ -202,7 +202,7 @@ class IndicesAdminClientExtensions extends AbstractClientExtensions {
      */
     static ListenableActionFuture<CloseIndexResponse> close(IndicesAdminClient self, Closure requestClosure) {
         // index must be set by the closure
-        doRequest(self, Requests.closeIndexRequest(null), requestClosure, self.&close)
+        doRequestAsync(self, Requests.closeIndexRequest(null), requestClosure, self.&close)
     }
 
     /**
@@ -215,7 +215,7 @@ class IndicesAdminClientExtensions extends AbstractClientExtensions {
      */
     static ListenableActionFuture<OpenIndexResponse> open(IndicesAdminClient self, Closure requestClosure) {
         // index must be set by the closure
-        doRequest(self, Requests.openIndexRequest(null), requestClosure, self.&open)
+        doRequestAsync(self, Requests.openIndexRequest(null), requestClosure, self.&open)
     }
 
     /**
@@ -230,7 +230,7 @@ class IndicesAdminClientExtensions extends AbstractClientExtensions {
      * @throws NullPointerException if any parameter is {@code null}
      */
     static ListenableActionFuture<FlushResponse> flush(IndicesAdminClient self, Closure requestClosure) {
-        doRequest(self, Requests.flushRequest(), requestClosure, self.&flush)
+        doRequestAsync(self, Requests.flushRequest(), requestClosure, self.&flush)
     }
 
     /**
@@ -249,7 +249,7 @@ class IndicesAdminClientExtensions extends AbstractClientExtensions {
      * @throws NullPointerException if any parameter is {@code null}
      */
     static ListenableActionFuture<OptimizeResponse> optimize(IndicesAdminClient self, Closure requestClosure) {
-        doRequest(self, Requests.optimizeRequest(), requestClosure, self.&optimize)
+        doRequestAsync(self, Requests.optimizeRequest(), requestClosure, self.&optimize)
     }
 
     /**
@@ -261,7 +261,7 @@ class IndicesAdminClientExtensions extends AbstractClientExtensions {
      * @throws NullPointerException if any parameter is {@code null}
      */
     static ListenableActionFuture<GetMappingsResponse> getMappings(IndicesAdminClient self, Closure requestClosure) {
-        doRequest(self, new GetMappingsRequest(), requestClosure, self.&getMappings)
+        doRequestAsync(self, new GetMappingsRequest(), requestClosure, self.&getMappings)
     }
 
     /**
@@ -274,7 +274,7 @@ class IndicesAdminClientExtensions extends AbstractClientExtensions {
      */
     static ListenableActionFuture<GetFieldMappingsResponse> getFieldMappings(IndicesAdminClient self,
                                                                              Closure requestClosure) {
-        doRequest(self, new GetFieldMappingsRequest(), requestClosure, self.&getFieldMappings)
+        doRequestAsync(self, new GetFieldMappingsRequest(), requestClosure, self.&getFieldMappings)
     }
 
     /**
@@ -286,7 +286,7 @@ class IndicesAdminClientExtensions extends AbstractClientExtensions {
      * @throws NullPointerException if any parameter is {@code null}
      */
     static ListenableActionFuture<PutMappingResponse> putMapping(IndicesAdminClient self, Closure requestClosure) {
-        doRequest(self, Requests.putMappingRequest(), requestClosure, self.&putMapping)
+        doRequestAsync(self, Requests.putMappingRequest(), requestClosure, self.&putMapping)
     }
 
     /**
@@ -299,7 +299,7 @@ class IndicesAdminClientExtensions extends AbstractClientExtensions {
      */
     static ListenableActionFuture<DeleteMappingResponse> deleteMapping(IndicesAdminClient self,
                                                                        Closure requestClosure) {
-        doRequest(self, Requests.deleteMappingRequest(), requestClosure, self.&deleteMapping)
+        doRequestAsync(self, Requests.deleteMappingRequest(), requestClosure, self.&deleteMapping)
     }
 
     /**
@@ -311,7 +311,7 @@ class IndicesAdminClientExtensions extends AbstractClientExtensions {
      * @throws NullPointerException if any parameter is {@code null}
      */
     static ListenableActionFuture<IndicesAliasesResponse> aliases(IndicesAdminClient self, Closure requestClosure) {
-        doRequest(self, Requests.indexAliasesRequest(), requestClosure, self.&aliases)
+        doRequestAsync(self, Requests.indexAliasesRequest(), requestClosure, self.&aliases)
     }
 
     /**
@@ -323,7 +323,7 @@ class IndicesAdminClientExtensions extends AbstractClientExtensions {
      * @throws NullPointerException if any parameter is {@code null}
      */
     static ListenableActionFuture<GetAliasesResponse> getAliases(IndicesAdminClient self, Closure requestClosure) {
-        doRequest(self, new GetAliasesRequest(), requestClosure, self.&getAliases)
+        doRequestAsync(self, new GetAliasesRequest(), requestClosure, self.&getAliases)
     }
 
     /**
@@ -335,7 +335,7 @@ class IndicesAdminClientExtensions extends AbstractClientExtensions {
      * @throws NullPointerException if any parameter is {@code null}
      */
     static ListenableActionFuture<AliasesExistResponse> aliasesExist(IndicesAdminClient self, Closure requestClosure) {
-        doRequest(self, new GetAliasesRequest(), requestClosure, self.&aliasesExist)
+        doRequestAsync(self, new GetAliasesRequest(), requestClosure, self.&aliasesExist)
     }
 
     /**
@@ -348,7 +348,7 @@ class IndicesAdminClientExtensions extends AbstractClientExtensions {
      */
     static ListenableActionFuture<ClearIndicesCacheResponse> clearCache(IndicesAdminClient self,
                                                                         Closure requestClosure) {
-        doRequest(self, Requests.clearIndicesCacheRequest(), requestClosure, self.&clearCache)
+        doRequestAsync(self, Requests.clearIndicesCacheRequest(), requestClosure, self.&clearCache)
     }
 
     /**
@@ -363,7 +363,7 @@ class IndicesAdminClientExtensions extends AbstractClientExtensions {
      */
     static ListenableActionFuture<UpdateSettingsResponse> updateSettings(IndicesAdminClient self,
                                                                          Closure requestClosure) {
-        doRequest(self, new UpdateSettingsRequest(), requestClosure, self.&updateSettings)
+        doRequestAsync(self, new UpdateSettingsRequest(), requestClosure, self.&updateSettings)
     }
 
     /**
@@ -377,7 +377,7 @@ class IndicesAdminClientExtensions extends AbstractClientExtensions {
     static ListenableActionFuture<PutIndexTemplateResponse> putTemplate(IndicesAdminClient self,
                                                                         Closure requestClosure) {
         // template name expected be supplied by the closure
-        doRequest(self, new PutIndexTemplateRequest(null), requestClosure, self.&putTemplate)
+        doRequestAsync(self, new PutIndexTemplateRequest(null), requestClosure, self.&putTemplate)
     }
 
     /**
@@ -391,7 +391,7 @@ class IndicesAdminClientExtensions extends AbstractClientExtensions {
      * @throws NullPointerException if {@code self} is {@code null}
      */
     static ListenableActionFuture<DeleteIndexTemplateResponse> deleteTemplate(IndicesAdminClient self, String name) {
-        doRequest(self, new DeleteIndexTemplateRequest(name), self.&deleteTemplate)
+        doRequestAsync(self, new DeleteIndexTemplateRequest(name), self.&deleteTemplate)
     }
 
     /**
@@ -404,7 +404,7 @@ class IndicesAdminClientExtensions extends AbstractClientExtensions {
      */
     static ListenableActionFuture<GetIndexTemplatesResponse> getTemplates(IndicesAdminClient self,
                                                                           Closure requestClosure) {
-        doRequest(self, new GetIndexTemplatesRequest(), requestClosure, self.&getTemplates)
+        doRequestAsync(self, new GetIndexTemplatesRequest(), requestClosure, self.&getTemplates)
     }
 
     /**
@@ -417,7 +417,7 @@ class IndicesAdminClientExtensions extends AbstractClientExtensions {
      */
     static ListenableActionFuture<ValidateQueryResponse> validateQuery(IndicesAdminClient self,
                                                                        Closure requestClosure) {
-        doRequest(self, new ValidateQueryRequest(), requestClosure, self.&validateQuery)
+        doRequestAsync(self, new ValidateQueryRequest(), requestClosure, self.&validateQuery)
     }
 
     /**
@@ -430,7 +430,7 @@ class IndicesAdminClientExtensions extends AbstractClientExtensions {
      */
     static ListenableActionFuture<PutWarmerResponse> putWarmer(IndicesAdminClient self, Closure requestClosure) {
         // warmer name is expected to be set by the closure
-        doRequest(self, new PutWarmerRequest(null), requestClosure, self.&putWarmer)
+        doRequestAsync(self, new PutWarmerRequest(null), requestClosure, self.&putWarmer)
     }
 
     /**
@@ -442,7 +442,7 @@ class IndicesAdminClientExtensions extends AbstractClientExtensions {
      * @throws NullPointerException if any parameter is {@code null}
      */
     static ListenableActionFuture<DeleteWarmerResponse> deleteWarmer(IndicesAdminClient self, Closure requestClosure) {
-        doRequest(self, new DeleteWarmerRequest(), requestClosure, self.&deleteWarmer)
+        doRequestAsync(self, new DeleteWarmerRequest(), requestClosure, self.&deleteWarmer)
     }
 
     /**
@@ -454,7 +454,7 @@ class IndicesAdminClientExtensions extends AbstractClientExtensions {
      * @throws NullPointerException if any parameter is {@code null}
      */
     static ListenableActionFuture<GetWarmersResponse> getWarmers(IndicesAdminClient self, Closure requestClosure) {
-        doRequest(self, new GetWarmersRequest(), requestClosure, self.&getWarmers)
+        doRequestAsync(self, new GetWarmersRequest(), requestClosure, self.&getWarmers)
     }
 
     /**
@@ -466,7 +466,7 @@ class IndicesAdminClientExtensions extends AbstractClientExtensions {
      * @throws NullPointerException if any parameter is {@code null}
      */
     static ListenableActionFuture<GetSettingsResponse> getSettings(IndicesAdminClient self, Closure requestClosure) {
-        doRequest(self, new GetSettingsRequest(), requestClosure, self.&getSettings)
+        doRequestAsync(self, new GetSettingsRequest(), requestClosure, self.&getSettings)
     }
 
     /**
@@ -481,6 +481,6 @@ class IndicesAdminClientExtensions extends AbstractClientExtensions {
                                                            String text,
                                                            Closure requestClosure) {
         // text must currently be supplied to the constructor
-        doRequest(self, new AnalyzeRequest(text), requestClosure, self.&analyze)
+        doRequestAsync(self, new AnalyzeRequest(text), requestClosure, self.&analyze)
     }
 }
