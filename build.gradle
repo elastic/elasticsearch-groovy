@@ -265,10 +265,20 @@ if (secretsConfiguration.exists()) {
 }
 
 /**
+ * Generate the Groovydoc jar on demand.
+ */
+task groovydocJar(type: Jar, dependsOn: groovydoc) {
+  classifier = 'groovydoc'
+
+  from groovydoc.destinationDir
+}
+
+/**
  * Generate the source jar on demand.
  */
 task sourcesJar(type: Jar) {
   classifier = 'sources'
+
   from sourceSets.main.allSource
 }
 
@@ -284,6 +294,7 @@ evaluationDependsOn(':grails')
  * Extra artifacts to publish along side the client jar.
  */
 artifacts {
+  archives groovydocJar
   archives sourcesJar
   //
   // TODO: Remove 'archives project(':grails').tasks['jar']' after removing the "grails" subproject
