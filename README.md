@@ -36,6 +36,7 @@ You need to install a version matching your Elasticsearch version:
 |---------------------|-----------------------------|---------------|--------|
 | master              | Build from source           | See below     | 2.4.1  |
 | 1.x                 | [Build from source](https://github.com/elasticsearch/elasticsearch-groovy/tree/1.x) | 7u60 or later | 2.4.1  |
+| 1.5                 | [1.5](https://github.com/elasticsearch/elasticsearch-groovy/tree/1.5) | 7u60 or later | 2.4.1  |
 | 1.4                 | [1.4](https://github.com/elasticsearch/elasticsearch-groovy/tree/1.4) | 7u60 or later | 2.3.7  |
 
 Please read documentation relative to the version that you are using!
@@ -76,7 +77,7 @@ repositories {
 }
 
 dependencies {
-    compile 'org.elasticsearch:elasticsearch-groovy:1.4.4'
+    compile 'org.elasticsearch:elasticsearch-groovy:1.5.0'
 }
 ```
 
@@ -87,7 +88,7 @@ dependencies {
   <dependency>
     <groupId>org.elasticsearch</groupId>
     <artifactId>elasticsearch-groovy</artifactId>
-    <version>1.4.4</version>
+    <version>1.5.0</version>
     <scope>compile</scope>
   </dependency>
 </dependencies>
@@ -106,7 +107,7 @@ repositories {
 
 dependencies {
   // You may be able to use the 'runtime' scope
-  compile group: 'org.elasticsearch', name: 'elasticsearch-groovy', version: '1.4.4', classifier: 'grails'
+  compile group: 'org.elasticsearch', name: 'elasticsearch-groovy', version: '1.5.0', classifier: 'grails'
 }
 ```
 
