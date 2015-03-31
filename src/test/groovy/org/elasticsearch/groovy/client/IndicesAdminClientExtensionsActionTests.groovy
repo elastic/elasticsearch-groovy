@@ -18,6 +18,8 @@
  */
 package org.elasticsearch.groovy.client
 
+import org.apache.lucene.util.LuceneTestCase.BadApple
+
 import org.elasticsearch.action.admin.indices.mapping.get.GetMappingsResponse
 import org.elasticsearch.action.admin.indices.refresh.RefreshResponse
 import org.elasticsearch.action.search.SearchResponse
@@ -80,6 +82,7 @@ class IndicesAdminClientExtensionsActionTests extends AbstractClientTests {
         assert searchResponse.hits.hits[0].id == docId
     }
 
+    @BadApple(bugUrl = 'Checking to see if the logic is flawed, or if the source is flawed')
     @Test
     void testGetMappingRequest() {
         // index a document to guarantee that a mapping exists
