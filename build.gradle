@@ -50,7 +50,7 @@ allprojects {
     // The Lucene snapshot is only used for "build from source" type builds (e.g. SNAPSHOT releases).
     // It stays on the bleeding edge of Lucene releases as expected by the corresponding
     // Elasticsearch version.
-    luceneSnapshotNumber = '1671894'
+    luceneSnapshotNumber = '1673726'
 
     // A map that is defined to contain version numbers for all dependencies in the current release.
     versions = [
@@ -65,7 +65,7 @@ allprojects {
       // Note: Avoid passing around a Groovy String (GString) to avoid issues when the version is
       //       cloned during the uploadArchives step. (Not a problem when it's a constant, but
       //       left alone when using non-snapshot releases to simplify switching)
-      lucene                     : "5.1.0-snapshot-${luceneSnapshotNumber}".toString(),
+      lucene                     : "5.2.0-snapshot-${luceneSnapshotNumber}".toString(),
       mockito                    : '1.10.5',
       'randomizedtesting-runner' : '2.1.10'
     ]
