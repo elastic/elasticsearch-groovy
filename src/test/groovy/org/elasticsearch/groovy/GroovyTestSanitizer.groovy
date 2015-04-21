@@ -21,7 +21,7 @@ package org.elasticsearch.groovy
 import groovy.transform.CompileStatic
 import groovy.transform.TypeChecked
 
-import org.apache.lucene.util.AbstractRandomizedTest
+import org.apache.lucene.util.LuceneTestCase
 import org.codehaus.groovy.reflection.ClassInfo
 import org.elasticsearch.common.collect.ImmutableSet
 
@@ -34,7 +34,7 @@ import java.lang.reflect.Modifier
 /**
  * {@code GroovyTestSanitizer} sanitizes the existing test infrastructure to work well with the Groovy runtime.
  * <ul>
- * <li>Modifies {@link AbstractRandomizedTest} to add Groovy's {@link ClassInfo} type to the list (literally it's a
+ * <li>Modifies {@link LuceneTestCase} to add Groovy's {@link ClassInfo} type to the list (literally it's a
  * {@code Set}) of types that are ignored during the cleanup process.</li>
  * </ul>
  * This should be invoked in a {@code static} block of every abstract test that uses the Elasticsearch test framework.
@@ -80,7 +80,7 @@ class GroovyTestSanitizer {
      */
     private static class GroovyTestSanitizerSingleton {
         /**
-         * Currently, this modifies {@link AbstractRandomizedTest} to add {@link ClassInfo} to the set of known
+         * Currently, this modifies {@link LuceneTestCase} to add {@link ClassInfo} to the set of known
          * static leak types to be ignored.
          */
         static {
@@ -90,7 +90,7 @@ class GroovyTestSanitizer {
             ImmutableSet<String> safeGroovyTypes = ImmutableSet.of(ClassInfo.class.name, SoftReference.class.name)
 
             // this corresponds to a Set<String>
-            Field field = AbstractRandomizedTest.class.getDeclaredField('STATIC_LEAK_IGNORED_TYPES')
+            Field field = LuceneTestCase.class.getDeclaredField('STATIC_LEAK_IGNORED_TYPES')
 
             // the field is private static, so this allows us to mess with it
             field.accessible = true

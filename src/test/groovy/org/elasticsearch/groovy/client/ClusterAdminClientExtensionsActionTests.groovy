@@ -86,7 +86,7 @@ class ClusterAdminClientExtensionsActionTests extends AbstractClientTests {
     @Test
     void testPutRepositoryRequestAndGetRepositoryRequest() {
         String repoName = "test-repo"
-        String absolutePath = newTempDir().absolutePath
+        String absolutePath = createTempDir().toAbsolutePath()
 
         // Create the repository
         PutRepositoryResponse response = clusterAdminClient.putRepository {
@@ -112,7 +112,7 @@ class ClusterAdminClientExtensionsActionTests extends AbstractClientTests {
     @Test
     void testPutRepositoryRequestAndGetRepositoryRequestAsync() {
         String repoName = "test-repo-async"
-        String absolutePath = newTempDir().absolutePath
+        String absolutePath = createTempDir().toAbsolutePath()
 
         // Create the repository
         PutRepositoryResponse response = clusterAdminClient.putRepositoryAsync {
@@ -139,7 +139,7 @@ class ClusterAdminClientExtensionsActionTests extends AbstractClientTests {
     void testCreateSnapshotRequest() {
         String repoName = "test-create-snapshot-repo"
         String snapshotName = "test-create-snapshot"
-        String absolutePath = newTempDir().absolutePath
+        String absolutePath = createTempDir().toAbsolutePath()
 
         // Write a document
         indexDoc(indexName, typeName) { value = "ignored" }
@@ -175,7 +175,7 @@ class ClusterAdminClientExtensionsActionTests extends AbstractClientTests {
     void testCreateSnapshotRequestAsync() {
         String repoName = "test-create-snapshot-repo-async"
         String snapshotName = "test-create-snapshot-async"
-        String absolutePath = newTempDir().absolutePath
+        String absolutePath = createTempDir().toAbsolutePath()
 
         // Write a document
         indexDoc(indexName, typeName) { value = "ignored" }
@@ -211,7 +211,7 @@ class ClusterAdminClientExtensionsActionTests extends AbstractClientTests {
     void testRestoreSnapshotRequest() {
         String repoName = "test-restore-snapshot-repo"
         String snapshotName = "test-restore-snapshot"
-        String absolutePath = newTempDir().absolutePath
+        String absolutePath = createTempDir().toAbsolutePath()
         String restoredIndexName = indexName + "-restored"
         String expectedValue = "expected"
 
@@ -281,7 +281,7 @@ class ClusterAdminClientExtensionsActionTests extends AbstractClientTests {
     void testRestoreSnapshotRequestAsync() {
         String repoName = "test-restore-snapshot-repo-async"
         String snapshotName = "test-restore-snapshot-async"
-        String absolutePath = newTempDir().absolutePath
+        String absolutePath = createTempDir().toAbsolutePath()
         String restoredIndexName = indexName + "-restored-async"
         String expectedValue = "expected"
 
