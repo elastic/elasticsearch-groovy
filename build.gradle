@@ -282,6 +282,28 @@ task sourcesJar(type: Jar) {
   from sourceSets.main.allSource
 }
 
+/**
+ * Generate the test jar on demand.
+ * <p>
+ * The test jar is useful for creating integration tests written in Groovy. It will
+ * appropriately ignore Groovy-created memory. All tests must extend either
+ * {@code AbstractElasticsearchIntegrationTest} or {@code AbstractElasticsearchTestCase}.
+ */
+task testJar(type: Jar) {
+  classifier = 'tests'
+
+  from sourceSets.test.output
+
+  // Any abstract tests are used as the basis to build from
+  include '**/Abstract*'
+  // The Abstract tests need the GroovyTestSanitizer in order to avoid failing due to
+  //  Groovy-created static memory
+  include '**/GroovyTestSanitizer*'
+
+  // Once it does the include, it leaves the empty directories, which are unwanted
+  includeEmptyDirs = false
+}
+
 //
 // TODO: Remove 'evaluationDependsOn(':grails')' after removing the "grails" subproject
 //
@@ -296,6 +318,7 @@ evaluationDependsOn(':grails')
 artifacts {
   archives groovydocJar
   archives sourcesJar
+  archives testJar
   //
   // TODO: Remove 'archives project(':grails').tasks['jar']' after removing the "grails" subproject
   //
