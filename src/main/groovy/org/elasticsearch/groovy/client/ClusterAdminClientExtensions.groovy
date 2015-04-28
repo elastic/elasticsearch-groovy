@@ -25,8 +25,6 @@ import org.elasticsearch.action.admin.cluster.node.hotthreads.NodesHotThreadsReq
 import org.elasticsearch.action.admin.cluster.node.hotthreads.NodesHotThreadsResponse
 import org.elasticsearch.action.admin.cluster.node.info.NodesInfoRequest
 import org.elasticsearch.action.admin.cluster.node.info.NodesInfoResponse
-import org.elasticsearch.action.admin.cluster.node.shutdown.NodesShutdownRequest
-import org.elasticsearch.action.admin.cluster.node.shutdown.NodesShutdownResponse
 import org.elasticsearch.action.admin.cluster.node.stats.NodesStatsRequest
 import org.elasticsearch.action.admin.cluster.node.stats.NodesStatsResponse
 import org.elasticsearch.action.admin.cluster.repositories.delete.DeleteRepositoryRequest
@@ -268,31 +266,6 @@ class ClusterAdminClientExtensions extends AbstractClientExtensions {
     static ListenableActionFuture<NodesHotThreadsResponse> nodesHotThreadsAsync(ClusterAdminClient self,
                                                                                 Closure requestClosure) {
         doRequestAsync(self, new NodesHotThreadsRequest(), requestClosure, self.&nodesHotThreads)
-    }
-
-    /**
-     * Shutdown nodes in the cluster.
-     *
-     * @param self The {@code this} reference for the {@link ClusterAdminClient}.
-     * @param requestClosure The map-like closure that configures the {@link NodesShutdownRequest}.
-     * @return Never {@code null}.
-     * @throws NullPointerException if any parameter is {@code null}
-     */
-    static NodesShutdownResponse nodesShutdown(ClusterAdminClient self, Closure requestClosure) {
-        doRequest(self, Requests.nodesShutdownRequest(), requestClosure, self.&nodesShutdown)
-    }
-
-    /**
-     * Shutdown nodes in the cluster.
-     *
-     * @param self The {@code this} reference for the {@link ClusterAdminClient}.
-     * @param requestClosure The map-like closure that configures the {@link NodesShutdownRequest}.
-     * @return Never {@code null}.
-     * @throws NullPointerException if any parameter is {@code null}
-     */
-    static ListenableActionFuture<NodesShutdownResponse> nodesShutdownAsync(ClusterAdminClient self,
-                                                                            Closure requestClosure) {
-        doRequestAsync(self, Requests.nodesShutdownRequest(), requestClosure, self.&nodesShutdown)
     }
 
     /**
