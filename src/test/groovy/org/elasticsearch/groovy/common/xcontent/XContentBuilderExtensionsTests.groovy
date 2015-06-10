@@ -159,6 +159,15 @@ class XContentBuilderExtensionsTests extends AbstractElasticsearchTestCase {
     }
 
     @Test
+    void testDotObjects() {
+        assert '{"categories":["a","b","c"],"rootprop":"something","test.subprop":10}' == {
+            categories = ['a', 'b', 'c']
+            rootprop = 'something'
+            test.subprop = 10
+        }.asJsonString()
+    }
+
+    @Test
     void testNestedObjects() {
         assert '{"categories":["a","b","c"],"rootprop":"something","test":{"subprop":10}}' == {
             categories = ['a', 'b', 'c']
