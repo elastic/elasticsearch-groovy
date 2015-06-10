@@ -26,9 +26,76 @@ import static org.elasticsearch.groovy.ClosureToMapConverter.mapClosure
  * Tests {@link ClosureToMapConverter}.
  */
 class ClosureToMapConverterTests extends AbstractElasticsearchTestCase {
+    /**
+     * A random {@code long} value.
+     * <p>
+     * This is specifically called out as a local field to ensure that the {@link Closure} properly uses the field via
+     * delegation.
+     */
+    private long value = randomLong()
+
+    /**
+     * "Short Hand" means that we are using using the full property name rather than nesting closures. It's the
+     * difference between
+     * <pre>
+     * {
+     *   x.y.z = 123
+     * }
+     * </pre>
+     * and
+     * <pre>
+     * {
+     *   x {
+     *     y {
+     *       z = 123
+     *     }
+     *   }
+     * }
+     * </pre>
+     * Using the short hand form is <em>not</em> allowed on the right hand side (it adds a lot of unnecessary
+     * complexity).
+     */
+    @Test(expected = IllegalArgumentException)
+    void testShortHandOnRightHandSide_Fails() {
+        mapClosure {
+            x.y.z = randomInt()
+            // NOT ALLOWED:
+            c = x.y.z     // <--- This is not allowed!
+        }
+    }
+
+    @Test(expected = MissingPropertyException)
+    void testShortHand_FailsWithBadOrder() {
+        mapClosure {
+            // Note: You define 'x' to be an int
+            x = randomInt()
+            // Now we try to define 'x.y.z', but 'x' already exists so it gets returned; then it tries to find 'y' as
+            //  a property of 'x', which won't exist
+            x.y.z = randomInt()
+        }
+    }
+
+    @Test
+    void testShortHandValid() {
+        Map<String, Object> values = [key: randomInt()]
+
+        // NOTE: The keys are intentionally ordered. The testShortHand_FailsWithBadOrder test will try the other order
+        Map<String, Object> map = mapClosure {
+            a.b.c = value
+            a = value     // Proper way to reuse the value from a shorthand property
+
+            b.c.d = values.key
+            b = values.key
+        }
+
+        assert map['a.b.c'] == value
+        assert map.a == value
+        assert map['b.c.d'] == values.key
+        assert map.b == values.key
+    }
+
     @Test
     void testFlatMapConversion() {
-        long value = randomLong()
         String string = randomAsciiOfLengthBetween(1, 16)
         Date now = new Date()
         boolean bool = randomBoolean()
@@ -50,8 +117,39 @@ class ClosureToMapConverterTests extends AbstractElasticsearchTestCase {
     }
 
     @Test
+    void testFlatNestedConversion() {
+        String string = randomAsciiOfLengthBetween(1, 16)
+        Date now = new Date()
+        boolean bool = randomBoolean()
+        Map<String, Object> checkMap = [key1: randomInt(), key2: [inner: randomInt()]]
+
+        // This is necessary to handle fields with "." in the name
+        Map<String, Object> map = mapClosure {
+            date = now
+            // Ensure nested field names work
+            object1.id = value
+            // Ensure nested-nested
+            object2.object3.name = string
+            // Ensure nested-nested-nested...
+            object4.object5.object6.valid = bool
+            // Ensure that right-hand side is parsed properly
+            object7.key1 = checkMap.key1
+            object8.key2 = checkMap.key2.inner
+        }
+
+        assert map.date == now
+        // NOTE: You _must_ access the keys as strings because it does _not_ translate
+        // otherwise
+        assert map['object1.id'] == value
+        assert map['object2.object3.name'] == string
+        assert map['object4.object5.object6.valid'] == bool
+        assert map['object7.key1'] == checkMap.key1
+        assert map['object8.key2'] == checkMap.key2.inner
+
+    }
+
+    @Test
     void testReusedVariableMapConversion() {
-        long value = randomLong()
         String string = randomAsciiOfLengthBetween(1, 16)
         Date now = new Date()
         boolean bool = randomBoolean()
@@ -85,7 +183,6 @@ class ClosureToMapConverterTests extends AbstractElasticsearchTestCase {
 
     @Test
     void testListMapConversion() {
-        long value = randomLong()
         List values = [randomAsciiOfLengthBetween(1, 8), randomLong(), randomBoolean()]
 
         Map<String, Object> map = mapClosure {
@@ -99,7 +196,6 @@ class ClosureToMapConverterTests extends AbstractElasticsearchTestCase {
 
     @Test
     void testNestedPropertyMapConversion() {
-        long value = randomLong()
         String firstName = randomAsciiOfLengthBetween(1, 8)
         String lastName = randomAsciiOfLengthBetween(1, 8)
         Date now = new Date()
@@ -128,7 +224,6 @@ class ClosureToMapConverterTests extends AbstractElasticsearchTestCase {
 
     @Test
     void testNestedMethodMapConversion() {
-        long value = randomLong()
         String firstName = randomAsciiOfLengthBetween(1, 8)
         String lastName = randomAsciiOfLengthBetween(1, 8)
         Date now = new Date()
@@ -157,7 +252,6 @@ class ClosureToMapConverterTests extends AbstractElasticsearchTestCase {
 
     @Test
     void testComplexMapConversion() {
-        long value = randomLong()
         String firstName = randomAsciiOfLengthBetween(1, 8)
         String lastName = randomAsciiOfLengthBetween(1, 8)
         Date start = new Date(randomLong())
