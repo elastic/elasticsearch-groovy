@@ -239,35 +239,29 @@ class ClientExtensionsActionTests extends AbstractClientTests {
         String userId = randomInt()
 
         String docId = indexDoc(indexName, typeName) {
-            user = userId
+            user {
+                id = userId
+            }
         }
 
         // refresh the index to guarantee searchability
         client.admin.indices.refresh { indices indexName }.actionGet()
 
-        SearchResponse response = client.search(Requests.searchRequest(indexName).types(typeName).source({
+        SearchResponse response = client.search {
+            indices indexName
+            types typeName
+            source {
                 query {
                     match {
-                        user = userId
+                        user.id = userId
                     }
                 }
-            }.asJsonString())).actionGet()
-
-//        SearchResponse response = client.search {
-//            indices indexName
-//            types typeName
-//            source {
-//                query {
-//                    match {
-//                        user = userId
-//                    }
-//                }
-//            }
-//        }.actionGet()
+            }
+        }.actionGet()
 
         assert response.hits.totalHits == 1
         assert response.hits.hits[0].id == docId
-        assert response.hits.hits[0].source.user == userId
+        assert response.hits.hits[0].source.user.id == userId
     }
 
     @Test
