@@ -192,7 +192,7 @@ repositories {
 }
 
 dependencies {
-  compile 'org.codehaus.groovy:groovy-all:2.4.1:indy'
+  compile 'org.codehaus.groovy:groovy-all:2.4.3:indy'
 }
 ```
 
@@ -203,7 +203,7 @@ dependencies {
   <dependency>
     <groupId>org.codehaus.groovy</groupId>
     <artifactId>groovy-all</artifactId>
-    <version>2.4.1</version>
+    <version>2.4.3</version>
     <classifier>indy</classifier>
     <scope>compile</scope>
   </dependency>
