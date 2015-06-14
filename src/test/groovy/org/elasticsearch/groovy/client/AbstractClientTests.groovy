@@ -66,27 +66,6 @@ abstract class AbstractClientTests extends AbstractElasticsearchIntegrationTest 
     }
 
     /**
-     * Create a new temporary directory.
-     * <p />
-     * Subsequent calls will create different temporary directories.
-     *
-     * @return Never {@code null}.
-     */
-    @Override
-    File newTempDir() {
-        SimpleDateFormat timestampFormat = new SimpleDateFormat("'tests-'yyyyMMddHHmmss'-'SSS");
-
-        // create a new temp directory
-        Path tempDir = Files.createTempDirectory(timestampFormat.format(new Date()))
-
-        // remember the folder for cleanup
-        tempDirs.add(tempDir)
-
-        // give it as a file
-        tempDir.toFile()
-    }
-
-    /**
      * Index the {@code doc} in the {@code indexName} and {@code typeName} with a randomly generated ID that is
      * returned.
      *

@@ -73,7 +73,7 @@ class ClusterAdminClientExtensionsActionTests extends AbstractClientTests {
     @Test
     void testPutRepositoryRequestAndGetRepositoryRequest() {
         String repoName = "test-repo"
-        String absolutePath = newTempDir().absolutePath
+        String absolutePath = randomRepoPath().absolutePath
 
         // Create the repository
         PutRepositoryResponse response = clusterAdminClient.putRepository {
@@ -100,7 +100,7 @@ class ClusterAdminClientExtensionsActionTests extends AbstractClientTests {
     void testCreateSnapshotRequest() {
         String repoName = "test-create-snapshot-repo"
         String snapshotName = "test-create-snapshot"
-        String absolutePath = newTempDir().absolutePath
+        String absolutePath = randomRepoPath().absolutePath
 
         // Write a document
         indexDoc(indexName, typeName) { value = "ignored" }
@@ -136,7 +136,7 @@ class ClusterAdminClientExtensionsActionTests extends AbstractClientTests {
     void testRestoreSnapshotRequest() {
         String repoName = "test-restore-snapshot-repo"
         String snapshotName = "test-restore-snapshot"
-        String absolutePath = newTempDir().absolutePath
+        String absolutePath = randomRepoPath().absolutePath
         String restoredIndexName = indexName + "-restored"
         String expectedValue = "expected"
 
