@@ -98,7 +98,7 @@ abstract class AbstractClientTests extends AbstractElasticsearchIntegrationTest 
     String indexDoc(String indexName, String typeName, Closure doc) {
         String docId = randomInt()
 
-        IndexResponse indexResponse = client.indexAsync {
+        IndexResponse indexResponse = client.index {
             index indexName
             type typeName
             id docId
@@ -172,7 +172,7 @@ abstract class AbstractClientTests extends AbstractElasticsearchIntegrationTest 
      * @throws IllegalArgumentException if any of the {@code indexConfigs} call invoke invalid methods.
      */
     BulkResponse bulkIndex(String indexName, List<Closure> indexConfigs) {
-        BulkResponse bulkResponse = client.bulkAsync {
+        BulkResponse bulkResponse = client.bulk {
             // note: this adds a List<IndexRequest>
             add indexConfigs.collect {
                 Requests.indexRequest(indexName).with(it)
