@@ -77,7 +77,7 @@ class XContentBuilderExtensions {
      * @param type The type of {@code XContent} to create in byte form
      * @return Never {@code null}.
      * @throws NullPointerException if {@code self} is {@code null}
-     * @throws org.elasticsearch.ElasticsearchIllegalArgumentException if {@code type} is unrecognized
+     * @throws org.elasticsearch.ElasticsearchGenerationException if {@code type} is unrecognized
      * @throws IOException if any error occurs while mapping the {@link Closure}
      */
     static byte[] asJsonBytes(Closure self) throws IOException {
@@ -91,7 +91,7 @@ class XContentBuilderExtensions {
      * @param type The type of {@code XContent} to create in byte form
      * @return Never blank.
      * @throws NullPointerException if {@code self} is {@code null}
-     * @throws org.elasticsearch.ElasticsearchIllegalArgumentException if {@code type} is unrecognized
+     * @throws org.elasticsearch.ElasticsearchGenerationException if {@code type} is unrecognized
      * @throws IOException if any error occurs while mapping the {@link Closure}
      */
     static String asJsonString(Closure self) throws IOException {
@@ -106,7 +106,7 @@ class XContentBuilderExtensions {
      * @param type The type of {@code XContent} to create
      * @return Never {@code null}.
      * @throws NullPointerException if {@code self} is {@code null}
-     * @throws org.elasticsearch.ElasticsearchIllegalArgumentException if {@code type} is unrecognized
+     * @throws org.elasticsearch.ElasticsearchGenerationException if {@code type} is unrecognized
      * @throws IOException if any error occurs while mapping the {@link Closure}
      */
     static XContentBuilder build(Closure self, XContentType type) throws IOException {
@@ -121,7 +121,7 @@ class XContentBuilderExtensions {
      * @param type The type of {@code XContent} to create in byte form
      * @return Never {@code null}.
      * @throws NullPointerException if {@code self} is {@code null}
-     * @throws org.elasticsearch.ElasticsearchIllegalArgumentException if {@code type} is unrecognized
+     * @throws org.elasticsearch.ElasticsearchGenerationException if {@code type} is unrecognized
      * @throws IOException if any error occurs while mapping the {@link Closure}
      */
     static byte[] buildBytes(Closure self, XContentType type) throws IOException {
@@ -136,7 +136,7 @@ class XContentBuilderExtensions {
      * @param type The type of {@code XContent} to create in byte form
      * @return Never {@code null}.
      * @throws NullPointerException if {@code self} is {@code null}
-     * @throws org.elasticsearch.ElasticsearchIllegalArgumentException if {@code type} is unrecognized
+     * @throws org.elasticsearch.ElasticsearchGenerationException if {@code type} is unrecognized
      * @throws IOException if any error occurs while mapping the {@link Closure}
      */
     static String buildString(Closure self, XContentType type) throws IOException {

@@ -18,7 +18,6 @@
  */
 package org.elasticsearch.groovy.common.settings
 
-import org.elasticsearch.common.settings.ImmutableSettings
 import org.elasticsearch.common.settings.Settings
 import org.elasticsearch.groovy.AbstractElasticsearchTestCase
 
@@ -62,7 +61,7 @@ class SettingsStaticExtensionsTests extends AbstractElasticsearchTestCase {
 
     @Test
     void testExtensionModuleConfigured() {
-        ImmutableSettings.Builder mapBuilder = ImmutableSettings.settingsBuilder()
+        Settings.Builder mapBuilder = Settings.settingsBuilder()
 
         String value = randomAsciiOfLengthBetween(16, 128)
 
@@ -70,7 +69,7 @@ class SettingsStaticExtensionsTests extends AbstractElasticsearchTestCase {
         mapBuilder.put([key : value])
 
         // built from the closure
-        Settings closureSettings = ImmutableSettings.settingsBuilder {
+        Settings closureSettings = Settings.settingsBuilder {
             key = value
         }.build()
 

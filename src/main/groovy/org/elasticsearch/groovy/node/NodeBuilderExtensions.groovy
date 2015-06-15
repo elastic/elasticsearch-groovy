@@ -18,8 +18,8 @@
  */
 package org.elasticsearch.groovy.node
 
-import org.elasticsearch.ElasticsearchIllegalArgumentException
-import org.elasticsearch.common.settings.ImmutableSettings
+import org.elasticsearch.ElasticsearchGenerationException
+import org.elasticsearch.common.settings.Settings
 import org.elasticsearch.node.NodeBuilder
 
 /**
@@ -34,7 +34,7 @@ class NodeBuilderExtensions {
      * @return Always {@link NodeBuilder#settings()}.
      * @throws NullPointerException if {@code self} is {@code null}
      */
-    static ImmutableSettings.Builder getSettings(NodeBuilder self) {
+    static Settings.Builder getSettings(NodeBuilder self) {
         self.settings()
     }
 
@@ -55,7 +55,7 @@ class NodeBuilderExtensions {
      * @param settings The settings specified as a {@link Closure}
      * @return Always {@code self}.
      * @throws NullPointerException if any parameter is {@code null}
-     * @throws ElasticsearchIllegalArgumentException if the {@code settings} fail to parse as JSON
+     * @throws ElasticsearchGenerationException if the {@code settings} fail to parse as JSON
      */
     static NodeBuilder settings(NodeBuilder self, Closure settings) {
         self.settings().put(settings)

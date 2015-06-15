@@ -65,7 +65,7 @@ class AdminClientExtensionsTests extends AbstractElasticsearchTestCase {
 
     @Test
     void testExtensionModuleConfigured() {
-        Node node = nodeBuilder().local(true).build()
+        Node node = nodeBuilder().local(true).settings { path.home = createTempDir().toString() }.build()
         AdminClient admin = node.client().admin()
 
         assert admin.getCluster() == admin.cluster()

@@ -46,7 +46,6 @@ extensionClasses = \
   org.elasticsearch.groovy.action.deletebyquery.DeleteByQueryRequestExtensions,\
   org.elasticsearch.groovy.action.index.IndexRequestExtensions,\
   org.elasticsearch.groovy.action.indexedscripts.put.PutIndexedScriptRequestExtensions,\
-  org.elasticsearch.groovy.action.mlt.MoreLikeThisRequestExtensions,\
   org.elasticsearch.groovy.action.percolate.PercolateRequestExtensions,\
   org.elasticsearch.groovy.action.search.SearchRequestExtensions,\
   org.elasticsearch.groovy.action.update.UpdateRequestExtensions,\
@@ -56,11 +55,11 @@ extensionClasses = \
   org.elasticsearch.groovy.client.IndicesAdminClientExtensions,\
   org.elasticsearch.groovy.node.NodeBuilderExtensions,\
   org.elasticsearch.groovy.node.NodeExtensions,\
-  org.elasticsearch.groovy.common.settings.ImmutableSettingsBuilderExtensions,\
+  org.elasticsearch.groovy.common.settings.SettingsBuilderExtensions,\
   org.elasticsearch.groovy.common.xcontent.XContentBuilderExtensions
 #
 # Take static methods defined in these comma separated classes and add them as static methods to the class associated
 # with the first method parameter, which is otherwise completely ignored.
 #
 staticExtensionClasses = \
-  org.elasticsearch.groovy.common.settings.ImmutableSettingsStaticExtensions
+  org.elasticsearch.groovy.common.settings.SettingsStaticExtensions

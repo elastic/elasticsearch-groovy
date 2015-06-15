@@ -42,13 +42,11 @@ class NodeExtensionsTests extends AbstractElasticsearchTestCase {
 
     @Test
     void testGetSettings() {
-        Settings settings = mock(Settings)
+        Settings settings = Settings.settingsBuilder().build()
 
         when(node.settings()).thenReturn(settings)
 
         assert NodeExtensions.getSettings(node) == settings
-
-        verifyZeroInteractions(settings)
     }
 
     @Test
@@ -64,7 +62,7 @@ class NodeExtensionsTests extends AbstractElasticsearchTestCase {
 
     @Test
     void testExtensionModuleConfigured() {
-        Node node = nodeBuilder().local(true).build()
+        Node node = nodeBuilder().local(true).settings { path.home = createTempDir().toString() }.build()
 
         assert node.getClient() == node.client()
         assert node.getSettings() == node.settings()

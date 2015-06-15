@@ -25,26 +25,13 @@ import org.elasticsearch.client.Client
 import org.elasticsearch.client.Requests
 import org.elasticsearch.groovy.AbstractElasticsearchIntegrationTest
 
-import org.junit.After
 import org.junit.Before
-
-import java.nio.file.Files
-import java.nio.file.Path
-import java.text.SimpleDateFormat
 
 /**
  * {@code AbstractClientTests} provides helper functionality to tests that make use of {@code Client}s to perform
  * actions.
  */
 abstract class AbstractClientTests extends AbstractElasticsearchIntegrationTest {
-    /**
-     * An optional temporary directory that can be created.
-     * <p />
-     * All items in the list are automatically deleted using
-     * {@link org.codehaus.groovy.runtime.NioGroovyMethods#deleteDir(Path)}.
-     */
-    List<Path> tempDirs = []
-
     /**
      * Test {@link Client} used to process requests.
      */
@@ -53,16 +40,6 @@ abstract class AbstractClientTests extends AbstractElasticsearchIntegrationTest 
     @Before
     void setupClient() {
         client = client()
-    }
-
-    /**
-     * Deletes any temporary directory created for the sake of tests.
-     */
-    @After
-    void cleanUpClient() {
-        tempDirs.each {
-            it.deleteDir()
-        }
     }
 
     /**

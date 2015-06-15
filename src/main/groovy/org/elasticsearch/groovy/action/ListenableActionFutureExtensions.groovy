@@ -21,7 +21,7 @@ package org.elasticsearch.groovy.action
 import org.elasticsearch.action.ActionListener
 import org.elasticsearch.action.ListenableActionFuture
 
-import static org.elasticsearch.common.Preconditions.checkNotNull
+import static com.google.common.base.Preconditions.checkNotNull
 
 /**
  * {@code ListenableActionFutureExtensions} adds Groovy-friendly extensions to {@link ListenableActionFuture}s to

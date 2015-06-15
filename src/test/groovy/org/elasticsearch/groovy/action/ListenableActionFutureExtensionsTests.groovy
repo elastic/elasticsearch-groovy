@@ -18,6 +18,8 @@
  */
 package org.elasticsearch.groovy.action
 
+import com.google.common.collect.ImmutableSet
+
 import org.elasticsearch.ElasticsearchException
 import org.elasticsearch.action.ActionListener
 import org.elasticsearch.action.ActionRequest
@@ -27,12 +29,15 @@ import org.elasticsearch.action.ListenableActionFuture
 import org.elasticsearch.action.support.ActionFilters
 import org.elasticsearch.action.support.PlainListenableActionFuture
 import org.elasticsearch.action.support.TransportAction
-import org.elasticsearch.common.collect.ImmutableSet
-import org.elasticsearch.common.settings.ImmutableSettings
+import org.elasticsearch.common.settings.Settings
 import org.elasticsearch.groovy.AbstractElasticsearchTestCase
+import org.elasticsearch.threadpool.ThreadPool
 
+import org.junit.After
+import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
+import org.junit.rules.TestName
 import org.junit.rules.Timeout
 
 import java.util.concurrent.CountDownLatch
@@ -46,6 +51,26 @@ class ListenableActionFutureExtensionsTests extends AbstractElasticsearchTestCas
      */
     @Rule
     public Timeout timeout = new Timeout(60000)
+    /**
+     * Used to collect each test name for creating the {@link #threadPool}.
+     */
+    @Rule
+    public TestName testName = new TestName()
+
+    /**
+     * {@link ThreadPool} per test created to test the {@link ListenableActionFuture} behavior.
+     */
+    private ThreadPool threadPool
+
+    @Before
+    void createThreadPool() {
+        threadPool = new ThreadPool(testName.methodName)
+    }
+
+    @After
+    void cleanUpThreadPool() {
+        terminate(threadPool)
+    }
 
     @Test
     void testListener_success() {
@@ -326,7 +351,7 @@ class ListenableActionFutureExtensionsTests extends AbstractElasticsearchTestCas
      * @return Never {@code null}.
      */
     private ListenableActionFuture<NoOpResponse> makeRequest(TransportAction<NoOpRequest, NoOpResponse> action) {
-        ListenableActionFuture<NoOpResponse> future = new PlainListenableActionFuture<>(false, null)
+        ListenableActionFuture<NoOpResponse> future = new PlainListenableActionFuture<>(threadPool)
 
         // invoke the action that sends a success/failure "response" to the future
         action.execute(new NoOpRequest(), future)
@@ -339,7 +364,7 @@ class ListenableActionFutureExtensionsTests extends AbstractElasticsearchTestCas
      */
     static abstract class AbstractNoOpAction extends TransportAction<NoOpRequest, NoOpResponse> {
         protected AbstractNoOpAction(String actionName) {
-            super(ImmutableSettings.EMPTY, actionName, null, new ActionFilters(ImmutableSet.of()))
+            super(Settings.EMPTY, actionName, null, new ActionFilters(ImmutableSet.of()))
         }
     }
 

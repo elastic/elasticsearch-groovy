@@ -18,12 +18,13 @@
  */
 package org.elasticsearch.groovy
 
+import com.google.common.collect.ImmutableSet
+
 import groovy.transform.CompileStatic
 import groovy.transform.TypeChecked
 
 import org.apache.lucene.util.LuceneTestCase
 import org.codehaus.groovy.reflection.ClassInfo
-import org.elasticsearch.common.collect.ImmutableSet
 
 import org.junit.Ignore
 

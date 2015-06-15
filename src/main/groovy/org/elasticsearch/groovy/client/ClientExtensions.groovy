@@ -39,7 +39,6 @@ import org.elasticsearch.action.indexedscripts.get.GetIndexedScriptRequest
 import org.elasticsearch.action.indexedscripts.get.GetIndexedScriptResponse
 import org.elasticsearch.action.indexedscripts.put.PutIndexedScriptRequest
 import org.elasticsearch.action.indexedscripts.put.PutIndexedScriptResponse
-import org.elasticsearch.action.mlt.MoreLikeThisRequest
 import org.elasticsearch.action.percolate.MultiPercolateRequest
 import org.elasticsearch.action.percolate.MultiPercolateResponse
 import org.elasticsearch.action.percolate.PercolateRequest
@@ -67,7 +66,7 @@ import org.elasticsearch.common.settings.Settings
 /**
  * {@code ClientExtensions} provides extensions to the Elasticsearch {@link Client} to enable Groovy-friendly
  * requests.
- * <p />
+ * <p>
  * This enables support for using {@link Closure}s to configure (and execute) the various action requests. For example:
  * <pre>
  * ListenableActionFuture&lt;IndexResponse&gt; indexResponse = client.indexAsync {
@@ -90,7 +89,7 @@ import org.elasticsearch.common.settings.Settings
  * The above code would create an {@link IndexRequest}, call {@link IndexRequest#index(String) index("index-name")},
  * {@link IndexRequest#type(String) type("type-name")}, {@link IndexRequest#id(String) id("id-value")}, and {@link
  * IndexRequest#source source(Closure)}.
- * <p />
+ * <p>
  * Note: All requests made by the {@code ClientExtensions} methods are asynchronous and they are invoked immediately.
  * To block until a response is returned, then call {@link ListenableActionFuture#actionGet()} or one of its overloads
  * that allow you to provide a timeout.
@@ -184,7 +183,7 @@ class ClientExtensions extends AbstractClientExtensions {
 
     /**
      * Executes a bulk of index, update, or delete operations.
-     * <p />
+     * <p>
      * An example usage of the Bulk API would be to bulk index your own data, which may make sense to wrap for your own
      * convenience:
      * <pre>
@@ -240,7 +239,7 @@ class ClientExtensions extends AbstractClientExtensions {
 
     /**
      * Executes a bulk of index, update, or delete operations.
-     * <p />
+     * <p>
      * An example usage of the Bulk API would be to bulk index your own data, which may make sense to wrap for your own
      * convenience:
      * <pre>
@@ -296,7 +295,7 @@ class ClientExtensions extends AbstractClientExtensions {
 
     /**
      * Updates a document based on a script or given source.
-     * <p />
+     * <p>
      * For an unscripted example, you could simply replace fields (all or partially) in an existing document:
      * <pre>
      * UpdateResponse response = client.update {
@@ -342,7 +341,7 @@ class ClientExtensions extends AbstractClientExtensions {
 
     /**
      * Updates a document based on a script or given source.
-     * <p />
+     * <p>
      * For an unscripted example, you could simply replace fields (all or partially) in an existing document:
      * <pre>
      * UpdateResponse response = client.updateAsync {
@@ -424,7 +423,7 @@ class ClientExtensions extends AbstractClientExtensions {
 
     /**
      * Gets a document from the index based on the index, type and id.
-     * <p />
+     * <p>
      * Note: Get retrievals are performed in real time.
      * <pre>
      * GetResponse response = client.get {
@@ -445,7 +444,7 @@ class ClientExtensions extends AbstractClientExtensions {
 
     /**
      * Gets a document from the index based on the index, type and id.
-     * <p />
+     * <p>
      * Note: Get retrievals are performed in real time.
      * <pre>
      * GetResponse response = client.getAsync {
@@ -773,32 +772,6 @@ class ClientExtensions extends AbstractClientExtensions {
     }
 
     /**
-     * An action that is the term vectors for a specific document.
-     *
-     * @param self The {@code this} reference for the {@link Client}
-     * @param requestClosure The map-like closure that configures the {@link TermVectorsRequest}.
-     * @return Never {@code null}.
-     * @deprecated As of 2.0, replaced by {@link ClientExtensions#termVectors}.
-     */
-    @Deprecated
-    static TermVectorsResponse termVector(Client self, Closure requestClosure) {
-        termVectors(self, requestClosure)
-    }
-
-    /**
-     * An action that is the term vectors for a specific document.
-     *
-     * @param self The {@code this} reference for the {@link Client}
-     * @param requestClosure The map-like closure that configures the {@link TermVectorsRequest}.
-     * @return Never {@code null}.
-     * @deprecated As of 2.0, this has been replaced by {@link Client#termVectorsAsync}.
-     */
-    @Deprecated
-    static ListenableActionFuture<TermVectorsResponse> termVectorAsync(Client self, Closure requestClosure) {
-        termVectorsAsync(self, requestClosure)
-    }
-
-    /**
      * Multi-get term vectors.
      *
      * @param self The {@code this} reference for the {@link Client}
@@ -1043,39 +1016,5 @@ class ClientExtensions extends AbstractClientExtensions {
     static ListenableActionFuture<DeleteIndexedScriptResponse> deleteIndexedScriptAsync(Client self,
                                                                                         Closure requestClosure) {
         doRequestAsync(self, new DeleteIndexedScriptRequest(), requestClosure, self.&deleteIndexedScript)
-    }
-
-    /**
-     * A more like this action to search for documents that are "like" a specific document.
-     * <p />
-     * This method may be deprecated in favor of one that does not <em>require</em> the {@code index} to be supplied to
-     * the method in the future.
-     *
-     * @param self The {@code this} reference for the {@link Client}
-     * @param index The index to load the document(s) from
-     * @param requestClosure The map-like closure that configures the {@link MoreLikeThisRequest}.
-     * @return Never {@code null}.
-     * @throws NullPointerException if any parameter is {@code null} except {@code index}
-     */
-    static SearchResponse moreLikeThis(Client self, String index, Closure requestClosure) {
-        // the only one that _requires_ the index as a parameter/constructor arg (no public setter)
-        doRequest(self, Requests.moreLikeThisRequest(index), requestClosure, self.&moreLikeThis)
-    }
-
-    /**
-     * A more like this action to search for documents that are "like" a specific document.
-     * <p />
-     * This method may be deprecated in favor of one that does not <em>require</em> the {@code index} to be supplied to
-     * the method in the future.
-     *
-     * @param self The {@code this} reference for the {@link Client}
-     * @param index The index to load the document(s) from
-     * @param requestClosure The map-like closure that configures the {@link MoreLikeThisRequest}.
-     * @return Never {@code null}.
-     * @throws NullPointerException if any parameter is {@code null} except {@code index}
-     */
-    static ListenableActionFuture<SearchResponse> moreLikeThisAsync(Client self, String index, Closure requestClosure) {
-        // the only one that _requires_ the index as a parameter/constructor arg (no public setter)
-        doRequestAsync(self, Requests.moreLikeThisRequest(index), requestClosure, self.&moreLikeThis)
     }
 }

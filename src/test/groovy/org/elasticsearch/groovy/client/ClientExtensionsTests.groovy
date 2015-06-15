@@ -55,18 +55,16 @@ class ClientExtensionsTests extends AbstractElasticsearchTestCase {
 
     @Test
     void testGetIndices() {
-        Settings settings = mock(Settings)
+        Settings settings = Settings.settingsBuilder().build()
 
         when(client.settings()).thenReturn(settings)
 
         assert ClientExtensions.getSettings(client) == settings
-
-        verifyZeroInteractions(settings)
     }
 
     @Test
     void testExtensionModuleConfigured() {
-        Node node = nodeBuilder().local(true).build()
+        Node node = nodeBuilder().local(true).settings { path.home = createTempDir().toString() }.build()
         Client client = node.client()
 
         assert client.getAdmin() == client.admin()

@@ -28,9 +28,9 @@ import org.junit.Test
  */
 class SettingsBuilderExtensionsTests extends AbstractElasticsearchTestCase {
     /**
-     * Tested {@link ImmutableSettings.Builder}.
+     * Tested {@link Settings.Builder}.
      */
-    private final ImmutableSettings.Builder builder = ImmutableSettings.settingsBuilder()
+    private final Settings.Builder builder = Settings.settingsBuilder()
 
     @Test
     void testSettingsClosure() {
@@ -44,9 +44,8 @@ class SettingsBuilderExtensionsTests extends AbstractElasticsearchTestCase {
             arbitrary {
                 field = arbitraryField
             }
-            cluster {
-                name = clusterName
-            }
+            // Tests inner field support
+            cluster.name = clusterName
             node {
                 client = clientNode
                 data = dataNode
@@ -66,7 +65,7 @@ class SettingsBuilderExtensionsTests extends AbstractElasticsearchTestCase {
 
     @Test
     void testExtensionModuleConfigured() {
-        ImmutableSettings.Builder mapBuilder = ImmutableSettings.settingsBuilder()
+        Settings.Builder mapBuilder = Settings.settingsBuilder()
 
         String value = randomAsciiOfLengthBetween(16, 128)
 

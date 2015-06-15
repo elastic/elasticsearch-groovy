@@ -40,9 +40,9 @@ abstract class AbstractClientExtensions {
     protected static
         <Request extends ActionRequest,
          Response extends ActionResponse,
-         Client extends ElasticsearchClient<Client>> Response doRequest(Client client,
-                                                                        Request request,
-                                                                        Closure<Response> requestClosure) {
+         Client extends ElasticsearchClient> Response doRequest(Client client,
+                                                                Request request,
+                                                                Closure<Response> requestClosure) {
         // TODO: After https://github.com/elastic/elasticsearch/issues/9201 is merged, then we can change this to avoid
         //       unnecessary threading (and simplify this method by potentially dropping parameters)!
         doRequestAsync(client, request, requestClosure).actionGet()
@@ -64,10 +64,10 @@ abstract class AbstractClientExtensions {
     protected static
         <Request extends ActionRequest,
          Response extends ActionResponse,
-         Client extends ElasticsearchClient<Client>> Response doRequest(Client client,
-                                                                        Request request,
-                                                                        Closure requestConfig,
-                                                                        Closure<Response> requestClosure) {
+         Client extends ElasticsearchClient> Response doRequest(Client client,
+                                                                Request request,
+                                                                Closure requestConfig,
+                                                                Closure<Response> requestClosure) {
         // configure the request
         if (requestConfig != null) {
             request.with(requestConfig)
@@ -90,11 +90,10 @@ abstract class AbstractClientExtensions {
     protected static
         <Request extends ActionRequest,
          Response extends ActionResponse,
-         Client extends ElasticsearchClient<Client>> PlainListenableActionFuture<Response> doRequestAsync(Client client,
-                                                                                                          Request request,
-                                                                                                          Closure<Response> requestClosure) {
-        PlainListenableActionFuture<Response> responseFuture =
-                new PlainListenableActionFuture<>(request.listenerThreaded(), client.threadPool())
+         Client extends ElasticsearchClient> PlainListenableActionFuture<Response> doRequestAsync(Client client,
+                                                                                                  Request request,
+                                                                                                  Closure<Response> requestClosure) {
+        PlainListenableActionFuture<Response> responseFuture = new PlainListenableActionFuture<>(client.threadPool())
 
         // invoke the request closure (method) that takes the request/response future to respond to
         requestClosure.call(request, responseFuture)
@@ -119,10 +118,10 @@ abstract class AbstractClientExtensions {
     protected static
         <Request extends ActionRequest,
          Response extends ActionResponse,
-         Client extends ElasticsearchClient<Client>> PlainListenableActionFuture<Response> doRequestAsync(Client client,
-                                                                                                          Request request,
-                                                                                                          Closure requestConfig,
-                                                                                                          Closure<Response> requestClosure) {
+         Client extends ElasticsearchClient> PlainListenableActionFuture<Response> doRequestAsync(Client client,
+                                                                                                  Request request,
+                                                                                                  Closure requestConfig,
+                                                                                                  Closure<Response> requestClosure) {
         // configure the request
         if (requestConfig != null) {
             request.with(requestConfig)

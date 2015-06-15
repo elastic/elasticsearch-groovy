@@ -18,7 +18,6 @@
  */
 package org.elasticsearch.groovy.node
 
-import org.elasticsearch.common.settings.ImmutableSettings
 import org.elasticsearch.common.settings.Settings
 import org.elasticsearch.groovy.AbstractElasticsearchTestCase
 import org.elasticsearch.node.Node
@@ -96,23 +95,28 @@ class NodeBuilderExtensionsTests extends AbstractElasticsearchTestCase {
             node {
                 local = true
             }
-            cluster {
-                name = 'test'
-            }
+            cluster.name = 'test'
+            path.home = createTempDir().toString()
         }
 
         // ensure that it always returns a Node
         Node closeNode = builder.node()
 
+        // It hadd better not start as closed
+        assert ! closeNode.closed
+
         // make sure that we close it and that it returns a reference to itself (as opposed to null)
-        closeNode.stop().close()
+        closeNode.close()
+
+        // It had better be closed
+        assert closeNode.closed
     }
 
     @Test
     void testGetSettings() {
         NodeBuilder builder = mock(NodeBuilder)
 
-        ImmutableSettings.Builder settings = mock(ImmutableSettings.Builder)
+        Settings.Builder settings = mock(Settings.Builder)
 
         when(builder.settings()).thenReturn(settings)
 
