@@ -18,16 +18,15 @@
  */
 package org.elasticsearch.groovy.common.settings
 
-import org.elasticsearch.common.settings.ImmutableSettings
 import org.elasticsearch.common.settings.Settings
 import org.elasticsearch.groovy.AbstractElasticsearchTestCase
 
 import org.junit.Test
 
 /**
- * Tests {@link ImmutableSettingsBuilderExtensions}.
+ * Tests {@link SettingsBuilderExtensions}.
  */
-class ImmutableSettingsBuilderExtensionsTests extends AbstractElasticsearchTestCase {
+class SettingsBuilderExtensionsTests extends AbstractElasticsearchTestCase {
     /**
      * Tested {@link ImmutableSettings.Builder}.
      */
@@ -41,7 +40,7 @@ class ImmutableSettingsBuilderExtensionsTests extends AbstractElasticsearchTestC
         boolean localNode = randomBoolean()
         int arbitraryField = randomInt()
 
-        ImmutableSettingsBuilderExtensions.put(builder) {
+        SettingsBuilderExtensions.put(builder) {
             arbitrary {
                 field = arbitraryField
             }

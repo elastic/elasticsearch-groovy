@@ -25,9 +25,9 @@ import org.elasticsearch.groovy.AbstractElasticsearchTestCase
 import org.junit.Test
 
 /**
- * Tests {@link ImmutableSettingsStaticExtensions}.
+ * Tests {@link SettingsStaticExtensions}.
  */
-class ImmutableSettingsStaticExtensionsTests extends AbstractElasticsearchTestCase {
+class SettingsStaticExtensionsTests extends AbstractElasticsearchTestCase {
 
     @Test
     void testSettingsClosure() {
@@ -39,7 +39,7 @@ class ImmutableSettingsStaticExtensionsTests extends AbstractElasticsearchTestCa
 
         // verify that the settings were added appropriately (note: first arg is unused and not shown in the actual
         //  extension version, as shown in the final test in this test class)
-        Settings settings = ImmutableSettingsStaticExtensions.settingsBuilder(null) {
+        Settings settings = SettingsStaticExtensions.settingsBuilder(null) {
             arbitrary {
                 field = arbitraryField
             }

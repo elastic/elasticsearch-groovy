@@ -18,8 +18,8 @@
  */
 package org.elasticsearch.groovy.common.settings
 
-import org.elasticsearch.ElasticsearchIllegalArgumentException
-import org.elasticsearch.common.settings.ImmutableSettings
+import org.elasticsearch.ElasticsearchGenerationException
+import org.elasticsearch.common.settings.Settings
 import org.elasticsearch.common.settings.loader.JsonSettingsLoader
 
 /**
@@ -28,11 +28,11 @@ import org.elasticsearch.common.settings.loader.JsonSettingsLoader
  * In particular, this adds the ability to specify settings in the form of a {@link Closure} in addition to existing
  * options.
  */
-class ImmutableSettingsBuilderExtensions {
+class SettingsBuilderExtensions {
     /**
      * Explicit settings to set.
      * <pre>
-     * ImmutableSettings.Builder.settingsBuilder().put {
+     * Settings.Builder.settingsBuilder().put {
      *     node {
      *         client = true
      *     }
@@ -45,18 +45,18 @@ class ImmutableSettingsBuilderExtensions {
      * will in effect create a JSON map out of the {@code settings} and then convert that to a string-to-string mapping
      * for you.
      *
-     * @param self The {@code this} reference for the {@link ImmutableSettings.Builder}
+     * @param self The {@code this} reference for the {@link Settings.Builder}
      * @param settings The settings specified as a {@link Closure}
      * @return Always {@code self}.
      * @throws NullPointerException if any parameter is {@code null}
-     * @throws ElasticsearchIllegalArgumentException if the {@code settings} fail to parse as JSON
+     * @throws ElasticsearchGenerationException if the {@code settings} fail to parse as JSON
      */
-    static ImmutableSettings.Builder put(ImmutableSettings.Builder self, Closure settings) {
+    static Settings.Builder put(Settings.Builder self, Closure settings) {
         try {
             self.put(new JsonSettingsLoader().load(settings.asJsonBytes()))
         }
         catch (IOException e) {
-            throw new ElasticsearchIllegalArgumentException("Closure failed to map to valid JSON.", e)
+            throw new ElasticsearchGenerationException("Closure failed to map to valid JSON.", e)
         }
 
         self

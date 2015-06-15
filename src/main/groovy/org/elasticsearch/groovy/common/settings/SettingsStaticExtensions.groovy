@@ -18,21 +18,20 @@
  */
 package org.elasticsearch.groovy.common.settings
 
-import org.elasticsearch.ElasticsearchIllegalArgumentException
-import org.elasticsearch.common.settings.ImmutableSettings
+import org.elasticsearch.ElasticsearchGenerationException
+import org.elasticsearch.common.settings.Settings
 
 /**
- * {@code ImmutableSettingsStaticExtensions} provide {@code static}, Groovy-friendly extensions to
- * {@link ImmutableSettings}.
- * <p />
+ * {@code SettingsStaticExtensions} provide {@code static}, Groovy-friendly extensions to {@link Settings}.
+ * <p>
  * In particular, this adds the ability to specify settings in the form of a {@link Closure} when creating a
- * new {@link ImmutableSettings#settingsBuilder() Builder}.
+ * new {@link Settings#settingsBuilder() Builder}.
  */
-class ImmutableSettingsStaticExtensions {
+class SettingsStaticExtensions {
     /**
      * Explicit settings to set.
      * <pre>
-     * ImmutableSettings.settingsBuilder {
+     * Settings.settingsBuilder {
      *     node {
      *         client = true
      *     }
@@ -44,11 +43,11 @@ class ImmutableSettingsStaticExtensions {
      *
      * @param selfType The {@code static} type that this method is added too (unused)
      * @param settings The settings specified as a {@link Closure}
-     * @return Always a new {@link ImmutableSettings.Builder} with the {@code settings} applied to it
+     * @return Always a new {@link Settings.Builder} with the {@code settings} applied to it
      * @throws NullPointerException if {@code settings} is {@code null}
-     * @throws ElasticsearchIllegalArgumentException if the {@code settings} fail to parse as JSON
+     * @throws ElasticsearchGenerationException if the {@code settings} fail to parse as JSON
      */
-    static ImmutableSettings.Builder settingsBuilder(ImmutableSettings selfType, Closure settings) {
-        ImmutableSettings.settingsBuilder().put(settings)
+    static Settings.Builder settingsBuilder(Settings selfType, Closure settings) {
+        Settings.settingsBuilder().put(settings)
     }
 }
