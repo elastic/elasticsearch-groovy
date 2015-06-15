@@ -72,9 +72,6 @@ Adding to your Groovy projects
 ```gradle
 repositories {
   mavenCentral()
-  maven {
-    url "https://oss.sonatype.org/content/repositories/snapshots/"
-  }
 }
 
 dependencies {
@@ -85,13 +82,6 @@ dependencies {
 ### Maven
 
 ```xml
-<repositories>
-  <repository>
-    <id>oss-snapshots</id>
-    <name>Sonatype OSS Snapshots</name>
-    <url>https://oss.sonatype.org/content/repositories/snapshots/</url>
-  </repository>
-</repositories>
 <dependencies>
   <dependency>
     <groupId>org.elasticsearch</groupId>
@@ -111,7 +101,6 @@ to load Groovy extension modules.
 ```gradle
 repositories {
   mavenCentral()
-  mavenRepo "https://oss.sonatype.org/content/repositories/snapshots/"
 }
 
 dependencies {
