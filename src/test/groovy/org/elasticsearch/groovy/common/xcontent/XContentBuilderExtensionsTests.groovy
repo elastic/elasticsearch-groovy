@@ -23,7 +23,7 @@ import org.elasticsearch.common.xcontent.XContentFactory
 import org.elasticsearch.common.xcontent.XContentParser
 import org.elasticsearch.common.xcontent.XContentType
 import org.elasticsearch.groovy.AbstractElasticsearchTestCase
-
+import org.junit.After
 import org.junit.Test
 
 /**
@@ -59,35 +59,58 @@ class XContentBuilderExtensionsTests extends AbstractElasticsearchTestCase {
      */
     private final XContentBuilder jsonBuilder = XContentFactory.contentBuilder(XContentType.JSON)
 
+    /**
+     * If non-{@code null}, this will be automatically closed after testing.
+     */
+    private XContentParser parser = null
+
+    /**
+     *
+     */
+    @After
+    void closeParser() {
+        parser?.close()
+    }
+
     @Test
     void testAsJsonBytes() {
         byte[] bytes = XContentBuilderExtensions.asJsonBytes(closure)
-        XContentParser jsonParser = XContentType.JSON.xContent().createParser(bytes)
 
-        assert closure.asMap() == jsonParser.mapAndClose()
+        // close the parser after it's used
+        parser = XContentType.JSON.xContent().createParser(bytes)
+
+        assert closure.asMap() == parser.map()
     }
 
     @Test
     void testAsJsonString() {
         String string = XContentBuilderExtensions.asJsonString(closure)
-        XContentParser jsonParser = XContentType.JSON.xContent().createParser(string)
 
-        assert closure.asMap() == jsonParser.mapAndClose()
+        // close the parser after it's used
+        parser = XContentType.JSON.xContent().createParser(string)
+
+        assert closure.asMap() == parser.map()
     }
 
     @Test
     void testBuild() {
         XContentBuilder builder = XContentBuilderExtensions.build(closure, type)
 
+        // close the parser after it's used
+        parser = type.xContent().createParser(builder.bytes())
+
         assert type == builder.contentType()
-        assert closure.asMap() == type.xContent().createParser(builder.bytes()).mapAndClose()
+        assert closure.asMap() == parser.map()
     }
 
     @Test
     void testBuildBytes() {
         byte[] bytes = XContentBuilderExtensions.buildBytes(closure, type)
 
-        assert closure.asMap() == type.xContent().createParser(bytes).mapAndClose()
+        // close the parser after it's used
+        parser = type.xContent().createParser(bytes)
+
+        assert closure.asMap() == parser.map()
     }
 
     @Test
@@ -96,7 +119,10 @@ class XContentBuilderExtensionsTests extends AbstractElasticsearchTestCase {
         //  avoid using the binary only formats and unnecessarily reusing JSON)
         String string = XContentBuilderExtensions.buildString(closure, XContentType.YAML)
 
-        assert closure.asMap() == XContentType.YAML.xContent().createParser(string).mapAndClose()
+        // close the parser after it's used
+        parser = XContentType.YAML.xContent().createParser(string)
+
+        assert closure.asMap() == parser.map()
     }
 
     @Test

@@ -65,9 +65,9 @@ allprojects {
       // Note: Avoid passing around a Groovy String (GString) to avoid issues when the version is
       //       cloned during the uploadArchives step. (Not a problem when it's a constant, but
       //       left alone when using non-snapshot releases to simplify switching)
-      lucene                     : "5.2.0".toString(),
+      lucene                     : "5.2.1".toString(),
       mockito                    : '1.10.5',
-      'randomizedtesting-runner' : '2.1.11'
+      'randomizedtesting-runner' : '2.1.14'
     ]
 
     // A map defining shorthand names to reference external dependencies.
