@@ -39,7 +39,9 @@ apply plugin: 'groovy'
  * Where order does <em>not</em> matter for the dependencies, then they are sorted alphabetically.
  */
 dependencies {
-  testCompile externalDeps['hamcrest'],
+  testCompile externalDeps['hamcrest-core'],
+              externalDeps['hamcrest-library'],
+              externalDeps['junit'],
               externalDeps['lucene-test-framework'],
               externalDeps['mockito'],
               externalDeps['randomizedtesting-runner'],
