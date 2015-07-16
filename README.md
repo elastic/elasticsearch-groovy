@@ -1,31 +1,44 @@
 Groovy Client for Elasticsearch
 ===============================
 
-The Elasticsearch Groovy client project helps you to use Elasticsearch in Groovy projects. This Groovy client is
-different from previous releases in that it inherently supports 100% of the Elasticsearch API for the supported version
-by using the Groovy extension feature with the Java client. Literally anything possible in the same version of the Java
-client is possible with the Groovy client, plus some Groovy-friendly extensions.
+The Elasticsearch Groovy client project helps you to use Elasticsearch in Groovy projects. This Groovy client inherently
+supports 100% of the Elasticsearch API for the supported version by using Groovy extension modules with the Java client.
+Literally anything possible in the same version of the Java client is possible with the Groovy client, plus some
+Groovy-friendly extensions.
 
-In much earlier versions of the client, you would run code like this:
-
-```groovy
-GClient client = new GNodeBuilder().settings { ... }.node().client
-GActionFuture future = client.index { ... }.gexecute()
-```
-
-This would provide a `GClient` from a `GNodeBuilder`, which was meant to provide the same features as the Java client's
-`Client` and `NodeBuilder`. However, because they had to be written to support every new feature of the Java client, it
-was missing some method variants.
-
-In this release, all of the `G`-prefixed classes have been replaced by extensions, which means that you can now use the
-Java client code from any Java client example that you find online <em>with the benefit of the Groovy extensions</em>.
+You can use the Java client code from any Java client example that you find online _with the benefit of the Groovy
+extensions_.
 
 ```groovy
-Client client = nodeBuilder().settings { ... }.node().client
-ListenableActionFuture<IndexResponse> future = client.index { ... }
+TransportClient client = new TransportClient(ImmutableSettings.settingsBuilder {
+  client.transport.sniff = true
+  cluster.name = "your-cluster-name"
+})
+
+// identical to the Java client:
+client.addTransportAddress( ... )
+
+String userId = "some-user-id"
+
+// asynchronously fetch the results
+ListenableActionFuture<SearchResponse> future = client.search {
+  indices "your-index"
+  types "your-type"
+  source {
+    query {
+      match {
+        user.id = userId
+      }
+    }
+  }
+}
+
+// block until the response is retrieved (you could alternatively use listeners)
+SearchResponse response = future.actionGet()
 ```
 
-Besides the usage of `Closure`s, the above example should look very familiar to existing Java client users.
+Besides the usage of `Closure`s, the above example should look very familiar to any existing Java client users, as well
+as those familiar with the Elasticsearch DSL (Domain Specific Language used for indexing and querying).
 
 Versions
 --------
@@ -35,7 +48,7 @@ You need to install a version matching your Elasticsearch version:
 |    Elasticsearch    |     Groovy Client           |    Java       | Groovy |
 |---------------------|-----------------------------|---------------|--------|
 | master              | Build from source           | See below     | 2.4.3  |
-| 1.x                 | [Build from source](https://github.com/elasticsearch/elasticsearch-groovy/tree/1.x) | 7u60 or later | 2.4.3  |
+| 1.7                 | [1.7](https://github.com/elasticsearch/elasticsearch-groovy/tree/1.7) | 7u60 or later | 2.4.3  |
 | 1.6                 | [1.6](https://github.com/elasticsearch/elasticsearch-groovy/tree/1.6) | 7u60 or later | 2.4.3  |
 | 1.5                 | [1.5](https://github.com/elasticsearch/elasticsearch-groovy/tree/1.5) | 7u60 or later | 2.4.1  |
 | 1.4                 | [1.4](https://github.com/elasticsearch/elasticsearch-groovy/tree/1.4) | 7u60 or later | 2.3.7  |
@@ -78,7 +91,7 @@ repositories {
 }
 
 dependencies {
-  compile 'org.elasticsearch:elasticsearch-groovy:1.6.0'
+  compile 'org.elasticsearch:elasticsearch-groovy:1.7.0'
 }
 ```
 
@@ -89,7 +102,7 @@ dependencies {
   <dependency>
     <groupId>org.elasticsearch</groupId>
     <artifactId>elasticsearch-groovy</artifactId>
-    <version>1.6.0</version>
+    <version>1.7.0</version>
     <scope>compile</scope>
   </dependency>
 </dependencies>
@@ -108,7 +121,7 @@ repositories {
 
 dependencies {
   // You may be able to use the 'runtime' scope
-  compile group: 'org.elasticsearch', name: 'elasticsearch-groovy', version: '1.6.0', classifier: 'grails'
+  compile group: 'org.elasticsearch', name: 'elasticsearch-groovy', version: '1.7.0', classifier: 'grails'
 }
 ```
 
