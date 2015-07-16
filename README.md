@@ -47,7 +47,7 @@ In general, the version number will match the release of Elasticsearch.
 
 |    Elasticsearch    |     Groovy Client           |    Java       | Groovy |
 |---------------------|-----------------------------|---------------|--------|
-| 1.7.0-SNAPSHOT      | 1.7.0-SNAPSHOT              | 7u60 or later | 2.4.3  |
+| 1.7.0               | 1.7.0                       | 7u60 or later | 2.4.3  |
 
 To build a `SNAPSHOT` version, you need to build it with Gradle (see below for further details):
 
@@ -84,31 +84,21 @@ Adding to your Groovy projects
 ```gradle
 repositories {
   mavenCentral()
-  maven {
-    url "https://oss.sonatype.org/content/repositories/snapshots/"
-  }
 }
 
 dependencies {
-  compile 'org.elasticsearch:elasticsearch-groovy:1.7.0-SNAPSHOT'
+  compile 'org.elasticsearch:elasticsearch-groovy:1.7.0'
 }
 ```
 
 ### Maven
 
 ```xml
-<repositories>
-  <repository>
-    <id>oss-snapshots</id>
-    <name>Sonatype OSS Snapshots</name>
-    <url>https://oss.sonatype.org/content/repositories/snapshots/</url>
-  </repository>
-</repositories>
 <dependencies>
   <dependency>
     <groupId>org.elasticsearch</groupId>
     <artifactId>elasticsearch-groovy</artifactId>
-    <version>1.7.0-SNAPSHOT</version>
+    <version>1.7.0</version>
     <scope>compile</scope>
   </dependency>
 </dependencies>
@@ -123,12 +113,11 @@ to load Groovy extension modules.
 ```gradle
 repositories {
   mavenCentral()
-  mavenRepo "https://oss.sonatype.org/content/repositories/snapshots/"
 }
 
 dependencies {
   // You may be able to use the 'runtime' scope
-  compile group: 'org.elasticsearch', name: 'elasticsearch-groovy', version: '1.7.0-SNAPSHOT', classifier: 'grails'
+  compile group: 'org.elasticsearch', name: 'elasticsearch-groovy', version: '1.7.0', classifier: 'grails'
 }
 ```
 
@@ -267,7 +256,7 @@ License
 
     This software is licensed under the Apache 2 license, quoted below.
 
-    Copyright 2009-2014 Elasticsearch <http://www.elasticsearch.org>
+    Copyright 2009-2015 Elasticsearch <http://www.elasticsearch.org>
 
     Licensed under the Apache License, Version 2.0 (the "License"); you may not
     use this file except in compliance with the License. You may obtain a copy of
