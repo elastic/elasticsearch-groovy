@@ -48,7 +48,7 @@ You need to install a version matching your Elasticsearch version:
 |    Elasticsearch    |     Groovy Client           |    Java       | Groovy |
 |---------------------|-----------------------------|---------------|--------|
 | master              | Build from source           | See below     | 2.4.4  |
-| 1.7                 | [1.7](https://github.com/elasticsearch/elasticsearch-groovy/tree/1.7) | 7u60 or later | 2.4.3  |
+| 1.7                 | [1.7](https://github.com/elasticsearch/elasticsearch-groovy/tree/1.7) | 7u60 or later | 2.4.4  |
 | 1.6                 | [1.6](https://github.com/elasticsearch/elasticsearch-groovy/tree/1.6) | 7u60 or later | 2.4.3  |
 | 1.5                 | [1.5](https://github.com/elasticsearch/elasticsearch-groovy/tree/1.5) | 7u60 or later | 2.4.1  |
 | 1.4                 | [1.4](https://github.com/elasticsearch/elasticsearch-groovy/tree/1.4) | 7u60 or later | 2.3.7  |
@@ -60,6 +60,14 @@ To build a SNAPSHOT version, you need to build it with Gradle (see below for fur
 ```bash
 $ gradle clean installDist
 ```
+
+Groovy Warning
+--------------
+
+Groovy released Groovy 2.4.4 to fix a vulnerability with [CVE-2015-3253](http://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2015-3253).
+
+You are considered vulnerable just by having an earlier version of Groovy on your classpath! All users should upgrade
+to Groovy 2.4.4 as a result.
 
 JVM Warning
 -----------
