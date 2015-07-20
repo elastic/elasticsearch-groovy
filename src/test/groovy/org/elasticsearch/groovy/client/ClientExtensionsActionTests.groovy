@@ -22,6 +22,7 @@ import org.elasticsearch.action.bulk.BulkItemResponse
 import org.elasticsearch.action.bulk.BulkResponse
 import org.elasticsearch.action.count.CountResponse
 import org.elasticsearch.action.delete.DeleteResponse
+import org.elasticsearch.action.explain.ExplainResponse
 import org.elasticsearch.action.get.GetResponse
 import org.elasticsearch.action.get.MultiGetResponse
 import org.elasticsearch.action.index.IndexResponse
@@ -952,6 +953,66 @@ class ClientExtensionsActionTests extends AbstractClientTests {
         }.actionGet()
 
         assert ! getResponse.exists
+    }
+
+    @Test
+    void testExplainRequest() {
+        int matchInteger = randomInt()
+
+        // send in a document to match
+        String docId = indexDoc(indexName, typeName) {
+            value = matchInteger
+        }
+
+        // refresh the index to guarantee searchability
+        assert client.admin.indices.refresh { indices indexName }.failedShards == 0
+
+        // Reference the document that we're interested in (just created) to see if we can find it
+        ExplainResponse response = client.explain {
+            index indexName
+            type typeName
+            id docId
+            source {
+                query {
+                    match {
+                        value = matchInteger
+                    }
+                }
+            }
+        }
+
+        // If it matched, then we know that explain works
+        assert response.match
+    }
+
+    @Test
+    void testExplainRequestAsync() {
+        int matchInteger = randomInt()
+
+        // send in a document to match
+        String docId = indexDoc(indexName, typeName) {
+            value = matchInteger
+        }
+
+        // refresh the index to guarantee searchability
+        assert client.admin.indices.refresh { indices indexName }.failedShards == 0
+
+        // Reference the document that we're interested in (just created) to see if we can find it
+        ExplainResponse response = client.explainAsync {
+            index indexName
+            type typeName
+            id docId
+            source {
+                query {
+                    match {
+                        value = matchInteger
+                    }
+                }
+            }
+        }.actionGet()
+
+        // If it matched, then we know that explain works
+        assert response.match
     }
 
     /**
