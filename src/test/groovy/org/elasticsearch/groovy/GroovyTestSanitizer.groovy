@@ -37,6 +37,8 @@ import java.lang.reflect.Modifier
  * <ul>
  * <li>Modifies {@link LuceneTestCase} to add Groovy's {@link ClassInfo} type to the list (literally it's a
  * {@code Set}) of types that are ignored during the cleanup process.</li>
+ * <li>This also adds the {@code SoftReference} to the list of types are ignored so that we can continue to support
+ * the Grails release.</li>
  * </ul>
  * This should be invoked in a {@code static} block of every abstract test that uses the Elasticsearch test framework.
  * Since all tests are expected to extend either {@code ElasticsearchTestCase} or {@code ElasticsearchIntegrationTest},
@@ -74,10 +76,10 @@ class GroovyTestSanitizer {
     }
 
     /**
-     * An inner class is used to force the JVM to perform its classloader magic. This allows us to use it as though
+     * An inner class is used to force the JVM to perform its Classloader magic. This allows us to use it as though
      * it's locked without ever using locks ourselves.
      * <p />
-     * It can be used as many times as
+     * It can be used as many times as necessary, but it will only be invoked once.
      */
     private static class GroovyTestSanitizerSingleton {
         /**
