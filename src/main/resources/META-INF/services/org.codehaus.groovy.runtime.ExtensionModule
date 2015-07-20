@@ -44,6 +44,7 @@ extensionClasses = \
   org.elasticsearch.groovy.action.admin.indices.settings.put.UpdateSettingsRequestExtensions,\
   org.elasticsearch.groovy.action.count.CountRequestExtensions,\
   org.elasticsearch.groovy.action.deletebyquery.DeleteByQueryRequestExtensions,\
+  org.elasticsearch.groovy.action.explain.ExplainRequestExtensions,\
   org.elasticsearch.groovy.action.index.IndexRequestExtensions,\
   org.elasticsearch.groovy.action.indexedscripts.put.PutIndexedScriptRequestExtensions,\
   org.elasticsearch.groovy.action.percolate.PercolateRequestExtensions,\
