@@ -22,7 +22,7 @@ import org.junit.Test
 
 /**
  * Tests {@link ClosureExtensions}.
- * <p />
+ * <p>
  * These tests assume that {@link ClosureToMapConverter} is appropriately tested.
  */
 class ClosureExtensionsTests extends AbstractElasticsearchTestCase {

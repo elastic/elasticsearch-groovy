@@ -78,7 +78,7 @@ class GroovyTestSanitizer {
     /**
      * An inner class is used to force the JVM to perform its Classloader magic. This allows us to use it as though
      * it's locked without ever using locks ourselves.
-     * <p />
+     * <p>
      * It can be used as many times as necessary, but it will only be invoked once.
      */
     private static class GroovyTestSanitizerSingleton {

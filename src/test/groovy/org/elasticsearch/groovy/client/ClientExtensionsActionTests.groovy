@@ -40,7 +40,7 @@ import org.junit.Test
 
 /**
  * Tests {@code ActionRequest}s added by {@link ClientExtensions}.
- * <p />
+ * <p>
  * This test assumes that the admin client extensions are applied as well.
  */
 class ClientExtensionsActionTests extends AbstractClientTests {
@@ -1017,7 +1017,7 @@ class ClientExtensionsActionTests extends AbstractClientTests {
 
     /**
      * Bulk index a random number of documents containing a random integer field named "value" at its root.
-     * <p />
+     * <p>
      * Document are guaranteed to exist for each value in the {@link List}, but values are not guaranteed to be unique.
      *
      * @return Never {@code null}. Never {@link List#isEmpty() empty}. The size of the resulting {@link List} is

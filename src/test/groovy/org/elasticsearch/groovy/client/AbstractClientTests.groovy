@@ -69,7 +69,7 @@ abstract class AbstractClientTests extends AbstractElasticsearchIntegrationTest 
 
     /**
      * Create {@link IndexRequest}s configured by {@code DefaultGroovyMethods.with}.
-     * <p />
+     * <p>
      * This should look something like:
      * <pre>
      * bulkIndex([{
@@ -101,7 +101,7 @@ abstract class AbstractClientTests extends AbstractElasticsearchIntegrationTest 
 
     /**
      * Create {@link IndexRequest}s configured by {@code DefaultGroovyMethods.with}, all going to the {@code indexName}.
-     * <p />
+     * <p>
      * This should look something like:
      * <pre>
      * bulkIndex("index1", [{
