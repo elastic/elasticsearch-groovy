@@ -24,7 +24,7 @@ import org.elasticsearch.common.settings.loader.JsonSettingsLoader
 
 /**
  * {@code ImmutableSettingsBuilderExtensions} provide Groovy-friendly extensions to {@link ImmutableSettings.Builder}.
- * <p />
+ * <p>
  * In particular, this adds the ability to specify settings in the form of a {@link Closure} in addition to existing
  * options.
  */

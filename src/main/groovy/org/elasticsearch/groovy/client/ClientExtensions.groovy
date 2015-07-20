@@ -121,7 +121,7 @@ class ClientExtensions extends AbstractClientExtensions {
 
     /**
      * Index a document associated with a given index and type, then get the future result.
-     * <p/>
+     * <p>
      * The id is optional. If it is not provided, one will be generated automatically.
      * <pre>
      * IndexResponse response = client.index {
@@ -152,7 +152,7 @@ class ClientExtensions extends AbstractClientExtensions {
 
     /**
      * Index a document associated with a given index and type, then get the future result.
-     * <p/>
+     * <p>
      * The id is optional. If it is not provided, one will be generated automatically.
      * <pre>
      * IndexResponse response = client.indexAsync {

@@ -143,7 +143,7 @@ class ClusterAdminClientExtensions extends AbstractClientExtensions {
 
     /**
      * Reroute the allocation of shards in the cluster.
-     * <p />
+     * <p>
      * Note: This is an Advanced API and care should be taken before performing related operations.
      *
      * @param self The {@code this} reference for the {@link ClusterAdminClient}.
@@ -157,7 +157,7 @@ class ClusterAdminClientExtensions extends AbstractClientExtensions {
 
     /**
      * Reroute the allocation of shards in the cluster.
-     * <p />
+     * <p>
      * Note: This is an Advanced API and care should be taken before performing related operations.
      *
      * @param self The {@code this} reference for the {@link ClusterAdminClient}.
@@ -482,7 +482,7 @@ class ClusterAdminClientExtensions extends AbstractClientExtensions {
 
     /**
      * Delete snapshots from a repository.
-     * <p />
+     * <p>
      * Note: Deleting a snapshot should only be done after creating newer snapshots, which are themselves backed up, in
      * order to avoid data loss.
      *
@@ -515,7 +515,7 @@ class ClusterAdminClientExtensions extends AbstractClientExtensions {
 
     /**
      * Get a list of pending cluster tasks that are scheduled to be executed.
-     * <p />
+     * <p>
      * This includes operations that update the cluster state (e.g., a create index operation).
      *
      * @param self The {@code this} reference for the {@link ClusterAdminClient}.

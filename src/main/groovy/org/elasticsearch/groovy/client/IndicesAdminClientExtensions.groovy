@@ -264,7 +264,7 @@ class IndicesAdminClientExtensions extends AbstractClientExtensions {
 
     /**
      * Delete the specified indices.
-     * <p />
+     * <p>
      * Note: Manually supply the reserved index name of "_all" to delete all indices.
      *
      * @param self The {@code this} reference for the {@link IndicesAdminClient}.
@@ -279,7 +279,7 @@ class IndicesAdminClientExtensions extends AbstractClientExtensions {
 
     /**
      * Delete the specified indices.
-     * <p />
+     * <p>
      * Note: Manually supply the reserved index name of "_all" to delete all indices.
      *
      * @param self The {@code this} reference for the {@link IndicesAdminClient}.
@@ -349,7 +349,7 @@ class IndicesAdminClientExtensions extends AbstractClientExtensions {
     /**
      * Explicitly flush the specified indices. A successful flush of an index guarantees that items in its transaction
      * log have been written to disk and starts a new transaction log.
-     * <p />
+     * <p>
      * Note: By default, Elasticsearch will perform flush operations automatically.
      *
      * @param self The {@code this} reference for the {@link IndicesAdminClient}.
@@ -364,7 +364,7 @@ class IndicesAdminClientExtensions extends AbstractClientExtensions {
     /**
      * Explicitly flush the specified indices. A successful flush of an index guarantees that items in its transaction
      * log have been written to disk and starts a new transaction log.
-     * <p />
+     * <p>
      * Note: By default, Elasticsearch will perform flush operations automatically.
      *
      * @param self The {@code this} reference for the {@link IndicesAdminClient}.
@@ -378,10 +378,10 @@ class IndicesAdminClientExtensions extends AbstractClientExtensions {
 
     /**
      * Explicitly optimize the specified indices.
-     * <p />
+     * <p>
      * Optimizing an index will reduce the number of segments that the index contains, which will speed up future search
      * operations. Like other operations, Elasticsearch will automatically optimize indices in the background.
-     * <p />
+     * <p>
      * The optimal number of segments is <tt>1</tt>, but an active index will regularly have more than <tt>1</tt>. A
      * {@link IndicesAdminClient#close(CloseIndexRequest) closed} index can be safely optimized to <tt>1</tt> segment to
      * speed up future search operations.
@@ -397,10 +397,10 @@ class IndicesAdminClientExtensions extends AbstractClientExtensions {
 
     /**
      * Explicitly optimize the specified indices.
-     * <p />
+     * <p>
      * Optimizing an index will reduce the number of segments that the index contains, which will speed up future search
      * operations. Like other operations, Elasticsearch will automatically optimize indices in the background.
-     * <p />
+     * <p>
      * The optimal number of segments is <tt>1</tt>, but an active index will regularly have more than <tt>1</tt>. A
      * {@link IndicesAdminClient#close(CloseIndexRequest) closed} index can be safely optimized to <tt>1</tt> segment to
      * speed up future search operations.
@@ -588,7 +588,7 @@ class IndicesAdminClientExtensions extends AbstractClientExtensions {
 
     /**
      * Update the settings of one or more indices.
-     * <p />
+     * <p>
      * Note: Some settings can only be set at the creation of an index, such as the number of shards.
      *
      * @param self The {@code this} reference for the {@link IndicesAdminClient}.
@@ -602,7 +602,7 @@ class IndicesAdminClientExtensions extends AbstractClientExtensions {
 
     /**
      * Update the settings of one or more indices.
-     * <p />
+     * <p>
      * Note: Some settings can only be set at the creation of an index, such as the number of shards.
      *
      * @param self The {@code this} reference for the {@link IndicesAdminClient}.
@@ -644,7 +644,7 @@ class IndicesAdminClientExtensions extends AbstractClientExtensions {
 
     /**
      * Delete an index template.
-     * <p />
+     * <p>
      * Note: This will <em>not</em> unmap indices that have made use of this template.
      *
      * @param self The {@code this} reference for the {@link IndicesAdminClient}.
@@ -658,7 +658,7 @@ class IndicesAdminClientExtensions extends AbstractClientExtensions {
 
     /**
      * Delete an index template.
-     * <p />
+     * <p>
      * Note: This will <em>not</em> unmap indices that have made use of this template.
      *
      * @param self The {@code this} reference for the {@link IndicesAdminClient}.

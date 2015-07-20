@@ -26,7 +26,7 @@ import static com.google.common.base.Preconditions.checkNotNull
 /**
  * {@code ListenableActionFutureExtensions} adds Groovy-friendly extensions to {@link ListenableActionFuture}s to
  * enable sometimes-simpler listener support.
- * <p />
+ * <p>
  * Note: All of the listener methods behave like "add" methods. "add" was not used to avoid colliding with Java
  * variants to avoid unexpected issues ({@link Closure} is-a {@link Runnable}, which can cause confusion without explicit casting).
  * <pre>

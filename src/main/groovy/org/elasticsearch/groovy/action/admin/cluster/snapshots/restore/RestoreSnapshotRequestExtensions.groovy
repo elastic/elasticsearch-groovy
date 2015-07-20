@@ -24,7 +24,7 @@ import org.elasticsearch.client.ClusterAdminClient
 
 /**
  * {@code RestoreSnapshotRequestExtensions} provides Groovy-friendly {@link RestoreSnapshotRequest} extensions.
- * <p />
+ * <p>
  * Note: This extension intentionally does _not_ provide a {@code Closure} overload of
  * {@link RestoreSnapshotRequest#source(java.util.Map)} because it is interpreted the same as using
  * {@link org.codehaus.groovy.runtime.DefaultGroovyMethods#with} and a {@code Closure}.

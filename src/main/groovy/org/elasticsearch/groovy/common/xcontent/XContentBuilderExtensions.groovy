@@ -29,7 +29,7 @@ import org.elasticsearch.common.xcontent.XContentType
 /**
  * {@link XContentBuilderExtensions} adds Groovy-friendly extensions to {@link XContentBuilder} as well as directly to
  * {@link Closure}s.
- * <p />
+ * <p>
  * In particular, this adds the ability to convert a {@link Closure} into a {@link Map} to a {@link XContentBuilder} to
  * enable effortless conversion:
  * <pre>
@@ -168,7 +168,7 @@ class XContentBuilderExtensions {
 
     /**
      * Get the internal {@link XContentGenerator} of the {@link XContentBuilder}.
-     * <p />
+     * <p>
      * Note: This does <em>not</em> close the {@link XContentBuilder#generator()}.
      *
      * @param self The {@code this} reference for the {@link XContentBuilder}
@@ -182,7 +182,7 @@ class XContentBuilderExtensions {
 
     /**
      * Get the internal {@link OutputStream} of the {@link XContentBuilder}.
-     * <p />
+     * <p>
      * Note: This does <em>not</em> close the {@link XContentBuilder#generator()}.
      *
      * @param self The {@code this} reference for the {@link XContentBuilder}

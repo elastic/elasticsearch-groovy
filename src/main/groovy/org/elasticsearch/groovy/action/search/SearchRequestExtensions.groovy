@@ -88,7 +88,7 @@ class SearchRequestExtensions {
 
     /**
      * Constructs a new search source builder with a raw search query.
-     * <p />
+     * <p>
      * Note: When building a new {@link SearchRequest}, using this method will overwrite other changes related to the
      * query.
      *
