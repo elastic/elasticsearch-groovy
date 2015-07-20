@@ -138,6 +138,9 @@ abstract class AbstractClientTests extends AbstractElasticsearchIntegrationTest 
         // sanity check
         assert ! bulkResponse.hasFailures()
 
+        // refresh the index to guarantee searchability
+        assert client.admin.indices.refresh { indices indexName }.failedShards == 0
+
         bulkResponse
     }
 }

@@ -1045,9 +1045,6 @@ class ClientExtensionsActionTests extends AbstractClientTests {
             }
         })
 
-        // refresh the index to guarantee searchability
-        assert client.admin.indices.refresh { indices indexName }.failedShards == 0
-
         values
     }
 }
