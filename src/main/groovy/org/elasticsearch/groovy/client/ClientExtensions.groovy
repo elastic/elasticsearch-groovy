@@ -750,7 +750,7 @@ class ClientExtensions extends AbstractClientExtensions {
     }
 
     /**
-     * An action that is the term vectors for a specific document.
+     * An action that retrieves the term vectors for a specific document.
      *
      * @param self The {@code this} reference for the {@link Client}
      * @param requestClosure The map-like closure that configures the {@link TermVectorsRequest}.
