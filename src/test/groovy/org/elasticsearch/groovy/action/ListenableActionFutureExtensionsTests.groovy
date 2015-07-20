@@ -29,6 +29,7 @@ import org.elasticsearch.action.ListenableActionFuture
 import org.elasticsearch.action.support.ActionFilters
 import org.elasticsearch.action.support.PlainListenableActionFuture
 import org.elasticsearch.action.support.TransportAction
+import org.elasticsearch.cluster.metadata.IndexNameExpressionResolver
 import org.elasticsearch.common.settings.Settings
 import org.elasticsearch.groovy.AbstractElasticsearchTestCase
 import org.elasticsearch.threadpool.ThreadPool
@@ -364,7 +365,8 @@ class ListenableActionFutureExtensionsTests extends AbstractElasticsearchTestCas
      */
     static abstract class AbstractNoOpAction extends TransportAction<NoOpRequest, NoOpResponse> {
         protected AbstractNoOpAction(String actionName) {
-            super(Settings.EMPTY, actionName, null, new ActionFilters(ImmutableSet.of()))
+            super(Settings.EMPTY, actionName, null, new ActionFilters(ImmutableSet.of()),
+                  new IndexNameExpressionResolver())
         }
     }
 
