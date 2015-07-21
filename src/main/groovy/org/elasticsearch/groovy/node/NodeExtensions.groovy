@@ -18,6 +18,9 @@
  */
 package org.elasticsearch.groovy.node
 
+import groovy.transform.CompileStatic
+import groovy.transform.TypeChecked
+
 import org.elasticsearch.client.Client
 import org.elasticsearch.common.settings.Settings
 import org.elasticsearch.node.Node
@@ -26,6 +29,8 @@ import org.elasticsearch.node.Node
  * {@code NodeExtensions} provides convenience methods to standard Elasticsearch {@link Node}s to make them more Groovy
  * friendly.
  */
+@CompileStatic
+@TypeChecked
 class NodeExtensions {
     /**
      * Get the {@link Settings} used to create the {@link Node}.

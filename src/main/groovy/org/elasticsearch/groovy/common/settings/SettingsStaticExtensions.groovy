@@ -18,6 +18,8 @@
  */
 package org.elasticsearch.groovy.common.settings
 
+import groovy.transform.TypeChecked
+
 import org.elasticsearch.ElasticsearchGenerationException
 import org.elasticsearch.common.settings.Settings
 
@@ -27,6 +29,7 @@ import org.elasticsearch.common.settings.Settings
  * In particular, this adds the ability to specify settings in the form of a {@link Closure} when creating a
  * new {@link Settings#settingsBuilder() Builder}.
  */
+@TypeChecked
 class SettingsStaticExtensions {
     /**
      * Explicit settings to set.

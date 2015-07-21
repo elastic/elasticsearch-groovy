@@ -18,6 +18,8 @@
  */
 package org.elasticsearch.groovy.node
 
+import groovy.transform.TypeChecked
+
 import org.elasticsearch.ElasticsearchGenerationException
 import org.elasticsearch.common.settings.Settings
 import org.elasticsearch.node.NodeBuilder
@@ -26,6 +28,7 @@ import org.elasticsearch.node.NodeBuilder
  * {@code NodeBuilderExtensions} provides convenience methods to standard Elasticsearch {@link NodeBuilder}s to make
  * them more Groovy friendly.
  */
+@TypeChecked
 class NodeBuilderExtensions {
     /**
      * Set any addition settings by working directly against the internally used settings builder.

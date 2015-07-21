@@ -18,10 +18,15 @@
  */
 package org.elasticsearch.groovy
 
+import groovy.transform.CompileStatic
+import groovy.transform.TypeChecked
+
 /**
  * {@code ClosureExtensions} adds convenient behaviors to Groovy's {@link Closure} class, such as the ability to convert
  * a {@code Closure} into a {@link Map} with {@link String} keys and {@link Object} values.
  */
+@CompileStatic
+@TypeChecked
 class ClosureExtensions {
     /**
      * Convert the self-referenced {@link Closure} into a {@link Map} with {@link String} keys as {@link Object} values.

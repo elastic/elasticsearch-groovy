@@ -18,7 +18,6 @@
  */
 package org.elasticsearch.groovy.client
 
-import groovy.transform.CompileStatic
 import groovy.transform.TypeChecked
 
 import org.elasticsearch.action.ActionRequest
@@ -30,7 +29,6 @@ import org.elasticsearch.client.ElasticsearchClient
  * {@code AbstractClientExtensions} provides convenience operations for {@link org.elasticsearch.client.Client}
  * extensions.
  */
-@CompileStatic
 @TypeChecked
 abstract class AbstractClientExtensions {
     /**
