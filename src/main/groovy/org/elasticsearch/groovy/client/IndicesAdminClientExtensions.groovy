@@ -827,11 +827,10 @@ class IndicesAdminClientExtensions extends AbstractClientExtensions {
      * @param self The {@code this} reference for the {@link IndicesAdminClient}.
      * @param requestClosure The map-like closure that configures the {@link AnalyzeRequest}.
      * @return Never {@code null}.
-     * @throws NullPointerException if any parameter is {@code null} except {@code text}
+     * @throws NullPointerException if any parameter is {@code null}
      */
-    static AnalyzeResponse analyze(IndicesAdminClient self, String text, Closure requestClosure) {
-        // text must currently be supplied to the constructor
-        doRequest(self, new AnalyzeRequest(text), requestClosure, self.&analyze)
+    static AnalyzeResponse analyze(IndicesAdminClient self, Closure requestClosure) {
+        doRequest(self, new AnalyzeRequest(), requestClosure, self.&analyze)
     }
 
     /**
@@ -840,12 +839,10 @@ class IndicesAdminClientExtensions extends AbstractClientExtensions {
      * @param self The {@code this} reference for the {@link IndicesAdminClient}.
      * @param requestClosure The map-like closure that configures the {@link AnalyzeRequest}.
      * @return Never {@code null}.
-     * @throws NullPointerException if any parameter is {@code null} except {@code text}
+     * @throws NullPointerException if any parameter is {@code null}
      */
     static ListenableActionFuture<AnalyzeResponse> analyzeAsync(IndicesAdminClient self,
-                                                                String text,
                                                                 Closure requestClosure) {
-        // text must currently be supplied to the constructor
-        doRequestAsync(self, new AnalyzeRequest(text), requestClosure, self.&analyze)
+        doRequestAsync(self, new AnalyzeRequest(), requestClosure, self.&analyze)
     }
 }
