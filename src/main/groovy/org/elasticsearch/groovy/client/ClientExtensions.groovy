@@ -457,7 +457,7 @@ class ClientExtensions extends AbstractClientExtensions {
      * </pre>
      * For a scripted example, you might do something like:
      * <pre>
-     * UpdateResponse response = client.updateAsync {
+     * UpdateResponse response = client.update {
      *     index "my-index"
      *     type "my-type"
      *     id "my-id"
