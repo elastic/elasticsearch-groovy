@@ -53,6 +53,36 @@ class IndicesAdminClientExtensionsActionTests extends AbstractClientTests {
     }
 
     @Test
+    void testRefreshRequestSync() {
+        String docId = indexDoc(indexName, typeName) {
+            name = "needle"
+        }
+
+        // refresh the index to guarantee searchability
+        RefreshResponse response = indicesAdminClient.refreshSync {
+            indices indexName
+        }
+
+        assert response.failedShards == 0
+
+        // because we have refreshed the index, we should now be able to search for documents guaranteed
+        SearchResponse searchResponse = client.searchSync {
+            indices indexName
+            types typeName
+            source {
+                query {
+                    match {
+                        name = "needle"
+                    }
+                }
+            }
+        }
+
+        assert searchResponse.hits.totalHits == 1
+        assert searchResponse.hits.hits[0].id == docId
+    }
+
+    @Test
     void testRefreshRequest() {
         String docId = indexDoc(indexName, typeName) {
             name = "needle"
@@ -61,7 +91,7 @@ class IndicesAdminClientExtensionsActionTests extends AbstractClientTests {
         // refresh the index to guarantee searchability
         RefreshResponse response = indicesAdminClient.refresh {
             indices indexName
-        }
+        }.actionGet()
 
         assert response.failedShards == 0
 
@@ -76,7 +106,7 @@ class IndicesAdminClientExtensionsActionTests extends AbstractClientTests {
                     }
                 }
             }
-        }
+        }.actionGet()
 
         assert searchResponse.hits.totalHits == 1
         assert searchResponse.hits.hits[0].id == docId
@@ -112,9 +142,8 @@ class IndicesAdminClientExtensionsActionTests extends AbstractClientTests {
         assert searchResponse.hits.hits[0].id == docId
     }
 
-    @BadApple(bugUrl = 'Checking to see if the logic is flawed, or if the source is flawed')
     @Test
-    void testGetMappingRequest() {
+    void testGetMappingRequestSync() {
         // index a document to guarantee that a mapping exists
         indexDoc(indexName, typeName) {
             name = "needle"
@@ -122,13 +151,13 @@ class IndicesAdminClientExtensionsActionTests extends AbstractClientTests {
 
         // ensure that the mapping exists
         // refresh the index to guarantee searchability
-        RefreshResponse refreshResponse = indicesAdminClient.refresh {
+        RefreshResponse refreshResponse = indicesAdminClient.refreshSync {
             indices indexName
         }
 
         assert refreshResponse.failedShards == 0
 
-        GetMappingsResponse response = indicesAdminClient.getMappings {
+        GetMappingsResponse response = indicesAdminClient.getMappingsSync {
             indices indexName
         }
 

@@ -96,8 +96,20 @@ class IndicesAdminClientExtensions extends AbstractClientExtensions {
      * @return Never {@code null}.
      * @throws NullPointerException if any parameter is {@code null}
      */
-    static RefreshResponse refresh(IndicesAdminClient self, Closure requestClosure) {
+    static RefreshResponse refreshSync(IndicesAdminClient self, Closure requestClosure) {
         doRequest(self, Requests.refreshRequest(), requestClosure, self.&refresh)
+    }
+
+    /**
+     * Explicitly refresh one or more indices, which makes all content indexed since the last refresh searchable.
+     *
+     * @param self The {@code this} reference for the {@link IndicesAdminClient}.
+     * @param requestClosure The map-like closure that configures the {@link RefreshRequest}.
+     * @return Never {@code null}.
+     * @throws NullPointerException if any parameter is {@code null}
+     */
+    static ListenableActionFuture<RefreshResponse> refresh(IndicesAdminClient self, Closure requestClosure) {
+        doRequestAsync(self, Requests.refreshRequest(), requestClosure, self.&refresh)
     }
 
     /**
@@ -120,8 +132,20 @@ class IndicesAdminClientExtensions extends AbstractClientExtensions {
      * @return Never {@code null}.
      * @throws NullPointerException if any parameter is {@code null}
      */
-    static IndicesExistsResponse exists(IndicesAdminClient self, Closure requestClosure) {
+    static IndicesExistsResponse existsSync(IndicesAdminClient self, Closure requestClosure) {
         doRequest(self, Requests.indicesExistsRequest(), requestClosure, self.&exists)
+    }
+
+    /**
+     * Determine if the specified indices exist.
+     *
+     * @param self The {@code this} reference for the {@link IndicesAdminClient}.
+     * @param requestClosure The map-like closure that configures the {@link IndicesExistsRequest}.
+     * @return Never {@code null}.
+     * @throws NullPointerException if any parameter is {@code null}
+     */
+    static ListenableActionFuture<IndicesExistsResponse> exists(IndicesAdminClient self, Closure requestClosure) {
+        doRequestAsync(self, Requests.indicesExistsRequest(), requestClosure, self.&exists)
     }
 
     /**
@@ -137,20 +161,33 @@ class IndicesAdminClientExtensions extends AbstractClientExtensions {
     }
 
     /**
-     * Determine if the specified types exist within the specified indices.
+     * Determine if the specified type(s) exist within the specified indices.
      *
      * @param self The {@code this} reference for the {@link IndicesAdminClient}.
      * @param requestClosure The map-like closure that configures the {@link TypesExistsRequest}.
      * @return Never {@code null}.
      * @throws NullPointerException if any parameter is {@code null}
      */
-    static TypesExistsResponse typesExists(IndicesAdminClient self, Closure requestClosure) {
+    static TypesExistsResponse typesExistsSync(IndicesAdminClient self, Closure requestClosure) {
         // indices must be supplied by the closure
         doRequest(self, new TypesExistsRequest(null), requestClosure, self.&typesExists)
     }
 
     /**
-     * Determine if the specified types exist within the specified indices.
+     * Determine if the specified type(s) exist within the specified indices.
+     *
+     * @param self The {@code this} reference for the {@link IndicesAdminClient}.
+     * @param requestClosure The map-like closure that configures the {@link TypesExistsRequest}.
+     * @return Never {@code null}.
+     * @throws NullPointerException if any parameter is {@code null}
+     */
+    static ListenableActionFuture<TypesExistsResponse> typesExists(IndicesAdminClient self, Closure requestClosure) {
+        // indices must be supplied by the closure
+        doRequestAsync(self, new TypesExistsRequest(null), requestClosure, self.&typesExists)
+    }
+
+    /**
+     * Determine if the specified type(s) exist within the specified indices.
      *
      * @param self The {@code this} reference for the {@link IndicesAdminClient}.
      * @param requestClosure The map-like closure that configures the {@link TypesExistsRequest}.
@@ -171,8 +208,20 @@ class IndicesAdminClientExtensions extends AbstractClientExtensions {
      * @return Never {@code null}.
      * @throws NullPointerException if any parameter is {@code null}
      */
-    static IndicesStatsResponse stats(IndicesAdminClient self, Closure requestClosure) {
+    static IndicesStatsResponse statsSync(IndicesAdminClient self, Closure requestClosure) {
         doRequest(self, new IndicesStatsRequest(), requestClosure, self.&stats)
+    }
+
+    /**
+     * Get stats for indices.
+     *
+     * @param self The {@code this} reference for the {@link IndicesAdminClient}.
+     * @param requestClosure The map-like closure that configures the {@link IndicesStatsRequest}.
+     * @return Never {@code null}.
+     * @throws NullPointerException if any parameter is {@code null}
+     */
+    static ListenableActionFuture<IndicesStatsResponse> stats(IndicesAdminClient self, Closure requestClosure) {
+        doRequestAsync(self, new IndicesStatsRequest(), requestClosure, self.&stats)
     }
 
     /**
@@ -195,8 +244,20 @@ class IndicesAdminClientExtensions extends AbstractClientExtensions {
      * @return Never {@code null}.
      * @throws NullPointerException if any parameter is {@code null}
      */
-    static RecoveryResponse recoveries(IndicesAdminClient self, Closure requestClosure) {
+    static RecoveryResponse recoveriesSync(IndicesAdminClient self, Closure requestClosure) {
         doRequest(self, new RecoveryRequest(), requestClosure, self.&recoveries)
+    }
+
+    /**
+     * Get details pertaining to the recovery state of indices and their associated shards.
+     *
+     * @param self The {@code this} reference for the {@link IndicesAdminClient}.
+     * @param requestClosure The map-like closure that configures the {@link RecoveryRequest}.
+     * @return Never {@code null}.
+     * @throws NullPointerException if any parameter is {@code null}
+     */
+    static ListenableActionFuture<RecoveryResponse> recoveries(IndicesAdminClient self, Closure requestClosure) {
+        doRequestAsync(self, new RecoveryRequest(), requestClosure, self.&recoveries)
     }
 
     /**
@@ -213,18 +274,39 @@ class IndicesAdminClientExtensions extends AbstractClientExtensions {
 
     /**
      * Get details pertaining to the segments of indices.
+     * <p>
+     * This is useful to determine how shards look on disk. For example, if you were unsure if an index had been force
+     * merged (optimized), then you could check to see if it had more than one segment.
      *
      * @param self The {@code this} reference for the {@link IndicesAdminClient}.
      * @param requestClosure The map-like closure that configures the {@link IndicesSegmentsRequest}.
      * @return Never {@code null}.
      * @throws NullPointerException if any parameter is {@code null}
      */
-    static IndicesSegmentResponse segments(IndicesAdminClient self, Closure requestClosure) {
-        doRequest(self, Requests.indicesExistsRequest(), requestClosure, self.&segments)
+    static IndicesSegmentResponse segmentsSync(IndicesAdminClient self, Closure requestClosure) {
+        doRequest(self, Requests.indicesSegmentsRequest(), requestClosure, self.&segments)
     }
 
     /**
      * Get details pertaining to the segments of indices.
+     * <p>
+     * This is useful to determine how shards look on disk. For example, if you were unsure if an index had been force
+     * merged (optimized), then you could check to see if it had more than one segment.
+     *
+     * @param self The {@code this} reference for the {@link IndicesAdminClient}.
+     * @param requestClosure The map-like closure that configures the {@link IndicesSegmentsRequest}.
+     * @return Never {@code null}.
+     * @throws NullPointerException if any parameter is {@code null}
+     */
+    static ListenableActionFuture<IndicesSegmentResponse> segments(IndicesAdminClient self, Closure requestClosure) {
+        doRequestAsync(self, Requests.indicesSegmentsRequest(), requestClosure, self.&segments)
+    }
+
+    /**
+     * Get details pertaining to the segments of indices.
+     * <p>
+     * This is useful to determine how shards look on disk. For example, if you were unsure if an index had been force
+     * merged (optimized), then you could check to see if it had more than one segment.
      *
      * @param self The {@code this} reference for the {@link IndicesAdminClient}.
      * @param requestClosure The map-like closure that configures the {@link IndicesSegmentsRequest}.
@@ -233,7 +315,7 @@ class IndicesAdminClientExtensions extends AbstractClientExtensions {
      */
     static ListenableActionFuture<IndicesSegmentResponse> segmentsAsync(IndicesAdminClient self,
                                                                         Closure requestClosure) {
-        doRequestAsync(self, Requests.indicesExistsRequest(), requestClosure, self.&segments)
+        doRequestAsync(self, Requests.indicesSegmentsRequest(), requestClosure, self.&segments)
     }
 
     /**
@@ -244,10 +326,24 @@ class IndicesAdminClientExtensions extends AbstractClientExtensions {
      * @return Never {@code null}.
      * @throws NullPointerException if any parameter is {@code null}
      */
-    static CreateIndexResponse create(IndicesAdminClient self, Closure requestClosure) {
+    static CreateIndexResponse createSync(IndicesAdminClient self, Closure requestClosure) {
         // index must be set by the closure
         doRequest(self, Requests.createIndexRequest(null), requestClosure, self.&create)
     }
+
+    /**
+     * Create an index explicitly, which allows the index configuration to be specified.
+     *
+     * @param self The {@code this} reference for the {@link IndicesAdminClient}.
+     * @param requestClosure The map-like closure that configures the {@link CreateIndexRequest}.
+     * @return Never {@code null}.
+     * @throws NullPointerException if any parameter is {@code null}
+     */
+    static ListenableActionFuture<CreateIndexResponse> create(IndicesAdminClient self, Closure requestClosure) {
+        // index must be set by the closure
+        doRequestAsync(self, Requests.createIndexRequest(null), requestClosure, self.&create)
+    }
+
 
     /**
      * Create an index explicitly, which allows the index configuration to be specified.
@@ -272,9 +368,24 @@ class IndicesAdminClientExtensions extends AbstractClientExtensions {
      * @return Never {@code null}.
      * @throws NullPointerException if any parameter is {@code null}
      */
-    static DeleteIndexResponse delete(IndicesAdminClient self, Closure requestClosure) {
+    static DeleteIndexResponse deleteSync(IndicesAdminClient self, Closure requestClosure) {
         // index must be set by the closure
         doRequest(self, Requests.deleteIndexRequest(null), requestClosure, self.&delete)
+    }
+
+    /**
+     * Delete the specified indices.
+     * <p>
+     * Note: Manually supply the reserved index name of "_all" to delete all indices.
+     *
+     * @param self The {@code this} reference for the {@link IndicesAdminClient}.
+     * @param requestClosure The map-like closure that configures the {@link DeleteIndexRequest}.
+     * @return Never {@code null}.
+     * @throws NullPointerException if any parameter is {@code null}
+     */
+    static ListenableActionFuture<DeleteIndexResponse> delete(IndicesAdminClient self, Closure requestClosure) {
+        // index must be set by the closure
+        doRequestAsync(self, Requests.deleteIndexRequest(null), requestClosure, self.&delete)
     }
 
     /**
@@ -301,9 +412,23 @@ class IndicesAdminClientExtensions extends AbstractClientExtensions {
      * @return Never {@code null}.
      * @throws NullPointerException if any parameter is {@code null}
      */
-    static CloseIndexResponse close(IndicesAdminClient self, Closure requestClosure) {
+    static CloseIndexResponse closeSync(IndicesAdminClient self, Closure requestClosure) {
         // index must be set by the closure
         doRequest(self, Requests.closeIndexRequest(null), requestClosure, self.&close)
+    }
+
+    /**
+     * Close the specified indices. Closing an index prevents documents from being added, updated, or removed. This is
+     * a good way to make an index read-only.
+     *
+     * @param self The {@code this} reference for the {@link IndicesAdminClient}.
+     * @param requestClosure The map-like closure that configures the {@link CloseIndexRequest}.
+     * @return Never {@code null}.
+     * @throws NullPointerException if any parameter is {@code null}
+     */
+    static ListenableActionFuture<CloseIndexResponse> close(IndicesAdminClient self, Closure requestClosure) {
+        // index must be set by the closure
+        doRequestAsync(self, Requests.closeIndexRequest(null), requestClosure, self.&close)
     }
 
     /**
@@ -328,9 +453,22 @@ class IndicesAdminClientExtensions extends AbstractClientExtensions {
      * @return Never {@code null}.
      * @throws NullPointerException if any parameter is {@code null}
      */
-    static OpenIndexResponse open(IndicesAdminClient self, Closure requestClosure) {
+    static OpenIndexResponse openSync(IndicesAdminClient self, Closure requestClosure) {
         // index must be set by the closure
         doRequest(self, Requests.openIndexRequest(null), requestClosure, self.&open)
+    }
+
+    /**
+     * Open the specified indices.
+     *
+     * @param self The {@code this} reference for the {@link IndicesAdminClient}.
+     * @param requestClosure The map-like closure that configures the {@link OpenIndexRequest}.
+     * @return Never {@code null}.
+     * @throws NullPointerException if any parameter is {@code null}
+     */
+    static ListenableActionFuture<OpenIndexResponse> open(IndicesAdminClient self, Closure requestClosure) {
+        // index must be set by the closure
+        doRequestAsync(self, Requests.openIndexRequest(null), requestClosure, self.&open)
     }
 
     /**
@@ -357,8 +495,23 @@ class IndicesAdminClientExtensions extends AbstractClientExtensions {
      * @return Never {@code null}.
      * @throws NullPointerException if any parameter is {@code null}
      */
-    static FlushResponse flush(IndicesAdminClient self, Closure requestClosure) {
+    static FlushResponse flushSync(IndicesAdminClient self, Closure requestClosure) {
         doRequest(self, Requests.flushRequest(), requestClosure, self.&flush)
+    }
+
+    /**
+     * Explicitly flush the specified indices. A successful flush of an index guarantees that items in its transaction
+     * log have been written to disk and starts a new transaction log.
+     * <p>
+     * Note: By default, Elasticsearch will perform flush operations automatically.
+     *
+     * @param self The {@code this} reference for the {@link IndicesAdminClient}.
+     * @param requestClosure The map-like closure that configures the {@link FlushRequest}.
+     * @return Never {@code null}.
+     * @throws NullPointerException if any parameter is {@code null}
+     */
+    static ListenableActionFuture<FlushResponse> flush(IndicesAdminClient self, Closure requestClosure) {
+        doRequestAsync(self, Requests.flushRequest(), requestClosure, self.&flush)
     }
 
     /**
@@ -391,8 +544,27 @@ class IndicesAdminClientExtensions extends AbstractClientExtensions {
      * @return Never {@code null}.
      * @throws NullPointerException if any parameter is {@code null}
      */
-    static OptimizeResponse optimize(IndicesAdminClient self, Closure requestClosure) {
+    static OptimizeResponse optimizeSync(IndicesAdminClient self, Closure requestClosure) {
         doRequest(self, Requests.optimizeRequest(), requestClosure, self.&optimize)
+    }
+
+    /**
+     * Explicitly optimize the specified indices.
+     * <p>
+     * Optimizing an index will reduce the number of segments that the index contains, which will speed up future search
+     * operations. Like other operations, Elasticsearch will automatically optimize indices in the background.
+     * <p>
+     * The optimal number of segments is <tt>1</tt>, but an active index will regularly have more than <tt>1</tt>. A
+     * {@link IndicesAdminClient#close(CloseIndexRequest) closed} index can be safely optimized to <tt>1</tt> segment to
+     * speed up future search operations.
+     *
+     * @param self The {@code this} reference for the {@link IndicesAdminClient}.
+     * @param requestClosure The map-like closure that configures the {@link OptimizeRequest}.
+     * @return Never {@code null}.
+     * @throws NullPointerException if any parameter is {@code null}
+     */
+    static ListenableActionFuture<OptimizeResponse> optimize(IndicesAdminClient self, Closure requestClosure) {
+        doRequestAsync(self, Requests.optimizeRequest(), requestClosure, self.&optimize)
     }
 
     /**
@@ -422,7 +594,7 @@ class IndicesAdminClientExtensions extends AbstractClientExtensions {
      * @return Never {@code null}.
      * @throws NullPointerException if any parameter is {@code null}
      */
-    static GetMappingsResponse getMappings(IndicesAdminClient self, Closure requestClosure) {
+    static GetMappingsResponse getMappingsSync(IndicesAdminClient self, Closure requestClosure) {
         doRequest(self, new GetMappingsRequest(), requestClosure, self.&getMappings)
     }
 
@@ -434,7 +606,20 @@ class IndicesAdminClientExtensions extends AbstractClientExtensions {
      * @return Never {@code null}.
      * @throws NullPointerException if any parameter is {@code null}
      */
-    static ListenableActionFuture<GetMappingsResponse> getMappingsAsync(IndicesAdminClient self, Closure requestClosure) {
+    static ListenableActionFuture<GetMappingsResponse> getMappings(IndicesAdminClient self, Closure requestClosure) {
+        doRequestAsync(self, new GetMappingsRequest(), requestClosure, self.&getMappings)
+    }
+
+    /**
+     * Get the mappings of one or more types.
+     *
+     * @param self The {@code this} reference for the {@link IndicesAdminClient}.
+     * @param requestClosure The map-like closure that configures the {@link GetMappingsRequest}.
+     * @return Never {@code null}.
+     * @throws NullPointerException if any parameter is {@code null}
+     */
+    static ListenableActionFuture<GetMappingsResponse> getMappingsAsync(IndicesAdminClient self,
+                                                                        Closure requestClosure) {
         doRequestAsync(self, new GetMappingsRequest(), requestClosure, self.&getMappings)
     }
 
@@ -446,8 +631,21 @@ class IndicesAdminClientExtensions extends AbstractClientExtensions {
      * @return Never {@code null}.
      * @throws NullPointerException if any parameter is {@code null}
      */
-    static GetFieldMappingsResponse getFieldMappings(IndicesAdminClient self, Closure requestClosure) {
+    static GetFieldMappingsResponse getFieldMappingsSync(IndicesAdminClient self, Closure requestClosure) {
         doRequest(self, new GetFieldMappingsRequest(), requestClosure, self.&getFieldMappings)
+    }
+
+    /**
+     * Get the mappings of one or more fields.
+     *
+     * @param self The {@code this} reference for the {@link IndicesAdminClient}.
+     * @param requestClosure The map-like closure that configures the {@link GetFieldMappingsRequest}.
+     * @return Never {@code null}.
+     * @throws NullPointerException if any parameter is {@code null}
+     */
+    static ListenableActionFuture<GetFieldMappingsResponse> getFieldMappings(IndicesAdminClient self,
+                                                                             Closure requestClosure) {
+        doRequestAsync(self, new GetFieldMappingsRequest(), requestClosure, self.&getFieldMappings)
     }
 
     /**
@@ -471,8 +669,20 @@ class IndicesAdminClientExtensions extends AbstractClientExtensions {
      * @return Never {@code null}.
      * @throws NullPointerException if any parameter is {@code null}
      */
-    static PutMappingResponse putMapping(IndicesAdminClient self, Closure requestClosure) {
+    static PutMappingResponse putMappingSync(IndicesAdminClient self, Closure requestClosure) {
         doRequest(self, Requests.putMappingRequest(), requestClosure, self.&putMapping)
+    }
+
+    /**
+     * Add the mapping definition for a type into one or more indices.
+     *
+     * @param self The {@code this} reference for the {@link IndicesAdminClient}.
+     * @param requestClosure The map-like closure that configures the {@link PutMappingRequest}.
+     * @return Never {@code null}.
+     * @throws NullPointerException if any parameter is {@code null}
+     */
+    static ListenableActionFuture<PutMappingResponse> putMapping(IndicesAdminClient self, Closure requestClosure) {
+        doRequestAsync(self, Requests.putMappingRequest(), requestClosure, self.&putMapping)
     }
 
     /**
@@ -495,8 +705,20 @@ class IndicesAdminClientExtensions extends AbstractClientExtensions {
      * @return Never {@code null}.
      * @throws NullPointerException if any parameter is {@code null}
      */
-    static IndicesAliasesResponse aliases(IndicesAdminClient self, Closure requestClosure) {
+    static IndicesAliasesResponse aliasesSync(IndicesAdminClient self, Closure requestClosure) {
         doRequest(self, Requests.indexAliasesRequest(), requestClosure, self.&aliases)
+    }
+
+    /**
+     * Atomically add or remove index aliases.
+     *
+     * @param self The {@code this} reference for the {@link IndicesAdminClient}.
+     * @param requestClosure The map-like closure that configures the {@link IndicesAliasesRequest}.
+     * @return Never {@code null}.
+     * @throws NullPointerException if any parameter is {@code null}
+     */
+    static ListenableActionFuture<IndicesAliasesResponse> aliases(IndicesAdminClient self, Closure requestClosure) {
+        doRequestAsync(self, Requests.indexAliasesRequest(), requestClosure, self.&aliases)
     }
 
     /**
@@ -520,8 +742,20 @@ class IndicesAdminClientExtensions extends AbstractClientExtensions {
      * @return Never {@code null}.
      * @throws NullPointerException if any parameter is {@code null}
      */
-    static GetAliasesResponse getAliases(IndicesAdminClient self, Closure requestClosure) {
+    static GetAliasesResponse getAliasesSync(IndicesAdminClient self, Closure requestClosure) {
         doRequest(self, new GetAliasesRequest(), requestClosure, self.&getAliases)
+    }
+
+    /**
+     * Get index aliases.
+     *
+     * @param self The {@code this} reference for the {@link IndicesAdminClient}.
+     * @param requestClosure The map-like closure that configures the {@link GetAliasesRequest}.
+     * @return Never {@code null}.
+     * @throws NullPointerException if any parameter is {@code null}
+     */
+    static ListenableActionFuture<GetAliasesResponse> getAliases(IndicesAdminClient self, Closure requestClosure) {
+        doRequestAsync(self, new GetAliasesRequest(), requestClosure, self.&getAliases)
     }
 
     /**
@@ -544,8 +778,20 @@ class IndicesAdminClientExtensions extends AbstractClientExtensions {
      * @return Never {@code null}.
      * @throws NullPointerException if any parameter is {@code null}
      */
-    static AliasesExistResponse aliasesExist(IndicesAdminClient self, Closure requestClosure) {
+    static AliasesExistResponse aliasesExistSync(IndicesAdminClient self, Closure requestClosure) {
         doRequest(self, new GetAliasesRequest(), requestClosure, self.&aliasesExist)
+    }
+
+    /**
+     * Determine if index aliases exist.
+     *
+     * @param self The {@code this} reference for the {@link IndicesAdminClient}.
+     * @param requestClosure The map-like closure that configures the {@link GetAliasesRequest}.
+     * @return Never {@code null}.
+     * @throws NullPointerException if any parameter is {@code null}
+     */
+    static ListenableActionFuture<AliasesExistResponse> aliasesExist(IndicesAdminClient self, Closure requestClosure) {
+        doRequestAsync(self, new GetAliasesRequest(), requestClosure, self.&aliasesExist)
     }
 
     /**
@@ -569,8 +815,21 @@ class IndicesAdminClientExtensions extends AbstractClientExtensions {
      * @return Never {@code null}.
      * @throws NullPointerException if any parameter is {@code null}
      */
-    static ClearIndicesCacheResponse clearCache(IndicesAdminClient self, Closure requestClosure) {
+    static ClearIndicesCacheResponse clearCacheSync(IndicesAdminClient self, Closure requestClosure) {
         doRequest(self, Requests.clearIndicesCacheRequest(), requestClosure, self.&clearCache)
+    }
+
+    /**
+     * Clear the indices specified caches.
+     *
+     * @param self The {@code this} reference for the {@link IndicesAdminClient}.
+     * @param requestClosure The map-like closure that configures the {@link ClearIndicesCacheRequest}.
+     * @return Never {@code null}.
+     * @throws NullPointerException if any parameter is {@code null}
+     */
+    static ListenableActionFuture<ClearIndicesCacheResponse> clearCache(IndicesAdminClient self,
+                                                                        Closure requestClosure) {
+        doRequestAsync(self, Requests.clearIndicesCacheRequest(), requestClosure, self.&clearCache)
     }
 
     /**
@@ -596,8 +855,23 @@ class IndicesAdminClientExtensions extends AbstractClientExtensions {
      * @return Never {@code null}.
      * @throws NullPointerException if any parameter is {@code null}
      */
-    static UpdateSettingsResponse updateSettings(IndicesAdminClient self, Closure requestClosure) {
+    static UpdateSettingsResponse updateSettingsSync(IndicesAdminClient self, Closure requestClosure) {
         doRequest(self, new UpdateSettingsRequest(), requestClosure, self.&updateSettings)
+    }
+
+    /**
+     * Update the settings of one or more indices.
+     * <p>
+     * Note: Some settings can only be set at the creation of an index, such as the number of shards.
+     *
+     * @param self The {@code this} reference for the {@link IndicesAdminClient}.
+     * @param requestClosure The map-like closure that configures the {@link UpdateSettingsRequest}.
+     * @return Never {@code null}.
+     * @throws NullPointerException if any parameter is {@code null}
+     */
+    static ListenableActionFuture<UpdateSettingsResponse> updateSettings(IndicesAdminClient self,
+                                                                         Closure requestClosure) {
+        doRequestAsync(self, new UpdateSettingsRequest(), requestClosure, self.&updateSettings)
     }
 
     /**
@@ -623,9 +897,23 @@ class IndicesAdminClientExtensions extends AbstractClientExtensions {
      * @return Never {@code null}.
      * @throws NullPointerException if any parameter is {@code null}
      */
-    static PutIndexTemplateResponse putTemplate(IndicesAdminClient self, Closure requestClosure) {
+    static PutIndexTemplateResponse putTemplateSync(IndicesAdminClient self, Closure requestClosure) {
         // template name expected be supplied by the closure
         doRequest(self, new PutIndexTemplateRequest(null), requestClosure, self.&putTemplate)
+    }
+
+    /**
+     * Add an index template to enable automatic type mappings.
+     *
+     * @param self The {@code this} reference for the {@link IndicesAdminClient}.
+     * @param requestClosure The map-like closure that configures the {@link PutIndexTemplateRequest}.
+     * @return Never {@code null}.
+     * @throws NullPointerException if any parameter is {@code null}
+     */
+    static ListenableActionFuture<PutIndexTemplateResponse> putTemplate(IndicesAdminClient self,
+                                                                        Closure requestClosure) {
+        // template name expected be supplied by the closure
+        doRequestAsync(self, new PutIndexTemplateRequest(null), requestClosure, self.&putTemplate)
     }
 
     /**
@@ -652,8 +940,22 @@ class IndicesAdminClientExtensions extends AbstractClientExtensions {
      * @return Never {@code null}.
      * @throws NullPointerException if {@code self} is {@code null}
      */
-    static DeleteIndexTemplateResponse deleteTemplate(IndicesAdminClient self, String name) {
+    static DeleteIndexTemplateResponse deleteTemplateSync(IndicesAdminClient self, String name) {
         doRequest(self, new DeleteIndexTemplateRequest(name), self.&deleteTemplate)
+    }
+
+    /**
+     * Delete an index template.
+     * <p>
+     * Note: This will <em>not</em> unmap indices that have made use of this template.
+     *
+     * @param self The {@code this} reference for the {@link IndicesAdminClient}.
+     * @param name The name of the index template to delete.
+     * @return Never {@code null}.
+     * @throws NullPointerException if {@code self} is {@code null}
+     */
+    static ListenableActionFuture<DeleteIndexTemplateResponse> deleteTemplate(IndicesAdminClient self, String name) {
+        doRequestAsync(self, new DeleteIndexTemplateRequest(name), self.&deleteTemplate)
     }
 
     /**
@@ -679,8 +981,21 @@ class IndicesAdminClientExtensions extends AbstractClientExtensions {
      * @return Never {@code null}.
      * @throws NullPointerException if any parameter is {@code null}
      */
-    static GetIndexTemplatesResponse getTemplates(IndicesAdminClient self, Closure requestClosure) {
+    static GetIndexTemplatesResponse getTemplatesSync(IndicesAdminClient self, Closure requestClosure) {
         doRequest(self, new GetIndexTemplatesRequest(), requestClosure, self.&getTemplates)
+    }
+
+    /**
+     * Get index templates.
+     *
+     * @param self The {@code this} reference for the {@link IndicesAdminClient}.
+     * @param requestClosure The map-like closure that configures the {@link GetIndexTemplatesRequest}.
+     * @return Never {@code null}.
+     * @throws NullPointerException if any parameter is {@code null}
+     */
+    static ListenableActionFuture<GetIndexTemplatesResponse> getTemplates(IndicesAdminClient self,
+                                                                          Closure requestClosure) {
+        doRequestAsync(self, new GetIndexTemplatesRequest(), requestClosure, self.&getTemplates)
     }
 
     /**
@@ -704,8 +1019,21 @@ class IndicesAdminClientExtensions extends AbstractClientExtensions {
      * @return Never {@code null}.
      * @throws NullPointerException if any parameter is {@code null}
      */
-    static ValidateQueryResponse validateQuery(IndicesAdminClient self, Closure requestClosure) {
+    static ValidateQueryResponse validateQuerySync(IndicesAdminClient self, Closure requestClosure) {
         doRequest(self, new ValidateQueryRequest(), requestClosure, self.&validateQuery)
+    }
+
+    /**
+     * Validate a query for correctness.
+     *
+     * @param self The {@code this} reference for the {@link IndicesAdminClient}.
+     * @param requestClosure The map-like closure that configures the {@link ValidateQueryRequest}.
+     * @return Never {@code null}.
+     * @throws NullPointerException if any parameter is {@code null}
+     */
+    static ListenableActionFuture<ValidateQueryResponse> validateQuery(IndicesAdminClient self,
+                                                                       Closure requestClosure) {
+        doRequestAsync(self, new ValidateQueryRequest(), requestClosure, self.&validateQuery)
     }
 
     /**
@@ -729,9 +1057,22 @@ class IndicesAdminClientExtensions extends AbstractClientExtensions {
      * @return Never {@code null}.
      * @throws NullPointerException if any parameter is {@code null}
      */
-    static PutWarmerResponse putWarmer(IndicesAdminClient self, Closure requestClosure) {
+    static PutWarmerResponse putWarmerSync(IndicesAdminClient self, Closure requestClosure) {
         // warmer name is expected to be set by the closure
         doRequest(self, new PutWarmerRequest(null), requestClosure, self.&putWarmer)
+    }
+
+    /**
+     * Put an index search warmer.
+     *
+     * @param self The {@code this} reference for the {@link IndicesAdminClient}.
+     * @param requestClosure The map-like closure that configures the {@link PutWarmerRequest}.
+     * @return Never {@code null}.
+     * @throws NullPointerException if any parameter is {@code null}
+     */
+    static ListenableActionFuture<PutWarmerResponse> putWarmer(IndicesAdminClient self, Closure requestClosure) {
+        // warmer name is expected to be set by the closure
+        doRequestAsync(self, new PutWarmerRequest(null), requestClosure, self.&putWarmer)
     }
 
     /**
@@ -755,8 +1096,20 @@ class IndicesAdminClientExtensions extends AbstractClientExtensions {
      * @return Never {@code null}.
      * @throws NullPointerException if any parameter is {@code null}
      */
-    static DeleteWarmerResponse deleteWarmer(IndicesAdminClient self, Closure requestClosure) {
+    static DeleteWarmerResponse deleteWarmerSync(IndicesAdminClient self, Closure requestClosure) {
         doRequest(self, new DeleteWarmerRequest(), requestClosure, self.&deleteWarmer)
+    }
+
+    /**
+     * Delete one or more index search warmers.
+     *
+     * @param self The {@code this} reference for the {@link IndicesAdminClient}.
+     * @param requestClosure The map-like closure that configures the {@link DeleteWarmerRequest}.
+     * @return Never {@code null}.
+     * @throws NullPointerException if any parameter is {@code null}
+     */
+    static ListenableActionFuture<DeleteWarmerResponse> deleteWarmer(IndicesAdminClient self, Closure requestClosure) {
+        doRequestAsync(self, new DeleteWarmerRequest(), requestClosure, self.&deleteWarmer)
     }
 
     /**
@@ -780,8 +1133,20 @@ class IndicesAdminClientExtensions extends AbstractClientExtensions {
      * @return Never {@code null}.
      * @throws NullPointerException if any parameter is {@code null}
      */
-    static GetWarmersResponse getWarmers(IndicesAdminClient self, Closure requestClosure) {
+    static GetWarmersResponse getWarmersSync(IndicesAdminClient self, Closure requestClosure) {
         doRequest(self, new GetWarmersRequest(), requestClosure, self.&getWarmers)
+    }
+
+    /**
+     * Get index search warmers.
+     *
+     * @param self The {@code this} reference for the {@link IndicesAdminClient}.
+     * @param requestClosure The map-like closure that configures the {@link GetWarmersRequest}.
+     * @return Never {@code null}.
+     * @throws NullPointerException if any parameter is {@code null}
+     */
+    static ListenableActionFuture<GetWarmersResponse> getWarmers(IndicesAdminClient self, Closure requestClosure) {
+        doRequestAsync(self, new GetWarmersRequest(), requestClosure, self.&getWarmers)
     }
 
     /**
@@ -804,8 +1169,20 @@ class IndicesAdminClientExtensions extends AbstractClientExtensions {
      * @return Never {@code null}.
      * @throws NullPointerException if any parameter is {@code null}
      */
-    static GetSettingsResponse getSettings(IndicesAdminClient self, Closure requestClosure) {
+    static GetSettingsResponse getSettingsSync(IndicesAdminClient self, Closure requestClosure) {
         doRequest(self, new GetSettingsRequest(), requestClosure, self.&getSettings)
+    }
+
+    /**
+     * Get index settings.
+     *
+     * @param self The {@code this} reference for the {@link IndicesAdminClient}.
+     * @param requestClosure The map-like closure that configures the {@link GetSettingsRequest}.
+     * @return Never {@code null}.
+     * @throws NullPointerException if any parameter is {@code null}
+     */
+    static ListenableActionFuture<GetSettingsResponse> getSettings(IndicesAdminClient self, Closure requestClosure) {
+        doRequestAsync(self, new GetSettingsRequest(), requestClosure, self.&getSettings)
     }
 
     /**
@@ -829,7 +1206,7 @@ class IndicesAdminClientExtensions extends AbstractClientExtensions {
      * @return Never {@code null}.
      * @throws NullPointerException if any parameter is {@code null}
      */
-    static AnalyzeResponse analyze(IndicesAdminClient self, Closure requestClosure) {
+    static AnalyzeResponse analyzeSync(IndicesAdminClient self, Closure requestClosure) {
         doRequest(self, new AnalyzeRequest(), requestClosure, self.&analyze)
     }
 
@@ -841,8 +1218,19 @@ class IndicesAdminClientExtensions extends AbstractClientExtensions {
      * @return Never {@code null}.
      * @throws NullPointerException if any parameter is {@code null}
      */
-    static ListenableActionFuture<AnalyzeResponse> analyzeAsync(IndicesAdminClient self,
-                                                                Closure requestClosure) {
+    static ListenableActionFuture<AnalyzeResponse> analyze(IndicesAdminClient self, Closure requestClosure) {
+        doRequestAsync(self, new AnalyzeRequest(), requestClosure, self.&analyze)
+    }
+
+    /**
+     * Analyze the {@code text} using the provided index.
+     *
+     * @param self The {@code this} reference for the {@link IndicesAdminClient}.
+     * @param requestClosure The map-like closure that configures the {@link AnalyzeRequest}.
+     * @return Never {@code null}.
+     * @throws NullPointerException if any parameter is {@code null}
+     */
+    static ListenableActionFuture<AnalyzeResponse> analyzeAsync(IndicesAdminClient self, Closure requestClosure) {
         doRequestAsync(self, new AnalyzeRequest(), requestClosure, self.&analyze)
     }
 }

@@ -54,7 +54,7 @@ abstract class AbstractClientTests extends AbstractElasticsearchIntegrationTest 
     String indexDoc(String indexName, String typeName, Closure doc) {
         String docId = randomInt()
 
-        IndexResponse indexResponse = client.index {
+        IndexResponse indexResponse = client.indexSync {
             index indexName
             type typeName
             id docId
@@ -128,7 +128,7 @@ abstract class AbstractClientTests extends AbstractElasticsearchIntegrationTest 
      * @throws IllegalArgumentException if any of the {@code indexConfigs} call invoke invalid methods.
      */
     BulkResponse bulkIndex(String indexName, List<Closure> indexConfigs) {
-        BulkResponse bulkResponse = client.bulk {
+        BulkResponse bulkResponse = client.bulkSync {
             // note: this adds a List<IndexRequest>
             add indexConfigs.collect {
                 Requests.indexRequest(indexName).with(it)
@@ -139,7 +139,7 @@ abstract class AbstractClientTests extends AbstractElasticsearchIntegrationTest 
         assert ! bulkResponse.hasFailures()
 
         // refresh the index to guarantee searchability
-        assert client.admin.indices.refresh { indices indexName }.failedShards == 0
+        assert client.admin.indices.refreshSync { indices indexName }.failedShards == 0
 
         bulkResponse
     }

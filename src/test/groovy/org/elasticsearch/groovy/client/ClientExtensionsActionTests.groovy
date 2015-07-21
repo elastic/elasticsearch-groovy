@@ -54,6 +54,25 @@ class ClientExtensionsActionTests extends AbstractClientTests {
     String typeName = 'actions'
 
     @Test
+    void testIndexRequestSync() {
+        String tweetId = randomInt()
+
+        IndexResponse response = client.indexSync {
+            index indexName
+            type 'tweet'
+            id tweetId
+            source {
+                user = "kimchy"
+                message = "this is a tweet!"
+            }
+        }
+
+        assert response.index == indexName
+        assert response.type == 'tweet'
+        assert response.id == tweetId
+    }
+
+    @Test
     void testIndexRequest() {
         String tweetId = randomInt()
 
@@ -65,7 +84,7 @@ class ClientExtensionsActionTests extends AbstractClientTests {
                 user = "kimchy"
                 message = "this is a tweet!"
             }
-        }
+        }.actionGet()
 
         assert response.index == indexName
         assert response.type == 'tweet'
@@ -92,6 +111,32 @@ class ClientExtensionsActionTests extends AbstractClientTests {
     }
 
     @Test
+    void testDeleteRequestSync() {
+        String docId = indexDoc(indexName, typeName) {
+            user = randomAsciiOfLengthBetween(1, 16)
+        }
+
+        // don't need a refresh, since we're not searching for it
+        DeleteResponse response = client.deleteSync {
+            index indexName
+            type typeName
+            id docId
+        }
+
+        assert response.found
+        assert response.id == docId
+
+        // don't need a refresh, since we're not searching for it
+        GetResponse getResponse = client.getSync {
+            index indexName
+            type typeName
+            id docId
+        }
+
+        assert ! getResponse.exists
+    }
+
+    @Test
     void testDeleteRequest() {
         String docId = indexDoc(indexName, typeName) {
             user = randomAsciiOfLengthBetween(1, 16)
@@ -102,7 +147,7 @@ class ClientExtensionsActionTests extends AbstractClientTests {
             index indexName
             type typeName
             id docId
-        }
+        }.actionGet()
 
         assert response.found
         assert response.id == docId
@@ -112,7 +157,7 @@ class ClientExtensionsActionTests extends AbstractClientTests {
             index indexName
             type typeName
             id docId
-        }
+        }.actionGet()
 
         assert ! getResponse.exists
     }
@@ -144,6 +189,44 @@ class ClientExtensionsActionTests extends AbstractClientTests {
     }
 
     @Test
+    void testUpdateRequestSync() {
+        String userId = randomAsciiOfLengthBetween(1, 16)
+
+        int nestedValue = randomInt()
+
+        String docId = indexDoc(indexName, typeName) {
+            user = userId
+        }
+
+        // update the document by adding a nested object (creatively named "nested")
+        UpdateResponse response = client.updateSync {
+            index indexName
+            type typeName
+            id docId
+            doc {
+                nested {
+                    value = nestedValue
+                }
+            }
+        }
+
+        assert ! response.created
+        assert response.version == 2
+
+        // don't need a refresh, since we're not searching for it
+        GetResponse getResponse = client.getSync {
+            index indexName
+            type typeName
+            id docId
+        }
+
+        assert getResponse.exists
+        assert getResponse.version == 2
+        assert getResponse.sourceAsMap["user"] == userId
+        assert getResponse.sourceAsMap.nested.value == nestedValue
+    }
+
+    @Test
     void testUpdateRequest() {
         String userId = randomAsciiOfLengthBetween(1, 16)
 
@@ -163,7 +246,7 @@ class ClientExtensionsActionTests extends AbstractClientTests {
                     value = nestedValue
                 }
             }
-        }
+        }.actionGet()
 
         assert ! response.created
         assert response.version == 2
@@ -173,7 +256,7 @@ class ClientExtensionsActionTests extends AbstractClientTests {
             index indexName
             type typeName
             id docId
-        }
+        }.actionGet()
 
         assert getResponse.exists
         assert getResponse.version == 2
@@ -220,6 +303,26 @@ class ClientExtensionsActionTests extends AbstractClientTests {
     }
 
     @Test
+    void testGetRequestSync() {
+        String userId = randomAsciiOfLengthBetween(1, 16)
+
+        String docId = indexDoc(indexName, typeName) {
+            user = userId
+        }
+
+        // don't need a refresh, since we're not searching for it
+        GetResponse response = client.getSync {
+            index indexName
+            type typeName
+            id docId
+        }
+
+        assert response.exists
+        assert response.id == docId
+        assert response.sourceAsMap["user"] == userId
+    }
+
+    @Test
     void testGetRequest() {
         String userId = randomAsciiOfLengthBetween(1, 16)
 
@@ -232,7 +335,7 @@ class ClientExtensionsActionTests extends AbstractClientTests {
             index indexName
             type typeName
             id docId
-        }
+        }.actionGet()
 
         assert response.exists
         assert response.id == docId
@@ -257,6 +360,44 @@ class ClientExtensionsActionTests extends AbstractClientTests {
         assert response.exists
         assert response.id == docId
         assert response.sourceAsMap["user"] == userId
+    }
+
+    @Test
+    void testMultiGetRequestSync() {
+        String userId1 = randomAsciiOfLengthBetween(1, 4)
+        String userId2 = randomAsciiOfLengthBetween(5, 8)
+        String userId3 = randomAsciiOfLengthBetween(9, 12)
+
+        // Three separate index operations
+        BulkResponse bulkResponse = bulkIndex(indexName, [
+            {
+                type typeName
+                source { user = userId1 }
+            },
+            {
+                type typeName
+                source {
+                    user = userId2
+                    field = randomInt()
+                }
+            },
+            {
+                type typeName
+                source { user = userId3 }
+            }
+        ])
+
+        // don't need a refresh, since we're not searching for it
+        MultiGetResponse response = client.multiGetSync {
+            for (BulkItemResponse bulkItemResponse : bulkResponse.items) {
+                add indexName, typeName, bulkItemResponse.id
+            }
+        }
+
+        assert response.responses.length == 3
+        assert response.responses[0].response.sourceAsMap.user == userId1
+        assert response.responses[1].response.sourceAsMap.user == userId2
+        assert response.responses[2].response.sourceAsMap.user == userId3
     }
 
     @Test
@@ -289,7 +430,7 @@ class ClientExtensionsActionTests extends AbstractClientTests {
             for (BulkItemResponse bulkItemResponse : bulkResponse.items) {
                 add indexName, typeName, bulkItemResponse.id
             }
-        }
+        }.actionGet()
 
         assert response.responses.length == 3
         assert response.responses[0].response.sourceAsMap.user == userId1
@@ -336,6 +477,45 @@ class ClientExtensionsActionTests extends AbstractClientTests {
     }
 
     @Test
+    void testBulkRequestSync() {
+        List<String> ids = [randomAsciiOfLength(1), randomAsciiOfLength(2), randomAsciiOfLength(3)]
+
+        BulkResponse response = client.bulkSync {
+            // Note: this uses add(ActionRequest...) [note the comma between each request]
+            add Requests.indexRequest(indexName).with {
+                type typeName
+                id ids[0]
+                source {
+                    user = randomInt()
+                }
+            },
+            Requests.indexRequest(indexName).with {
+                type typeName
+                id ids[1]
+                source {
+                    user = randomInt()
+                }
+            },
+            Requests.indexRequest(indexName).with {
+                type typeName
+                id ids[2]
+                source {
+                    user = randomInt()
+                }
+            }
+        }
+
+        assert ! response.hasFailures()
+        assert response.items.length == 3
+        // ensure each item was indexed as expected
+        response.items.eachWithIndex { BulkItemResponse item, int i ->
+            assert item.index == indexName
+            assert item.type == typeName
+            assert item.id == ids[i]
+        }
+    }
+
+    @Test
     void testBulkRequest() {
         List<String> ids = [randomAsciiOfLength(1), randomAsciiOfLength(2), randomAsciiOfLength(3)]
 
@@ -362,7 +542,7 @@ class ClientExtensionsActionTests extends AbstractClientTests {
                     user = randomInt()
                 }
             }
-        }
+        }.actionGet()
 
         assert ! response.hasFailures()
         assert response.items.length == 3
@@ -414,6 +594,35 @@ class ClientExtensionsActionTests extends AbstractClientTests {
     }
 
     @Test
+    void testSearchRequestSync() {
+        // int used for ID to ensure that the search is simple
+        String userId = randomInt()
+
+        String docId = indexDoc(indexName, typeName) {
+            user = userId
+        }
+
+        // refresh the index to guarantee searchability
+        client.admin.indices.refreshSync { indices indexName }
+
+        SearchResponse response = client.searchSync {
+            indices indexName
+            types typeName
+            source {
+                query {
+                    match {
+                        user = userId
+                    }
+                }
+            }
+        }
+
+        assert response.hits.totalHits == 1
+        assert response.hits.hits[0].id == docId
+        assert response.hits.hits[0].source.user == userId
+    }
+
+    @Test
     void testSearchRequest() {
         // int used for ID to ensure that the search is simple
         String userId = randomInt()
@@ -423,7 +632,7 @@ class ClientExtensionsActionTests extends AbstractClientTests {
         }
 
         // refresh the index to guarantee searchability
-        client.admin.indices.refresh { indices indexName }
+        client.admin.indices.refresh { indices indexName }.actionGet()
 
         SearchResponse response = client.search {
             indices indexName
@@ -435,7 +644,7 @@ class ClientExtensionsActionTests extends AbstractClientTests {
                     }
                 }
             }
-        }
+        }.actionGet()
 
         assert response.hits.totalHits == 1
         assert response.hits.hits[0].id == docId
@@ -472,6 +681,43 @@ class ClientExtensionsActionTests extends AbstractClientTests {
     }
 
     @Test
+    void testMultiSearchRequestSync() {
+        List<Integer> values = bulkIndexValues()
+        // the value that all must be greater than or equal to in the first search; less than in the second search
+        int gteValue = values[randomInt(values.size() - 1)]
+
+        // determine how many indexed documents have a value >= gteValue and, separately value < gteValue
+        MultiSearchResponse response = client.multiSearchSync {
+            add Requests.searchRequest(indexName).types(typeName).source {
+                query {
+                    range {
+                        value {
+                            gte = gteValue
+                        }
+                    }
+                }
+            }
+            add Requests.searchRequest().with {
+                indices indexName
+                types typeName
+                source {
+                    query {
+                        range {
+                            value {
+                                lt = gteValue
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        // the counts should match exactly since they're doing the same operation
+        assert response.responses[0].response.hits.totalHits == values.count { it >= gteValue }
+        assert response.responses[1].response.hits.totalHits == values.count { it < gteValue }
+    }
+
+    @Test
     void testMultiSearchRequest() {
         List<Integer> values = bulkIndexValues()
         // the value that all must be greater than or equal to in the first search; less than in the second search
@@ -501,7 +747,7 @@ class ClientExtensionsActionTests extends AbstractClientTests {
                     }
                 }
             }
-        }
+        }.actionGet()
 
         // the counts should match exactly since they're doing the same operation
         assert response.responses[0].response.hits.totalHits == values.count { it >= gteValue }
@@ -546,6 +792,31 @@ class ClientExtensionsActionTests extends AbstractClientTests {
     }
 
     @Test
+    void testCountRequestSync() {
+        List<Integer> values = bulkIndexValues()
+        // the value that all must be greater than or equal to
+        int gteValue = values[randomInt(values.size() - 1)]
+
+        // determine how many indexed documents have a value >= gteValue
+        CountResponse response = client.countSync {
+            indices indexName
+            types typeName
+            source {
+                query {
+                    range {
+                        value {
+                            gte = gteValue
+                        }
+                    }
+                }
+            }
+        }
+
+        // the counts should match exactly since they're doing the same operation
+        assert response.count == values.count { it >= gteValue }
+    }
+
+    @Test
     void testCountRequest() {
         List<Integer> values = bulkIndexValues()
         // the value that all must be greater than or equal to
@@ -564,7 +835,7 @@ class ClientExtensionsActionTests extends AbstractClientTests {
                     }
                 }
             }
-        }
+        }.actionGet()
 
         // the counts should match exactly since they're doing the same operation
         assert response.count == values.count { it >= gteValue }
@@ -596,12 +867,12 @@ class ClientExtensionsActionTests extends AbstractClientTests {
     }
 
     @Test
-    void testSearchScrollRequest() {
+    void testSearchScrollRequestSync() {
         // index some arbitrary data
         List<Integer> values =  bulkIndexValues()
 
         // Open a new scroll ID
-        SearchResponse searchResponse = client.search {
+        SearchResponse searchResponse = client.searchSync {
             source {
                 query {
                     match_all { }
@@ -618,17 +889,56 @@ class ClientExtensionsActionTests extends AbstractClientTests {
         assert searchResponse.scrollId != null
         assert searchResponse.hits.hits.length == 0
 
-        SearchResponse response = client.searchScroll {
+        SearchResponse response = client.searchScrollSync {
             scrollId searchResponse.scrollId
             // keep the next window open
             scroll "60s"
         }
 
         // Cleanup any open/locked resources
-        ClearScrollResponse clearResponse = client.clearScroll {
+        ClearScrollResponse clearResponse = client.clearScrollSync {
             // NOTE: The response contains the _next_ scroll ID
             addScrollId response.scrollId
         }
+
+        // Ensure that it was successful
+        assert clearResponse.succeeded
+    }
+
+    @Test
+    void testSearchScrollRequest() {
+        // index some arbitrary data
+        List<Integer> values =  bulkIndexValues()
+
+        // Open a new scroll ID
+        SearchResponse searchResponse = client.search {
+            source {
+                query {
+                    match_all { }
+                }
+                // Note: Size is per relevant shard!
+                size 1000
+            }
+            searchType SearchType.SCAN
+            scroll "60s"
+        }.actionGet()
+
+        // sanity check
+        assert searchResponse.hits.totalHits == values.size()
+        assert searchResponse.scrollId != null
+        assert searchResponse.hits.hits.length == 0
+
+        SearchResponse response = client.searchScroll {
+            scrollId searchResponse.scrollId
+            // keep the next window open
+            scroll "60s"
+        }.actionGet()
+
+        // Cleanup any open/locked resources
+        ClearScrollResponse clearResponse = client.clearScroll {
+            // NOTE: The response contains the _next_ scroll ID
+            addScrollId response.scrollId
+        }.actionGet()
 
         // Ensure that it was successful
         assert clearResponse.succeeded
@@ -674,12 +984,12 @@ class ClientExtensionsActionTests extends AbstractClientTests {
     }
 
     @Test
-    void testClearScrollRequest() {
+    void testClearScrollRequestSync() {
         // index some arbitrary data
         List<Integer> values =  bulkIndexValues()
 
         // Open a new scroll ID
-        SearchResponse searchResponse = client.search {
+        SearchResponse searchResponse = client.searchSync {
             source {
                 query {
                     match_all { }
@@ -696,9 +1006,40 @@ class ClientExtensionsActionTests extends AbstractClientTests {
         assert searchResponse.scrollId != null
 
         // Cleanup any open/locked resources
-        ClearScrollResponse response = client.clearScroll {
+        ClearScrollResponse response = client.clearScrollSync {
             addScrollId searchResponse.scrollId
         }
+
+        // Ensure that it was successful
+        assert response.succeeded
+    }
+
+    @Test
+    void testClearScrollRequest() {
+        // index some arbitrary data
+        List<Integer> values =  bulkIndexValues()
+
+        // Open a new scroll ID
+        SearchResponse searchResponse = client.search {
+            source {
+                query {
+                    match_all { }
+                }
+                // Note: Size is per relevant shard!
+                size 1000
+            }
+            searchType SearchType.SCAN
+            scroll "60s"
+        }.actionGet()
+
+        // sanity check
+        assert searchResponse.hits.totalHits == values.size()
+        assert searchResponse.scrollId != null
+
+        // Cleanup any open/locked resources
+        ClearScrollResponse response = client.clearScroll {
+            addScrollId searchResponse.scrollId
+        }.actionGet()
 
         // Ensure that it was successful
         assert response.succeeded
@@ -736,6 +1077,58 @@ class ClientExtensionsActionTests extends AbstractClientTests {
     }
 
     @Test
+    void testPutIndexedScriptRequestSync() {
+        int startCount = randomInt(1024)
+
+        String docId = indexDoc(indexName, typeName) {
+            // actual value is ignored
+            user = randomAsciiOfLengthBetween(1, 16)
+            count = startCount
+        }
+
+        // index the script
+        PutIndexedScriptResponse response = client.putIndexedScriptSync {
+            id 'testPutIndexedScriptRequest'
+            // NOTE: This will be the Groovy runtime within Elasticsearch and not the Groovy client (this)
+            scriptLang 'groovy'
+            source {
+                // NOTE: The script is [in this case] Groovy, but it must be a string that is interpreted on the server
+                script = "ctx._source.count += count"
+            }
+        }
+
+        assert response.created
+
+        UpdateResponse updateResponse = client.updateSync {
+            index indexName
+            type typeName
+            id docId
+            source {
+                script_id 'testPutIndexedScriptRequest'
+                lang 'groovy'
+                params {
+                    count = 5
+                }
+            }
+        }
+
+        assert ! updateResponse.created
+        assert updateResponse.id == docId
+        assert updateResponse.version == 2
+
+        GetResponse getResponse = client.getSync {
+            index indexName
+            type typeName
+            id docId
+        }
+
+        assert getResponse.exists
+        assert getResponse.version == updateResponse.version
+        assert getResponse.source.user != null
+        assert getResponse.source.count == startCount + 5
+    }
+
+    @Test
     void testPutIndexedScriptRequest() {
         int startCount = randomInt(1024)
 
@@ -754,7 +1147,7 @@ class ClientExtensionsActionTests extends AbstractClientTests {
                 // NOTE: The script is [in this case] Groovy, but it must be a string that is interpreted on the server
                 script = "ctx._source.count += count"
             }
-        }
+        }.actionGet()
 
         assert response.created
 
@@ -769,7 +1162,7 @@ class ClientExtensionsActionTests extends AbstractClientTests {
                     count = 5
                 }
             }
-        }
+        }.actionGet()
 
         assert ! updateResponse.created
         assert updateResponse.id == docId
@@ -779,7 +1172,7 @@ class ClientExtensionsActionTests extends AbstractClientTests {
             index indexName
             type typeName
             id docId
-        }
+        }.actionGet()
 
         assert getResponse.exists
         assert getResponse.version == updateResponse.version
@@ -840,6 +1233,33 @@ class ClientExtensionsActionTests extends AbstractClientTests {
     }
 
     @Test
+    void testGetIndexedScriptRequestSync() {
+        String groovyScript = "ctx._source.count += count"
+
+        // index the script
+        PutIndexedScriptResponse putResponse = client.putIndexedScriptSync {
+            id 'testGetIndexedScriptRequest'
+            // NOTE: This will be the Groovy runtime within Elasticsearch and not the Groovy client (this)
+            scriptLang 'groovy'
+            source {
+                // NOTE: The script is [in this case] Groovy, but it must be a string that is interpreted on the server
+                script = groovyScript
+            }
+        }
+
+        assert putResponse.created
+
+        GetIndexedScriptResponse response = client.getIndexedScriptSync {
+            id 'testGetIndexedScriptRequest'
+            scriptLang 'groovy'
+        }
+
+        assert response.exists
+        assert response.version == putResponse.version
+        assert response.script == groovyScript
+    }
+
+    @Test
     void testGetIndexedScriptRequest() {
         String groovyScript = "ctx._source.count += count"
 
@@ -852,14 +1272,14 @@ class ClientExtensionsActionTests extends AbstractClientTests {
                 // NOTE: The script is [in this case] Groovy, but it must be a string that is interpreted on the server
                 script = groovyScript
             }
-        }
+        }.actionGet()
 
         assert putResponse.created
 
         GetIndexedScriptResponse response = client.getIndexedScript {
             id 'testGetIndexedScriptRequest'
             scriptLang 'groovy'
-        }
+        }.actionGet()
 
         assert response.exists
         assert response.version == putResponse.version
@@ -894,11 +1314,11 @@ class ClientExtensionsActionTests extends AbstractClientTests {
     }
 
     @Test
-    void testDeleteIndexedScriptRequest() {
+    void testDeleteIndexedScriptRequestSync() {
         String groovyScript = "ctx._source.count += count"
 
         // index the script
-        PutIndexedScriptResponse putResponse = client.putIndexedScript {
+        PutIndexedScriptResponse putResponse = client.putIndexedScriptSync {
             id 'testDeleteIndexedScriptRequest'
             scriptLang 'groovy'
             source {
@@ -909,17 +1329,48 @@ class ClientExtensionsActionTests extends AbstractClientTests {
         assert putResponse.created
 
         // perform the delete
-        DeleteIndexedScriptResponse response = client.deleteIndexedScript {
+        DeleteIndexedScriptResponse response = client.deleteIndexedScriptSync {
             id 'testDeleteIndexedScriptRequest'
             scriptLang 'groovy'
         }
 
         assert response.found
 
-        GetIndexedScriptResponse getResponse = client.getIndexedScript {
+        GetIndexedScriptResponse getResponse = client.getIndexedScriptSync {
             id 'testDeleteIndexedScriptRequest'
             scriptLang 'groovy'
         }
+
+        assert ! getResponse.exists
+    }
+
+    @Test
+    void testDeleteIndexedScriptRequest() {
+        String groovyScript = "ctx._source.count += count"
+
+        // index the script
+        PutIndexedScriptResponse putResponse = client.putIndexedScript {
+            id 'testDeleteIndexedScriptRequest'
+            scriptLang 'groovy'
+            source {
+                script = "ctx._source.count += count"
+            }
+        }.actionGet()
+
+        assert putResponse.created
+
+        // perform the delete
+        DeleteIndexedScriptResponse response = client.deleteIndexedScript {
+            id 'testDeleteIndexedScriptRequest'
+            scriptLang 'groovy'
+        }.actionGet()
+
+        assert response.found
+
+        GetIndexedScriptResponse getResponse = client.getIndexedScript {
+            id 'testDeleteIndexedScriptRequest'
+            scriptLang 'groovy'
+        }.actionGet()
 
         assert ! getResponse.exists
     }
@@ -956,7 +1407,7 @@ class ClientExtensionsActionTests extends AbstractClientTests {
     }
 
     @Test
-    void testExplainRequest() {
+    void testExplainRequestSync() {
         int matchInteger = randomInt()
 
         // send in a document to match
@@ -965,10 +1416,10 @@ class ClientExtensionsActionTests extends AbstractClientTests {
         }
 
         // refresh the index to guarantee searchability
-        assert client.admin.indices.refresh { indices indexName }.failedShards == 0
+        assert client.admin.indices.refreshSync { indices indexName }.failedShards == 0
 
         // Reference the document that we're interested in (just created) to see if we can find it
-        ExplainResponse response = client.explain {
+        ExplainResponse response = client.explainSync {
             index indexName
             type typeName
             id docId
@@ -986,6 +1437,36 @@ class ClientExtensionsActionTests extends AbstractClientTests {
     }
 
     @Test
+    void testExplainRequest() {
+        int matchInteger = randomInt()
+
+        // send in a document to match
+        String docId = indexDoc(indexName, typeName) {
+            value = matchInteger
+        }
+
+        // refresh the index to guarantee searchability
+        assert client.admin.indices.refresh { indices indexName }.actionGet().failedShards == 0
+
+        // Reference the document that we're interested in (just created) to see if we can find it
+        ExplainResponse response = client.explain {
+            index indexName
+            type typeName
+            id docId
+            source {
+                query {
+                    match {
+                        value = matchInteger
+                    }
+                }
+            }
+        }.actionGet()
+
+        // If it matched, then we know that explain works
+        assert response.match
+    }
+
+    @Test
     void testExplainRequestAsync() {
         int matchInteger = randomInt()
 
@@ -995,7 +1476,7 @@ class ClientExtensionsActionTests extends AbstractClientTests {
         }
 
         // refresh the index to guarantee searchability
-        assert client.admin.indices.refresh { indices indexName }.failedShards == 0
+        assert client.admin.indices.refreshAsync { indices indexName }.actionGet().failedShards == 0
 
         // Reference the document that we're interested in (just created) to see if we can find it
         ExplainResponse response = client.explainAsync {
