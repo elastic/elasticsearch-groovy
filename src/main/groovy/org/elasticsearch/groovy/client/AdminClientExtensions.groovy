@@ -18,6 +18,9 @@
  */
 package org.elasticsearch.groovy.client
 
+import groovy.transform.CompileStatic
+import groovy.transform.TypeChecked
+
 import org.elasticsearch.client.AdminClient
 import org.elasticsearch.client.Client
 import org.elasticsearch.client.ClusterAdminClient
@@ -27,6 +30,8 @@ import org.elasticsearch.client.IndicesAdminClient
  * {@code AdminClientExtensions} provides Groovy-friendly access to {@link AdminClient}s.
  * @see Client#admin()
  */
+@CompileStatic
+@TypeChecked
 class AdminClientExtensions {
 
     /**

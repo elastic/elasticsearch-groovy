@@ -18,6 +18,9 @@
  */
 package org.elasticsearch.groovy
 
+import groovy.transform.CompileStatic
+import groovy.transform.TypeChecked
+
 /**
  * {@code ClosureToMapConverter} serves as a utility to convert {@link Closure}s into {@link Map}s with {@link String}
  * keys and {@link Object} values. The values can be {@link List}s, {@link Map}s, or other values (normal objects). In
@@ -78,6 +81,8 @@ package org.elasticsearch.groovy
  * any state and therefore multiple instances can run in parallel.
  * @see ClosureExtensions#asMap(Closure)
  */
+@CompileStatic
+@TypeChecked
 class ClosureToMapConverter {
     /**
      * Convert the {@code closure} into a {@link Map}.
@@ -199,8 +204,8 @@ class ClosureToMapConverter {
         //   }
         // }
         // methodName would be "name" and args would be the closure
-        if (args instanceof Object[] && args.size() == 1) {
-            value = args[0]
+        if (args instanceof Object[] && ((Object[])args).length == 1) {
+            value = ((Object[])args)[0]
         }
 
         // assign the value of the would-be method
@@ -261,13 +266,13 @@ class ClosureToMapConverter {
             // NOTE: This "owner" is only the same as "closure.owner" for the root closure.
             if (rootOwner.hasProperty(propertyName)) {
                 // the owner has it, so just return that value (this _should_ be on the right hand side used as a value)
-                returned = rootOwner.getProperty(propertyName)
+                returned = ((GroovyObject)rootOwner).getProperty(propertyName)
             }
             else {
                 buildName = propertyName
             }
         }
-        // continuation from above where it's now "key2"; this method would never get "key3" unless it was on the
+        // continuation from above where it's now "key2"; this method would never get "key3" with the inline example
         else {
             buildName += '.' + propertyName
         }
@@ -289,7 +294,7 @@ class ClosureToMapConverter {
         // If we are maintaining state trying to load the name
         if (buildName != null) {
             fullName = buildName + "." + propertyName
-            // We just now saw "key3", so we can throw away the name now
+            // We just now saw "key3" from the getProperty method, so we can throw away the name now
             buildName = null
         }
 
