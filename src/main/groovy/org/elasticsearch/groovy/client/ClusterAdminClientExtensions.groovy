@@ -61,6 +61,21 @@ import org.elasticsearch.client.Requests
 
 /**
  * {@code ClusterAdminClientExtensions} provides Groovy-friendly access to {@link ClusterAdminClient} features.
+ * <p>
+ * The future of these {@code Client} extensions is to offer synchronous-by-default methods that do not require calling
+ * {@code actionGet} for your preferred method. Because the Groovy client exists as an extension of the Java code base,
+ * we decided that we would <em>not</em> dramatically change any API calls without an extremely good reason (e.g.,
+ * something simply does not work). To that effect, we have added a transition step to the Groovy client that does
+ * not exist in the Java client so that you can prepare for the synchronous methods by adding a companion method to
+ * every single {@code Client} <em>request</em> that ends in {@code Sync}, such as
+ * {@link ClusterAdminClientExtensions#healthSync}, which is the synchronous alternative to
+ * {@link ClusterAdminClient#health}.
+ * <p>
+ * The long term goal is to remove the {@code *Sync} options and to make the normal requests (those lacking any
+ * {@code *Sync} or {@code *Async} suffix) synchronous.
+ * <p>
+ * If you choose to continue using asynchronous methods, then you are strongly encouraged to adopt the new {@code Async}
+ * companion methods to avoid all possible confusion, as well as to aid with any eventual transition.
  * @see AdminClient#cluster()
  */
 class ClusterAdminClientExtensions extends AbstractClientExtensions {
