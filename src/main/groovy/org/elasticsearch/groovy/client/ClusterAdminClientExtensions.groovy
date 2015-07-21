@@ -84,6 +84,15 @@ class ClusterAdminClientExtensions extends AbstractClientExtensions {
 
     /**
      * Get the health of the cluster.
+     * <p>
+     * The Health API can be useful for infrastructure checkups (aka health checkups, hence the API's name). It can
+     * be used to determine the cluster health right now or, often more usefully, it can block until it observes a
+     * specific state of interest (e.g., a degraded state):
+     * <pre>
+     * ClusterHealthResponse response = client.admin.cluster.healthSync {
+     *     waitForStatus ClusterHealthStatus.YELLOW
+     * }
+     * </pre>
      *
      * @param self The {@code this} reference for the {@link ClusterAdminClient}.
      * @param requestClosure The map-like closure that configures the {@link ClusterHealthRequest}.
@@ -96,6 +105,15 @@ class ClusterAdminClientExtensions extends AbstractClientExtensions {
 
     /**
      * Get the health of the cluster.
+     * <p>
+     * The Health API can be useful for infrastructure checkups (aka health checkups, hence the API's name). It can
+     * be used to determine the cluster health right now or, often more usefully, it can block until it observes a
+     * specific state of interest (e.g., a degraded state):
+     * <pre>
+     * ClusterHealthResponse response = client.admin.cluster.health {
+     *     waitForStatus ClusterHealthStatus.YELLOW
+     * }.actionGet()
+     * </pre>
      *
      * @param self The {@code this} reference for the {@link ClusterAdminClient}.
      * @param requestClosure The map-like closure that configures the {@link ClusterHealthRequest}.
@@ -108,6 +126,15 @@ class ClusterAdminClientExtensions extends AbstractClientExtensions {
 
     /**
      * Get the health of the cluster.
+     * <p>
+     * The Health API can be useful for infrastructure checkups (aka health checkups, hence the API's name). It can
+     * be used to determine the cluster health right now or, often more usefully, it can block until it observes a
+     * specific state of interest (e.g., a degraded state):
+     * <pre>
+     * ClusterHealthResponse response = client.admin.cluster.healthAsync {
+     *     waitForStatus ClusterHealthStatus.YELLOW
+     * }.actionGet()
+     * </pre>
      *
      * @param self The {@code this} reference for the {@link ClusterAdminClient}.
      * @param requestClosure The map-like closure that configures the {@link ClusterHealthRequest}.
@@ -276,6 +303,10 @@ class ClusterAdminClientExtensions extends AbstractClientExtensions {
 
     /**
      * Get the nodes info of the cluster.
+     * <p>
+     * NodesInfoResponse response = clusterAdminClient.nodesInfoSync {
+     *     all() // collect all info possible
+     * }
      *
      * @param self The {@code this} reference for the {@link ClusterAdminClient}.
      * @param requestClosure The map-like closure that configures the {@link NodesInfoRequest}.
@@ -288,6 +319,10 @@ class ClusterAdminClientExtensions extends AbstractClientExtensions {
 
     /**
      * Get the nodes info of the cluster.
+     * <p>
+     * NodesInfoResponse response = clusterAdminClient.nodesInfo {
+     *     all() // collect all info possible
+     * }.actionGet()
      *
      * @param self The {@code this} reference for the {@link ClusterAdminClient}.
      * @param requestClosure The map-like closure that configures the {@link NodesInfoRequest}.
@@ -300,6 +335,10 @@ class ClusterAdminClientExtensions extends AbstractClientExtensions {
 
     /**
      * Get the nodes info of the cluster.
+     * <p>
+     * NodesInfoResponse response = clusterAdminClient.nodesInfoAsync {
+     *     all() // collect all info possible
+     * }.actionGet()
      *
      * @param self The {@code this} reference for the {@link ClusterAdminClient}.
      * @param requestClosure The map-like closure that configures the {@link NodesInfoRequest}.
@@ -312,6 +351,11 @@ class ClusterAdminClientExtensions extends AbstractClientExtensions {
 
     /**
      * Get the nodes stats of the cluster.
+     * <pre>
+     * NodesStatsResponse response = clusterAdminClient.nodesStatsSync {
+     *     all() // collect all stats possible
+     * }
+     * </pre>
      *
      * @param self The {@code this} reference for the {@link ClusterAdminClient}.
      * @param requestClosure The map-like closure that configures the {@link NodesStatsRequest}.
@@ -324,6 +368,11 @@ class ClusterAdminClientExtensions extends AbstractClientExtensions {
 
     /**
      * Get the nodes stats of the cluster.
+     * <pre>
+     * NodesStatsResponse response = clusterAdminClient.nodesStats {
+     *     all() // collect all stats possible
+     * }.actionGet()
+     * </pre>
      *
      * @param self The {@code this} reference for the {@link ClusterAdminClient}.
      * @param requestClosure The map-like closure that configures the {@link NodesStatsRequest}.
@@ -336,6 +385,11 @@ class ClusterAdminClientExtensions extends AbstractClientExtensions {
 
     /**
      * Get the nodes stats of the cluster.
+     * <pre>
+     * NodesStatsResponse response = clusterAdminClient.nodesStatsAsync {
+     *     all() // collect all stats possible
+     * }.actionGet()
+     * </pre>
      *
      * @param self The {@code this} reference for the {@link ClusterAdminClient}.
      * @param requestClosure The map-like closure that configures the {@link NodesStatsRequest}.
@@ -350,7 +404,12 @@ class ClusterAdminClientExtensions extends AbstractClientExtensions {
      * Get the hot threads details from nodes in the cluster.
      * <p>
      * This is particularly useful when you feel the need to debug activity on the cluster, so this can be requested
-     * and logged.
+     * and logged. To get a reasonable number of threads (above the conservative default), you might do something like:
+     * <pre>
+     * NodesHotThreadsResponse response = client.admin.cluster.nodesHotThreads {
+     *     threads 500
+     * }.actionGet()
+     * </pre>
      *
      * @param self The {@code this} reference for the {@link ClusterAdminClient}.
      * @param requestClosure The map-like closure that configures the {@link NodesHotThreadsRequest}.
@@ -365,7 +424,12 @@ class ClusterAdminClientExtensions extends AbstractClientExtensions {
      * Get the hot threads details from nodes in the cluster.
      * <p>
      * This is particularly useful when you feel the need to debug activity on the cluster, so this can be requested
-     * and logged.
+     * and logged. To get a reasonable number of threads (above the conservative default), you might do something like:
+     * <pre>
+     * NodesHotThreadsResponse response = client.admin.cluster.nodesHotThreads {
+     *     threads 500
+     * }.actionGet()
+     * </pre>
      *
      * @param self The {@code this} reference for the {@link ClusterAdminClient}.
      * @param requestClosure The map-like closure that configures the {@link NodesHotThreadsRequest}.
@@ -381,7 +445,12 @@ class ClusterAdminClientExtensions extends AbstractClientExtensions {
      * Get the hot threads details from nodes in the cluster.
      * <p>
      * This is particularly useful when you feel the need to debug activity on the cluster, so this can be requested
-     * and logged.
+     * and logged. To get a reasonable number of threads (above the conservative default), you might do something like:
+     * <pre>
+     * NodesHotThreadsResponse response = client.admin.cluster.nodesHotThreads {
+     *     threads 500
+     * }.actionGet()
+     * </pre>
      *
      * @param self The {@code this} reference for the {@link ClusterAdminClient}.
      * @param requestClosure The map-like closure that configures the {@link NodesHotThreadsRequest}.
@@ -635,6 +704,11 @@ class ClusterAdminClientExtensions extends AbstractClientExtensions {
 
     /**
      * Get snapshots from a repository.
+     * <pre>
+     * GetSnapshotsResponse response = clusterAdminClient.getSnapshotsSync {
+     *     repository "my-repo-name"
+     * }
+     * </pre>
      *
      * @param self The {@code this} reference for the {@link ClusterAdminClient}.
      * @param requestClosure The map-like closure that configures the {@link GetSnapshotsRequest}.
@@ -648,6 +722,11 @@ class ClusterAdminClientExtensions extends AbstractClientExtensions {
 
     /**
      * Get snapshots from a repository.
+     * <pre>
+     * GetSnapshotsResponse response = clusterAdminClient.getSnapshots {
+     *     repository "my-repo-name"
+     * }.actionGet()
+     * </pre>
      *
      * @param self The {@code this} reference for the {@link ClusterAdminClient}.
      * @param requestClosure The map-like closure that configures the {@link GetSnapshotsRequest}.
@@ -662,6 +741,11 @@ class ClusterAdminClientExtensions extends AbstractClientExtensions {
 
     /**
      * Get snapshots from a repository.
+     * <pre>
+     * GetSnapshotsResponse response = clusterAdminClient.getSnapshotsAsync {
+     *     repository "my-repo-name"
+     * }.actionGet()
+     * </pre>
      *
      * @param self The {@code this} reference for the {@link ClusterAdminClient}.
      * @param requestClosure The map-like closure that configures the {@link GetSnapshotsRequest}.
@@ -769,6 +853,13 @@ class ClusterAdminClientExtensions extends AbstractClientExtensions {
      * Get a list of pending cluster tasks that are scheduled to be executed.
      * <p>
      * This includes operations that update the cluster state (e.g., a create index operation).
+     * <pre>
+     * PendingClusterTasksResponse response = client.admin.cluster.pendingClusterTasksSync {
+     *     // There are currently no parameters for the request
+     * }
+     * </pre>
+     * This is particularly useful when attempting to understand why a cluster's master is showing slow responses.
+     * Specifically, it's useful to check this if the cluster's {@link #health} is yellow or red.
      *
      * @param self The {@code this} reference for the {@link ClusterAdminClient}.
      * @param requestClosure The map-like closure that configures the {@link PendingClusterTasksRequest}.
@@ -783,6 +874,13 @@ class ClusterAdminClientExtensions extends AbstractClientExtensions {
      * Get a list of pending cluster tasks that are scheduled to be executed.
      * <p>
      * This includes operations that update the cluster state (e.g., a create index operation).
+     * <pre>
+     * PendingClusterTasksResponse response = client.admin.cluster.pendingClusterTasks {
+     *     // There are currently no parameters for the request
+     * }.actionGet()
+     * </pre>
+     * This is particularly useful when attempting to understand why a cluster's master is showing slow responses.
+     * Specifically, it's useful to check this if the cluster's {@link #health} is yellow or red.
      *
      * @param self The {@code this} reference for the {@link ClusterAdminClient}.
      * @param requestClosure The map-like closure that configures the {@link PendingClusterTasksRequest}.
@@ -798,6 +896,13 @@ class ClusterAdminClientExtensions extends AbstractClientExtensions {
      * Get a list of pending cluster tasks that are scheduled to be executed.
      * <p>
      * This includes operations that update the cluster state (e.g., a create index operation).
+     * <pre>
+     * PendingClusterTasksResponse response = client.admin.cluster.pendingClusterTasksAsync {
+     *     // There are currently no parameters for the request
+     * }.actionGet()
+     * </pre>
+     * This is particularly useful when attempting to understand why a cluster's master is showing slow responses.
+     * Specifically, it's useful to check this if the cluster's {@link #health} is yellow or red.
      *
      * @param self The {@code this} reference for the {@link ClusterAdminClient}.
      * @param requestClosure The map-like closure that configures the {@link PendingClusterTasksRequest}.

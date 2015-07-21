@@ -20,12 +20,23 @@ package org.elasticsearch.groovy.client
 
 import org.elasticsearch.action.admin.cluster.health.ClusterHealthResponse
 import org.elasticsearch.action.admin.cluster.health.ClusterHealthStatus
+import org.elasticsearch.action.admin.cluster.node.hotthreads.NodesHotThreadsResponse
+import org.elasticsearch.action.admin.cluster.node.info.NodesInfoResponse
+import org.elasticsearch.action.admin.cluster.node.stats.NodesStatsResponse
+import org.elasticsearch.action.admin.cluster.repositories.delete.DeleteRepositoryResponse
 import org.elasticsearch.action.admin.cluster.repositories.get.GetRepositoriesResponse
 import org.elasticsearch.action.admin.cluster.repositories.put.PutRepositoryResponse
+import org.elasticsearch.action.admin.cluster.reroute.ClusterRerouteResponse
 import org.elasticsearch.action.admin.cluster.snapshots.create.CreateSnapshotResponse
+import org.elasticsearch.action.admin.cluster.snapshots.delete.DeleteSnapshotResponse
+import org.elasticsearch.action.admin.cluster.snapshots.get.GetSnapshotsResponse
 import org.elasticsearch.action.admin.cluster.snapshots.restore.RestoreSnapshotResponse
+import org.elasticsearch.action.admin.cluster.snapshots.status.SnapshotsStatusResponse
+import org.elasticsearch.action.admin.cluster.state.ClusterStateResponse
+import org.elasticsearch.action.admin.cluster.tasks.PendingClusterTasksResponse
 import org.elasticsearch.action.get.GetResponse
 import org.elasticsearch.client.ClusterAdminClient
+import org.elasticsearch.cluster.SnapshotsInProgress
 import org.elasticsearch.snapshots.SnapshotState
 import org.elasticsearch.test.ElasticsearchIntegrationTest.ClusterScope
 import org.elasticsearch.test.ElasticsearchIntegrationTest.Scope
@@ -97,8 +108,8 @@ class ClusterAdminClientExtensionsActionTests extends AbstractClientTests {
     }
 
     @Test
-    void testPutRepositoryRequestAndGetRepositoryRequestSync() {
-        String repoName = "test-repo"
+    void testPutRepositoryRequestSync() {
+        String repoName = "test-repo-sync"
         String absolutePath = randomRepoPath().toAbsolutePath()
 
         // Create the repository
@@ -112,19 +123,11 @@ class ClusterAdminClientExtensionsActionTests extends AbstractClientTests {
         }
 
         assert response.acknowledged
-
-        // verify that it exists
-        GetRepositoriesResponse getResponse = clusterAdminClient.getRepositoriesSync {
-            repositories repoName
-        }
-
-        assert getResponse.repositories()[0].name() == repoName
-        assert getResponse.repositories()[0].settings().get("location") == absolutePath
     }
 
     @Test
-    void testPutRepositoryRequestAndGetRepositoryRequest() {
-        String repoName = "test-repo-async"
+    void testPutRepositoryRequest() {
+        String repoName = "test-repo"
         String absolutePath = randomRepoPath().toAbsolutePath()
 
         // Create the repository
@@ -138,18 +141,10 @@ class ClusterAdminClientExtensionsActionTests extends AbstractClientTests {
         }.actionGet()
 
         assert response.acknowledged
-
-        // verify that it exists
-        GetRepositoriesResponse getResponse = clusterAdminClient.getRepositories {
-            repositories repoName
-        }.actionGet()
-
-        assert getResponse.repositories()[0].name() == repoName
-        assert getResponse.repositories()[0].settings().get("location") == absolutePath
     }
 
     @Test
-    void testPutRepositoryRequestAndGetRepositoryRequestAsync() {
+    void testPutRepositoryRequestAsync() {
         String repoName = "test-repo-async"
         String absolutePath = randomRepoPath().toAbsolutePath()
 
@@ -164,38 +159,113 @@ class ClusterAdminClientExtensionsActionTests extends AbstractClientTests {
         }.actionGet()
 
         assert response.acknowledged
+    }
+
+    @Test
+    void testGetRepositoryRequestSync() {
+        String repoName = "test-get-repo-sync"
+        // Create the repository
+        String absolutePath = createRepository(repoName)
 
         // verify that it exists
-        GetRepositoriesResponse getResponse = clusterAdminClient.getRepositoriesAsync {
+        GetRepositoriesResponse response = clusterAdminClient.getRepositoriesSync {
+            repositories repoName
+        }
+
+        assert response.repositories()[0].name() == repoName
+        assert response.repositories()[0].settings().get("location") == absolutePath
+    }
+
+    @Test
+    void testGetRepositoryRequest() {
+        String repoName = "test-get-repo"
+        // Create the repository
+        String absolutePath = createRepository(repoName)
+
+        // verify that it exists
+        GetRepositoriesResponse response = clusterAdminClient.getRepositories {
             repositories repoName
         }.actionGet()
 
-        assert getResponse.repositories()[0].name() == repoName
-        assert getResponse.repositories()[0].settings().get("location") == absolutePath
+        assert response.repositories()[0].name() == repoName
+        assert response.repositories()[0].settings().get("location") == absolutePath
+    }
+
+    @Test
+    void testGetRepositoryRequestAsync() {
+        String repoName = "test-get-repo-async"
+        // Create the repository
+        String absolutePath = createRepository(repoName)
+
+        // verify that it exists
+        GetRepositoriesResponse response = clusterAdminClient.getRepositoriesAsync {
+            repositories repoName
+        }.actionGet()
+
+        assert response.repositories()[0].name() == repoName
+        assert response.repositories()[0].settings().get("location") == absolutePath
+    }
+
+    @Test
+    void testDeleteRepositoryRequestRequestSync() {
+        String repoName = "test-delete-repo-sync"
+
+        // Create the repository
+        createRepository(repoName)
+
+        // verify that it exists
+        DeleteRepositoryResponse response = clusterAdminClient.deleteRepositorySync {
+            name repoName
+        }
+
+        // sanity check
+        assert response.acknowledged
+    }
+
+    @Test
+    void testDeleteRepositoryRequestRequest() {
+        String repoName = "test-delete-repo"
+
+        // Create the repository
+        createRepository(repoName)
+
+        // verify that it exists
+        DeleteRepositoryResponse response = clusterAdminClient.deleteRepository {
+            name repoName
+        }.actionGet()
+
+        // sanity check
+        assert response.acknowledged
+    }
+
+    @Test
+    void testDeleteRepositoryRequestAsync() {
+        String repoName = "test-delete-repo-async"
+
+        // Create the repository
+        createRepository(repoName)
+
+        // verify that it exists
+        DeleteRepositoryResponse response = clusterAdminClient.deleteRepositoryAsync {
+            name repoName
+        }.actionGet()
+
+        // sanity check
+        assert response.acknowledged
     }
 
     @Test
     void testCreateSnapshotRequestSync() {
-        String repoName = "test-create-snapshot-repo"
-        String snapshotName = "test-create-snapshot"
-        String absolutePath = randomRepoPath().toAbsolutePath()
+        String repoName = "test-create-snapshot-repo-sync"
+        String snapshotName = "test-create-snapshot-sync"
+
+        // Create the repository
+        createRepository(repoName)
 
         // Write a document
         indexDoc(indexName, typeName) { value = "ignored" }
         // flush the index to disk
         client.admin.indices.flushSync { indices indexName }
-
-        // Create the repository
-        PutRepositoryResponse putResponse = clusterAdminClient.putRepositorySync {
-            name repoName
-            type "fs"
-            settings {
-                location = absolutePath
-            }
-        }
-
-        // sanity check
-        assert putResponse.acknowledged
 
         // Create the snapshot
         CreateSnapshotResponse response = clusterAdminClient.createSnapshotSync {
@@ -212,26 +282,16 @@ class ClusterAdminClientExtensionsActionTests extends AbstractClientTests {
 
     @Test
     void testCreateSnapshotRequest() {
-        String repoName = "test-create-snapshot-repo-async"
-        String snapshotName = "test-create-snapshot-async"
-        String absolutePath = randomRepoPath().toAbsolutePath()
+        String repoName = "test-create-snapshot-repo"
+        String snapshotName = "test-create-snapshot"
+
+        // Create the repository
+        createRepository(repoName)
 
         // Write a document
         indexDoc(indexName, typeName) { value = "ignored" }
         // flush the index to disk
         client.admin.indices.flush { indices indexName }.actionGet()
-
-        // Create the repository
-        PutRepositoryResponse putResponse = clusterAdminClient.putRepository {
-            name repoName
-            type "fs"
-            settings {
-                location = absolutePath
-            }
-        }.actionGet()
-
-        // sanity check
-        assert putResponse.acknowledged
 
         // Create the snapshot
         CreateSnapshotResponse response = clusterAdminClient.createSnapshot {
@@ -250,24 +310,14 @@ class ClusterAdminClientExtensionsActionTests extends AbstractClientTests {
     void testCreateSnapshotRequestAsync() {
         String repoName = "test-create-snapshot-repo-async"
         String snapshotName = "test-create-snapshot-async"
-        String absolutePath = randomRepoPath().toAbsolutePath()
+
+        // Create the repository
+        createRepository(repoName)
 
         // Write a document
         indexDoc(indexName, typeName) { value = "ignored" }
         // flush the index to disk
         client.admin.indices.flushAsync { indices indexName }.actionGet()
-
-        // Create the repository
-        PutRepositoryResponse putResponse = clusterAdminClient.putRepositoryAsync {
-            name repoName
-            type "fs"
-            settings {
-                location = absolutePath
-            }
-        }.actionGet()
-
-        // sanity check
-        assert putResponse.acknowledged
 
         // Create the snapshot
         CreateSnapshotResponse response = clusterAdminClient.createSnapshotAsync {
@@ -283,38 +333,112 @@ class ClusterAdminClientExtensionsActionTests extends AbstractClientTests {
     }
 
     @Test
-    void testRestoreSnapshotRequestSync() {
-        String repoName = "test-restore-snapshot-repo"
+    void testGetSnapshotsRequestSync() {
+        String repoName = "test-get-snapshots-repo-sync"
+        String snapshotName = "test-get-snapshots-sync"
+
+        createRepositoryAndSnapshot(repoName, snapshotName)
+
+        // Check for the snapshot
+        GetSnapshotsResponse response = clusterAdminClient.getSnapshotsSync {
+            repository repoName
+        }
+
+        // verify that it exists
+        assert response.snapshots[0].name() == snapshotName
+    }
+
+    @Test
+    void testGetSnapshotsRequest() {
+        String repoName = "test-get-snapshots-repo"
+        String snapshotName = "test-get-snapshots"
+
+        createRepositoryAndSnapshot(repoName, snapshotName)
+
+        // Check for the snapshot
+        GetSnapshotsResponse response = clusterAdminClient.getSnapshots {
+            repository repoName
+        }.actionGet()
+
+        // verify that it exists
+        assert response.snapshots[0].name() == snapshotName
+    }
+
+    @Test
+    void testGetSnapshotsRequestAsync() {
+        String repoName = "test-get-snapshots-repo-async"
+        String snapshotName = "test-get-snapshots-async"
+
+        createRepositoryAndSnapshot(repoName, snapshotName)
+
+        // Check for the snapshot
+        GetSnapshotsResponse response = clusterAdminClient.getSnapshotsAsync {
+            repository repoName
+        }.actionGet()
+
+        // verify that it exists
+        assert response.snapshots[0].name() == snapshotName
+    }
+
+    @Test
+    void testSnapshotsStatusRequestSync() {
+        String repoName = "test-snapshots-status-repo-sync"
+        String snapshotName = "test-restore-snapshot-sync"
+
+        createRepositoryAndSnapshot(repoName, snapshotName)
+
+        // Check for the snapshot's status
+        SnapshotsStatusResponse response = clusterAdminClient.snapshotsStatusSync {
+            repository repoName
+            snapshots snapshotName
+        }
+
+        // verify that we found it and that it's still valid
+        assert response.snapshots[0].state == SnapshotsInProgress.State.SUCCESS
+    }
+
+    @Test
+    void testSnapshotsStatusRequest() {
+        String repoName = "test-snapshots-status-repo"
         String snapshotName = "test-restore-snapshot"
-        String absolutePath = randomRepoPath().toAbsolutePath()
-        String restoredIndexName = indexName + "-restored"
+
+        createRepositoryAndSnapshot(repoName, snapshotName)
+
+        // Check for the snapshot's status
+        SnapshotsStatusResponse response = clusterAdminClient.snapshotsStatus {
+            repository repoName
+            snapshots snapshotName
+        }.actionGet()
+
+        // verify that we found it and that it's still valid
+        assert response.snapshots[0].state == SnapshotsInProgress.State.SUCCESS
+    }
+
+    @Test
+    void testSnapshotsStatusRequestAsync() {
+        String repoName = "test-snapshots-status-repo-async"
+        String snapshotName = "test-restore-snapshot-async"
+
+        createRepositoryAndSnapshot(repoName, snapshotName)
+
+        // Check for the snapshot's status
+        SnapshotsStatusResponse response = clusterAdminClient.snapshotsStatusAsync {
+            repository repoName
+            snapshots snapshotName
+        }.actionGet()
+
+        // verify that we found it and that it's still valid
+        assert response.snapshots[0].state == SnapshotsInProgress.State.SUCCESS
+    }
+
+    @Test
+    void testRestoreSnapshotRequestSync() {
+        String repoName = "test-restore-snapshot-repo-sync"
+        String snapshotName = "test-restore-snapshot-sync"
+        String restoredIndexName = indexName + "-restored-sync"
         String expectedValue = "expected"
 
-        // Write a document
-        String docId = indexDoc(indexName, typeName) { value = expectedValue }
-
-        // Create the repository
-        PutRepositoryResponse putResponse = clusterAdminClient.putRepositorySync {
-            name repoName
-            type "fs"
-            settings {
-                location = absolutePath
-            }
-        }
-
-        // sanity check
-        assert putResponse.acknowledged
-
-        // Create the snapshot
-        CreateSnapshotResponse createResponse = clusterAdminClient.createSnapshotSync {
-            repository repoName
-            snapshot snapshotName
-            indices indexName
-            waitForCompletion true
-        }
-
-        // sanity check
-        assert createResponse.snapshotInfo.state() == SnapshotState.SUCCESS
+        String docId = createRepositoryAndSnapshot(repoName, snapshotName, expectedValue)
 
         // Restore the snapshot to another index (indexName -> restoredIndexName)
         RestoreSnapshotResponse response = clusterAdminClient.restoreSnapshotSync {
@@ -351,37 +475,12 @@ class ClusterAdminClientExtensionsActionTests extends AbstractClientTests {
 
     @Test
     void testRestoreSnapshotRequest() {
-        String repoName = "test-restore-snapshot-repo-async"
-        String snapshotName = "test-restore-snapshot-async"
-        String absolutePath = randomRepoPath().toAbsolutePath()
-        String restoredIndexName = indexName + "-restored-async"
+        String repoName = "test-restore-snapshot-repo"
+        String snapshotName = "test-restore-snapshot"
+        String restoredIndexName = indexName + "-restored"
         String expectedValue = "expected"
 
-        // Write a document
-        String docId = indexDoc(indexName, typeName) { value = expectedValue }
-
-        // Create the repository
-        PutRepositoryResponse putResponse = clusterAdminClient.putRepository {
-            name repoName
-            type "fs"
-            settings {
-                location = absolutePath
-            }
-        }.actionGet()
-
-        // sanity check
-        assert putResponse.acknowledged
-
-        // Create the snapshot
-        CreateSnapshotResponse createResponse = clusterAdminClient.createSnapshot {
-            repository repoName
-            snapshot snapshotName
-            indices indexName
-            waitForCompletion true
-        }.actionGet()
-
-        // sanity check
-        assert createResponse.snapshotInfo.state() == SnapshotState.SUCCESS
+        String docId = createRepositoryAndSnapshot(repoName, snapshotName, expectedValue)
 
         // Restore the snapshot to another index (indexName -> restoredIndexName)
         RestoreSnapshotResponse response = clusterAdminClient.restoreSnapshot {
@@ -420,35 +519,10 @@ class ClusterAdminClientExtensionsActionTests extends AbstractClientTests {
     void testRestoreSnapshotRequestAsync() {
         String repoName = "test-restore-snapshot-repo-async"
         String snapshotName = "test-restore-snapshot-async"
-        String absolutePath = randomRepoPath().toAbsolutePath()
         String restoredIndexName = indexName + "-restored-async"
         String expectedValue = "expected"
 
-        // Write a document
-        String docId = indexDoc(indexName, typeName) { value = expectedValue }
-
-        // Create the repository
-        PutRepositoryResponse putResponse = clusterAdminClient.putRepositoryAsync {
-            name repoName
-            type "fs"
-            settings {
-                location = absolutePath
-            }
-        }.actionGet()
-
-        // sanity check
-        assert putResponse.acknowledged
-
-        // Create the snapshot
-        CreateSnapshotResponse createResponse = clusterAdminClient.createSnapshotAsync {
-            repository repoName
-            snapshot snapshotName
-            indices indexName
-            waitForCompletion true
-        }.actionGet()
-
-        // sanity check
-        assert createResponse.snapshotInfo.state() == SnapshotState.SUCCESS
+        String docId = createRepositoryAndSnapshot(repoName, snapshotName, expectedValue)
 
         // Restore the snapshot to another index (indexName -> restoredIndexName)
         RestoreSnapshotResponse response = clusterAdminClient.restoreSnapshotAsync {
@@ -481,5 +555,335 @@ class ClusterAdminClientExtensionsActionTests extends AbstractClientTests {
 
         assert getResponse.exists
         assert getResponse.sourceAsMap.value == expectedValue
+    }
+
+    @Test
+    void testDeleteSnapshotRequestSync() {
+        String repoName = "test-delete-snapshot-repo-sync"
+        String snapshotName = "test-delete-snapshot-sync"
+
+        createRepositoryAndSnapshot(repoName, snapshotName)
+
+        // Delete the snapshot
+        DeleteSnapshotResponse response = clusterAdminClient.deleteSnapshotSync {
+            repository repoName
+            snapshot snapshotName
+        }
+
+        // sanity check
+        assert response.acknowledged
+    }
+
+    @Test
+    void testDeleteSnapshotRequest() {
+        String repoName = "test-delete-snapshot-repo"
+        String snapshotName = "test-delete-snapshot"
+
+        createRepositoryAndSnapshot(repoName, snapshotName)
+
+        // Delete the snapshot
+        DeleteSnapshotResponse response = clusterAdminClient.deleteSnapshot {
+            repository repoName
+            snapshot snapshotName
+        }.actionGet()
+
+        // sanity check
+        assert response.acknowledged
+    }
+
+    @Test
+    void testDeleteSnapshotRequestAsync() {
+        String repoName = "test-delete-snapshot-repo-async"
+        String snapshotName = "test-delete-snapshot-async"
+
+        createRepositoryAndSnapshot(repoName, snapshotName)
+
+        // Delete the snapshot
+        DeleteSnapshotResponse response = clusterAdminClient.deleteSnapshotAsync {
+            repository repoName
+            snapshot snapshotName
+        }.actionGet()
+
+        // sanity check
+        assert response.acknowledged
+    }
+
+    @Test
+    void testNodesHotThreadsRequestSync() {
+        NodesHotThreadsResponse response = clusterAdminClient.nodesHotThreadsSync {
+            // Currently defaults to 3, but we just want a quick test
+            threads 1
+        }
+
+        // sanity check
+        assert ! response.nodesMap.empty
+    }
+
+    @Test
+    void testNodesHotThreadsRequest() {
+        NodesHotThreadsResponse response = clusterAdminClient.nodesHotThreads {
+            // Currently defaults to 3, but we just want a quick test
+            threads 1
+        }.actionGet()
+
+        // sanity check
+        assert ! response.nodesMap.empty
+    }
+
+    @Test
+    void testNodesHotThreadsRequestAsync() {
+        NodesHotThreadsResponse response = clusterAdminClient.nodesHotThreadsAsync {
+            // Currently defaults to 3, but we just want a quick test
+            threads 1
+        }.actionGet()
+
+        // sanity check
+        assert ! response.nodesMap.empty
+    }
+
+    @Test
+    void testPendingClusterTasksRequestSync() {
+        PendingClusterTasksResponse response = clusterAdminClient.pendingClusterTasksSync {
+            // nothing to pass in!
+        }
+
+        assert response.pendingTasks.size() == 0
+    }
+
+    @Test
+    void testPendingClusterTasksRequest() {
+        PendingClusterTasksResponse response = clusterAdminClient.pendingClusterTasks {
+            // nothing to pass in!
+        }.actionGet()
+
+        assert response.pendingTasks.size() == 0
+    }
+
+    @Test
+    void testPendingClusterTasksRequestAsync() {
+        PendingClusterTasksResponse response = clusterAdminClient.pendingClusterTasksAsync {
+            // nothing to pass in!
+        }.actionGet()
+
+        assert response.pendingTasks.size() == 0
+    }
+
+    @Test
+    void testNodesInfoRequestSync() {
+        NodesInfoResponse response = clusterAdminClient.nodesInfoSync {
+            all() // collect all info possible
+        }
+
+        // sanity checks
+        assert response.failures() == null
+        response.nodes.each {
+            // plugin info
+            assert it.plugins != null
+            // operating system info
+            assert it.os != null
+        }
+    }
+
+    @Test
+    void testNodesInfoRequest() {
+        NodesInfoResponse response = clusterAdminClient.nodesInfo {
+            all() // collect all info possible
+        }.actionGet()
+
+        // sanity checks
+        assert response.failures() == null
+        response.nodes.each {
+            // plugin info
+            assert it.plugins != null
+            // operating system info
+            assert it.os != null
+        }
+    }
+
+    @Test
+    void testNodesInfoRequestAsync() {
+        NodesInfoResponse response = clusterAdminClient.nodesInfoAsync {
+            all() // collect all info possible
+        }.actionGet()
+
+        // sanity checks
+        assert response.failures() == null
+        response.nodes.each {
+            // plugin info
+            assert it.plugins != null
+            // operating system info
+            assert it.os != null
+        }
+    }
+
+    @Test
+    void testNodesStatsRequestSync() {
+        NodesStatsResponse response = clusterAdminClient.nodesStatsSync {
+            all() // collect all stats possible
+        }
+
+        // sanity checks
+        assert response.failures() == null
+        response.nodes.each {
+            // file system info
+            assert it.fs != null
+            // operating system info
+            assert it.os != null
+        }
+    }
+
+    @Test
+    void testNodesStatsRequest() {
+        NodesStatsResponse response = clusterAdminClient.nodesStats {
+            all() // collect all stats possible
+        }.actionGet()
+
+        // sanity checks
+        assert response.failures() == null
+        response.nodes.each {
+            // file system info
+            assert it.fs != null
+            // operating system info
+            assert it.os != null
+        }
+    }
+
+    @Test
+    void testNodesStatsRequestAsync() {
+        NodesStatsResponse response = clusterAdminClient.nodesStatsAsync {
+            all() // collect all stats possible
+        }.actionGet()
+
+        // sanity checks
+        assert response.failures() == null
+        response.nodes.each {
+            // file system info
+            assert it.fs != null
+            // operating system info
+            assert it.os != null
+        }
+    }
+
+    @Test
+    void testStateRequestSync() {
+        ClusterStateResponse response = clusterAdminClient.stateSync {
+            // we only need node info
+            clear()
+            nodes true
+        }
+
+        // sanity checks
+        assert response.state != null
+        assert response.state.nodes != null
+    }
+
+    @Test
+    void testStateRequest() {
+        ClusterStateResponse response = clusterAdminClient.state {
+            // we only need node info
+            clear()
+            nodes true
+        }.actionGet()
+
+        // sanity checks
+        assert response.state != null
+        assert response.state.nodes != null
+    }
+
+    @Test
+    void testStateRequestAsync() {
+        ClusterStateResponse response = clusterAdminClient.stateAsync {
+            // we only need node info
+            clear()
+            nodes true
+        }.actionGet()
+
+        // sanity checks
+        assert response.state != null
+        assert response.state.nodes != null
+    }
+
+    /**
+     * Create a repository with the {@code repoName} and a snapshot with the {@code snapshotName} within the repository.
+     * <p>
+     * This will:
+     * <ol>
+     * <li>Index a single document with a field named "value" whose value is defaulted to {@code "ignored"}.</li>
+     * <li>Use the {@link #indexName} to snapshot and nothing else.</li>
+     * <li>Wait until the snapshot is created before returning and it will assert that it has been created.</li>
+     * </ol>
+     *
+     * @param repoName The name of the repository to create.
+     * @param snapshotName The name of the snapshot to create.
+     *
+     * @see #createRepositoryAndSnapshot(String, String, String)
+     */
+    void createRepositoryAndSnapshot(String repoName, String snapshotName) {
+        createRepositoryAndSnapshot(repoName, snapshotName, "ignored")
+    }
+
+    /**
+     * Create a repository with the {@code repoName} and a snapshot with the {@code snapshotName} within the repository.
+     * <p>
+     * This will:
+     * <ol>
+     * <li>Index a single document with a field named "value" whose value is set to {@code expectedValue}.</li>
+     * <li>Use the {@link #indexName} to snapshot and nothing else.</li>
+     * <li>Wait until the snapshot is created before returning and it will assert that it has been created.</li>
+     * </ol>
+     *
+     * @param repoName The name of the repository to create.
+     * @param snapshotName The name of the snapshot to create.
+     * @param expectedValue A value that can be tested against after restoring from the snapshot.
+     * @return The randomly generated ID used to index the {@code expectedValue}. Never {@code null}.
+     *
+     * @see #createRepositoryAndSnapshot(String, String)
+     */
+    String createRepositoryAndSnapshot(String repoName, String snapshotName, String expectedValue) {
+        // Create the repository for the snapshot
+        createRepository(repoName)
+
+        // Write a document
+        String docId = indexDoc(indexName, typeName) { value = expectedValue }
+        // flush the index to disk
+        client.admin.indices.flushAsync { indices indexName }.actionGet()
+
+        // Create the snapshot
+        CreateSnapshotResponse createResponse = clusterAdminClient.createSnapshotSync {
+            repository repoName
+            snapshot snapshotName
+            indices indexName
+            waitForCompletion true
+        }
+
+        assert createResponse.snapshotInfo.state() == SnapshotState.SUCCESS
+
+        docId
+    }
+
+    /**
+     * Create a repository with the {@code repoName}
+     * <p>
+     * This will wait until the repository is created before returning and it will assert that it has been created.
+     *
+     * @param repoName The name of the repository to create.
+     * @return Never {@code null}. The absolute path used by the file system-based repository.
+     */
+    String createRepository(String repoName) {
+        String absolutePath = randomRepoPath().toAbsolutePath()
+
+        // Create the repository
+        PutRepositoryResponse putResponse = clusterAdminClient.putRepositorySync {
+            name repoName
+            type "fs"
+            settings {
+                location = absolutePath
+            }
+        }
+
+        // sanity check
+        assert putResponse.acknowledged
+
+        absolutePath
     }
 }
