@@ -54,8 +54,8 @@ allprojects {
 
     // A map that is defined to contain version numbers for all dependencies in the current release.
     versions = [
-      elasticsearch              : '1.6.1-SNAPSHOT',
-      'elasticsearch-groovy'     : '1.6.1-SNAPSHOT',
+      elasticsearch              : '1.6.1',
+      'elasticsearch-groovy'     : '1.6.1',
       'elasticsearch-license'    : '1.0.0',
       'elasticsearch-shield'     : '1.0.1',
       groovy                     : '2.4.4',
@@ -67,7 +67,7 @@ allprojects {
       //       left alone when using non-snapshot releases to simplify switching)
       lucene                     : "4.10.4".toString(),
       mockito                    : '1.10.5',
-      'randomizedtesting-runner' : '2.1.11'
+      'randomizedtesting-runner' : '2.1.14'
     ]
 
     // A map defining shorthand names to reference external dependencies.

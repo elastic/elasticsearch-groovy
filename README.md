@@ -38,7 +38,7 @@ SearchResponse response = future.actionGet()
 ```
 
 Besides the usage of `Closure`s, the above example should look very familiar to any existing Java client users, as well
-as those familiar with the Elasticsearch DSL (Domain Specific Language used for indexing and querying)..
+as those familiar with the Elasticsearch DSL (Domain Specific Language used for indexing and querying).
 
 Versions
 --------
@@ -47,7 +47,7 @@ In general, the version number will match the release of Elasticsearch.
 
 |    Elasticsearch    |     Groovy Client           |    Java       | Groovy |
 |---------------------|-----------------------------|---------------|--------|
-| 1.6.1-SNAPSHOT      | 1.6.1-SNAPSHOT              | 7u60 or later | 2.4.3  |
+| 1.6.1               | 1.6.1                       | 7u60 or later | 2.4.4  |
 | 1.6.0               | 1.6.0                       | 7u60 or later | 2.4.3  |
 
 To build a `SNAPSHOT` version, you need to build it with Gradle (see below for further details):
@@ -57,6 +57,14 @@ $ gradle clean installDist
 ```
 
 This is particularly relevant on the 1.x and master branches, which do make occassional snapshot releases, but they may be behind the most up-to-date snapshot release(s). In general, this is not a concern due to the way that the Groovy client is written using Groovy Extensions, but non-backwards compatible changes can still break those too.
+
+Groovy Warning
+--------------
+
+Groovy released Groovy 2.4.4 to fix a vulnerability with [CVE-2015-3253](http://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2015-3253).
+
+You are considered vulnerable just by having an earlier version of Groovy on your classpath! All users should upgrade
+to Groovy 2.4.4 as a result.
 
 JVM Warning
 -----------
