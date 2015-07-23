@@ -97,7 +97,7 @@ repositories {
 }
 
 dependencies {
-  compile 'org.elasticsearch:elasticsearch-groovy:1.6.0'
+  compile 'org.elasticsearch:elasticsearch-groovy:1.6.1'
 }
 ```
 
@@ -108,7 +108,7 @@ dependencies {
   <dependency>
     <groupId>org.elasticsearch</groupId>
     <artifactId>elasticsearch-groovy</artifactId>
-    <version>1.6.0</version>
+    <version>1.6.1</version>
     <scope>compile</scope>
   </dependency>
 </dependencies>
@@ -127,7 +127,7 @@ repositories {
 
 dependencies {
   // You may be able to use the 'runtime' scope
-  compile group: 'org.elasticsearch', name: 'elasticsearch-groovy', version: '1.6.0', classifier: 'grails'
+  compile group: 'org.elasticsearch', name: 'elasticsearch-groovy', version: '1.6.1', classifier: 'grails'
 }
 ```
 
