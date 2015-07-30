@@ -366,7 +366,7 @@ class ListenableActionFutureExtensionsTests extends AbstractElasticsearchTestCas
     static abstract class AbstractNoOpAction extends TransportAction<NoOpRequest, NoOpResponse> {
         protected AbstractNoOpAction(String actionName) {
             super(Settings.EMPTY, actionName, null, new ActionFilters(ImmutableSet.of()),
-                  new IndexNameExpressionResolver())
+                  new IndexNameExpressionResolver(Settings.EMPTY))
         }
     }
 
