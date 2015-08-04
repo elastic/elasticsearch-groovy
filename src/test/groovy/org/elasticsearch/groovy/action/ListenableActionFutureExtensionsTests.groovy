@@ -31,7 +31,7 @@ import org.elasticsearch.action.support.PlainListenableActionFuture
 import org.elasticsearch.action.support.TransportAction
 import org.elasticsearch.cluster.metadata.IndexNameExpressionResolver
 import org.elasticsearch.common.settings.Settings
-import org.elasticsearch.groovy.AbstractElasticsearchTestCase
+import org.elasticsearch.groovy.AbstractESTestCase
 import org.elasticsearch.threadpool.ThreadPool
 
 import org.junit.After
@@ -46,7 +46,7 @@ import java.util.concurrent.CountDownLatch
 /**
  * Tests {@link ListenableActionFutureExtensions}.
  */
-class ListenableActionFutureExtensionsTests extends AbstractElasticsearchTestCase {
+class ListenableActionFutureExtensionsTests extends AbstractESTestCase {
     /**
      * Timeout for each <em>individual</em> test (and non-static to avoid wasted test resources).
      */

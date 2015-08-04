@@ -19,7 +19,7 @@
 package org.elasticsearch.groovy.node
 
 import org.elasticsearch.common.settings.Settings
-import org.elasticsearch.groovy.AbstractElasticsearchTestCase
+import org.elasticsearch.groovy.AbstractESTestCase
 import org.elasticsearch.node.Node
 import org.elasticsearch.node.NodeBuilder
 
@@ -34,7 +34,7 @@ import static org.mockito.Mockito.when
 /**
  * Tests {@link NodeBuilderExtensions}.
  */
-class NodeBuilderExtensionsTests extends AbstractElasticsearchTestCase {
+class NodeBuilderExtensionsTests extends AbstractESTestCase {
     /**
      * Tested {@link NodeBuilder}.
      */

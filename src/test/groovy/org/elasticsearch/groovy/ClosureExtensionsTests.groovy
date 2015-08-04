@@ -25,7 +25,7 @@ import org.junit.Test
  * <p>
  * These tests assume that {@link ClosureToMapConverter} is appropriately tested.
  */
-class ClosureExtensionsTests extends AbstractElasticsearchTestCase {
+class ClosureExtensionsTests extends AbstractESTestCase {
     @Test
     void testAsMap() {
         String firstName = randomAsciiOfLengthBetween(1, 8)

@@ -22,14 +22,14 @@ import org.elasticsearch.common.xcontent.XContentBuilder
 import org.elasticsearch.common.xcontent.XContentFactory
 import org.elasticsearch.common.xcontent.XContentParser
 import org.elasticsearch.common.xcontent.XContentType
-import org.elasticsearch.groovy.AbstractElasticsearchTestCase
+import org.elasticsearch.groovy.AbstractESTestCase
 import org.junit.After
 import org.junit.Test
 
 /**
  * Tests {@link XContentBuilderExtensions}.
  */
-class XContentBuilderExtensionsTests extends AbstractElasticsearchTestCase {
+class XContentBuilderExtensionsTests extends AbstractESTestCase {
     /**
      * Get a random {@link XContentType} to ensure all types work.
      */

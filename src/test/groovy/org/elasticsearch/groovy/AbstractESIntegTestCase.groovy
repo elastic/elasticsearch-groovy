@@ -20,13 +20,19 @@ package org.elasticsearch.groovy
 
 import groovy.transform.CompileStatic
 
-/**
- * The basis for all Groovy client test classes that do not require a running Elasticsearch cluster / client.
- * @see AbstractESTestCase
- * @deprecated Use {@link AbstractESTestCase} instead (to match rename of the base ES code).
- */
-@Deprecated
-@CompileStatic
-abstract class AbstractElasticsearchTestCase extends AbstractESTestCase {
+import org.elasticsearch.test.ESIntegTestCase
 
+/**
+ * The basis for all Groovy client test classes that require a running Elasticsearch cluster / client (integration
+ * tests).
+ * @see AbstractESTestCase
+ */
+@CompileStatic
+abstract class AbstractESIntegTestCase extends ESIntegTestCase {
+    /**
+     * Sanitize the test code to allow Groovy to cleanup after itself rather than forcing the onus onto everyone else.
+     */
+    static {
+        assert GroovyTestSanitizer.groovySanitized
+    }
 }

@@ -38,8 +38,8 @@ import org.elasticsearch.action.get.GetResponse
 import org.elasticsearch.client.ClusterAdminClient
 import org.elasticsearch.cluster.SnapshotsInProgress
 import org.elasticsearch.snapshots.SnapshotState
-import org.elasticsearch.test.ElasticsearchIntegrationTest.ClusterScope
-import org.elasticsearch.test.ElasticsearchIntegrationTest.Scope
+import org.elasticsearch.test.ESIntegTestCase.ClusterScope
+import org.elasticsearch.test.ESIntegTestCase.Scope
 
 import org.junit.Before
 import org.junit.Test

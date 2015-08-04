@@ -25,7 +25,7 @@ import static org.elasticsearch.groovy.ClosureToMapConverter.mapClosure
 /**
  * Tests {@link ClosureToMapConverter}.
  */
-class ClosureToMapConverterTests extends AbstractElasticsearchTestCase {
+class ClosureToMapConverterTests extends AbstractESTestCase {
     /**
      * A random {@code long} value.
      * <p>

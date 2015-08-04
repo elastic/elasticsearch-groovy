@@ -23,7 +23,7 @@ import org.elasticsearch.action.index.IndexRequest
 import org.elasticsearch.action.index.IndexResponse
 import org.elasticsearch.client.Client
 import org.elasticsearch.client.Requests
-import org.elasticsearch.groovy.AbstractElasticsearchIntegrationTest
+import org.elasticsearch.groovy.AbstractESIntegTestCase
 
 import org.junit.Before
 
@@ -31,7 +31,7 @@ import org.junit.Before
  * {@code AbstractClientTests} provides helper functionality to tests that make use of {@code Client}s to perform
  * actions.
  */
-abstract class AbstractClientTests extends AbstractElasticsearchIntegrationTest {
+abstract class AbstractClientTests extends AbstractESIntegTestCase {
     /**
      * Test {@link Client} used to process requests.
      */

@@ -42,7 +42,7 @@ import java.lang.reflect.Modifier
  * </ul>
  * This should be invoked in a {@code static} block of every abstract test that uses the Elasticsearch test framework.
  * Since all tests are expected to extend either {@code ElasticsearchTestCase} or {@code ElasticsearchIntegrationTest},
- * {@link AbstractElasticsearchTestCase} and {@link AbstractElasticsearchIntegrationTest} exist to do this for you.
+ * {@link AbstractElasticsearchTestCase} and {@link AbstractESIntegTestCase} exist to do this for you.
  * <pre>
  * static {
  *     assert GroovyTestSanitizer.groovySanitized
@@ -50,7 +50,7 @@ import java.lang.reflect.Modifier
  * </pre>
  * In particular, this should be done before any test has the chance to run.
  * @see AbstractElasticsearchTestCase
- * @see AbstractElasticsearchIntegrationTest
+ * @see AbstractESIntegTestCase
  */
 @Ignore
 @CompileStatic

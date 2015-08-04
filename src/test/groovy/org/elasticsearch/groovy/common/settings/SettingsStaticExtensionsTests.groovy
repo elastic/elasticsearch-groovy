@@ -19,14 +19,14 @@
 package org.elasticsearch.groovy.common.settings
 
 import org.elasticsearch.common.settings.Settings
-import org.elasticsearch.groovy.AbstractElasticsearchTestCase
+import org.elasticsearch.groovy.AbstractESTestCase
 
 import org.junit.Test
 
 /**
  * Tests {@link SettingsStaticExtensions}.
  */
-class SettingsStaticExtensionsTests extends AbstractElasticsearchTestCase {
+class SettingsStaticExtensionsTests extends AbstractESTestCase {
 
     @Test
     void testSettingsClosure() {
