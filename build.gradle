@@ -379,14 +379,14 @@ uploadArchives {
         name 'Elasticsearch Groovy Client'
         packaging 'jar'
         description project.description
-        url 'https://github.com/elasticsearch/elasticsearch-groovy'
+        url 'https://github.com/elastic/elasticsearch-groovy'
         inceptionYear '2014'
 
         // Source Control details (GitHub)
         scm {
-          connection 'scm:git:git@github.com:elasticsearch/elasticsearch-groovy.git'
-          developerConnection 'scm:git:git@github.com:elasticsearch/elasticsearch-groovy.git'
-          url 'https://github.com/elasticsearch/elasticsearch-groovy'
+          connection 'scm:git:git@github.com:elastic/elasticsearch-groovy.git'
+          developerConnection 'scm:git:git@github.com:elastic/elasticsearch-groovy.git'
+          url 'https://github.com/elastic/elasticsearch-groovy'
         }
 
         // Using Apache 2
