@@ -43,23 +43,21 @@ as those familiar with the Elasticsearch DSL (Domain Specific Language used for 
 Versions
 --------
 
-You need to install a version matching your Elasticsearch version:
+In general, the version number will match the release of Elasticsearch.
 
 |    Elasticsearch    |     Groovy Client           |    Java       | Groovy |
 |---------------------|-----------------------------|---------------|--------|
-| master              | Build from source           | See below     | 2.4.4  |
-| 1.7                 | [1.7](https://github.com/elasticsearch/elasticsearch-groovy/tree/1.7) | 7u60 or later | 2.4.4  |
-| 1.6                 | [1.6](https://github.com/elasticsearch/elasticsearch-groovy/tree/1.6) | 7u60 or later | 2.4.4  |
-| 1.5                 | [1.5](https://github.com/elasticsearch/elasticsearch-groovy/tree/1.5) | 7u60 or later | 2.4.1  |
-| 1.4                 | [1.4](https://github.com/elasticsearch/elasticsearch-groovy/tree/1.4) | 7u60 or later | 2.3.7  |
+| 2.0.0-beta1         | 2.0.0-beta1-SNAPSHOT        | 7u60 or later | 2.4.4  |
 
-Please read documentation relative to the version that you are using!
-
-To build a SNAPSHOT version, you need to build it with Gradle (see below for further details):
+To build a `SNAPSHOT` version, you need to build it with Gradle (see below for further details):
 
 ```bash
 $ gradle clean installDist
 ```
+
+This is particularly relevant on the 2.x and master branches, which do make occasional snapshot releases, but they may
+be behind the most up-to-date snapshot release(s). In general, this is not a concern due to the way that the Groovy
+client is written using Groovy Extensions, but non-backwards compatible changes can still break those too.
 
 Groovy Warning
 --------------
@@ -99,18 +97,18 @@ repositories {
 }
 
 dependencies {
-  compile 'org.elasticsearch:elasticsearch-groovy:1.7.0'
+  compile 'org.elasticsearch:elasticsearch-groovy:2.0.0-beta1'
 }
 ```
 
 ### Maven
 
-```
+```xml
 <dependencies>
   <dependency>
     <groupId>org.elasticsearch</groupId>
     <artifactId>elasticsearch-groovy</artifactId>
-    <version>1.7.0</version>
+    <version>2.0.0-beta1</version>
     <scope>compile</scope>
   </dependency>
 </dependencies>
@@ -129,7 +127,7 @@ repositories {
 
 dependencies {
   // You may be able to use the 'runtime' scope
-  compile group: 'org.elasticsearch', name: 'elasticsearch-groovy', version: '1.7.0', classifier: 'grails'
+  compile group: 'org.elasticsearch', name: 'elasticsearch-groovy', version: '2.0.0-beta1', classifier: 'grails'
 }
 ```
 
@@ -156,7 +154,7 @@ $ gradle clean installDist
 ```
 
 This will skip all tests and place the compiled jar in
-`./build/install/elasticsearch-groovy/elasticsearch-groovy-{version}.jar`. It will package all dependencies (e.g.,
+`./build/install/elasticsearch-groovy/elasticsearch-groovy-{version}.jar`. It will package all dependencies (e.g., 
 `elasticsearch-{version}.jar`) into `./build/install/elasticsearch-groovy/lib`.
 
 Testing Groovy Client
@@ -206,18 +204,18 @@ repositories {
 }
 
 dependencies {
-  compile 'org.codehaus.groovy:groovy-all:2.4.3:indy'
+  compile 'org.codehaus.groovy:groovy-all:2.4.4:indy'
 }
 ```
 
 #### Maven
 
-```
+```xml
 <dependencies>
   <dependency>
     <groupId>org.codehaus.groovy</groupId>
     <artifactId>groovy-all</artifactId>
-    <version>2.4.3</version>
+    <version>2.4.4</version>
     <classifier>indy</classifier>
     <scope>compile</scope>
   </dependency>
@@ -262,8 +260,6 @@ To change this setting:
 2. Select `Compiler`
 3. Select `Groovy Compiler`
 4. Check `Invoke dynamic support`
-
-With IntelliJ 13, I have noticed that it is sometimes necessary to manually rebuild the project because it loses track of the resource files. This happens infrequently, but it will cause practically every test to fail when it does happen.
 
 License
 -------
