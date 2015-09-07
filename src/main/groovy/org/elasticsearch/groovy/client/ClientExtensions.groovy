@@ -27,6 +27,8 @@ import org.elasticsearch.action.delete.DeleteRequest
 import org.elasticsearch.action.delete.DeleteResponse
 import org.elasticsearch.action.explain.ExplainRequest
 import org.elasticsearch.action.explain.ExplainResponse
+import org.elasticsearch.action.fieldstats.FieldStatsRequest
+import org.elasticsearch.action.fieldstats.FieldStatsResponse
 import org.elasticsearch.action.get.GetRequest
 import org.elasticsearch.action.get.GetResponse
 import org.elasticsearch.action.get.MultiGetRequest
@@ -1523,5 +1525,86 @@ class ClientExtensions extends AbstractClientExtensions {
     static ListenableActionFuture<DeleteIndexedScriptResponse> deleteIndexedScriptAsync(Client self,
                                                                                         Closure requestClosure) {
         doRequestAsync(self, new DeleteIndexedScriptRequest(), requestClosure, self.&deleteIndexedScript)
+    }
+
+    /**
+     * Get field stats details.
+     * <pre>
+     * FieldStatsResponse response = client.fieldStatsSync {
+     *     index "my-index"
+     *     source {
+     *         fields = ["your_field"]
+     *         index_constraints {
+     *             your_field { // <- field name!
+     *                 min_value {
+     *                     gte = matchInteger
+     *                 }
+     *             }
+     *         }
+     *     }
+     * }
+     * </pre>
+     *
+     * @param self The {@code this} reference for the {@link Client}
+     * @param requestClosure The map-like closure that configures the {@link FieldStatsRequest}.
+     * @return Never {@code null}.
+     * @throws NullPointerException if any parameter is {@code null}
+     */
+    static FieldStatsResponse fieldStatsSync(Client self, Closure requestClosure) {
+        doRequest(self, new FieldStatsRequest(), requestClosure, self.&fieldStats)
+    }
+
+    /**
+     * Get field stats details.
+     * <pre>
+     * FieldStatsResponse response = client.fieldStats {
+     *     index "my-index"
+     *     source {
+     *         fields = ["your_field"]
+     *         index_constraints {
+     *             your_field { // <- field name!
+     *                 min_value {
+     *                     gte = matchInteger
+     *                 }
+     *             }
+     *         }
+     *     }
+     * }.actionGet()
+     * </pre>
+     *
+     * @param self The {@code this} reference for the {@link Client}
+     * @param requestClosure The map-like closure that configures the {@link FieldStatsRequest}.
+     * @return Never {@code null}.
+     * @throws NullPointerException if any parameter is {@code null}
+     */
+    static ListenableActionFuture<FieldStatsResponse> fieldStats(Client self, Closure requestClosure) {
+        doRequestAsync(self, new FieldStatsRequest(), requestClosure, self.&fieldStats)
+    }
+
+    /**
+     * Get field stats details.
+     * <pre>
+     * FieldStatsResponse response = client.fieldStatsAsync {
+     *     index "my-index"
+     *     source {
+     *         fields = ["your_field"]
+     *         index_constraints {
+     *             your_field { // <- field name!
+     *                 min_value {
+     *                     gte = matchInteger
+     *                 }
+     *             }
+     *         }
+     *     }
+     * }.actionGet()
+     * </pre>
+     *
+     * @param self The {@code this} reference for the {@link Client}
+     * @param requestClosure The map-like closure that configures the {@link FieldStatsRequest}.
+     * @return Never {@code null}.
+     * @throws NullPointerException if any parameter is {@code null}
+     */
+    static ListenableActionFuture<FieldStatsResponse> fieldStatsAsync(Client self, Closure requestClosure) {
+        doRequestAsync(self, new FieldStatsRequest(), requestClosure, self.&fieldStats)
     }
 }

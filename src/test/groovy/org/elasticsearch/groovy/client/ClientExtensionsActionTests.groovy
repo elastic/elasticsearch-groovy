@@ -23,6 +23,7 @@ import org.elasticsearch.action.bulk.BulkResponse
 import org.elasticsearch.action.count.CountResponse
 import org.elasticsearch.action.delete.DeleteResponse
 import org.elasticsearch.action.explain.ExplainResponse
+import org.elasticsearch.action.fieldstats.FieldStatsResponse
 import org.elasticsearch.action.get.GetResponse
 import org.elasticsearch.action.get.MultiGetResponse
 import org.elasticsearch.action.index.IndexResponse
@@ -1494,6 +1495,99 @@ class ClientExtensionsActionTests extends AbstractClientTests {
 
         // If it matched, then we know that explain works
         assert response.match
+    }
+
+    @Test
+    void testFieldStatsRequestSync() {
+        int matchInteger = randomInt()
+
+        // send in a document to match
+        String docId = indexDoc(indexName, typeName) {
+            value = matchInteger
+        }
+
+        // refresh the index to guarantee searchability
+        assert client.admin.indices.refreshSync { indices indexName }.failedShards == 0
+
+        // Reference the document that we're interested in (just created) to see if we can find it
+        FieldStatsResponse response = client.fieldStatsSync {
+            indices indexName
+            source {
+                fields = ["value"]
+                index_constraints {
+                    value { // <- field name!
+                        min_value {
+                            gte = matchInteger
+                        }
+                    }
+                }
+            }
+        }
+
+        // If it matched, then we know that we found the value
+        assert response.allFieldStats.value.minValue == Integer.toString(matchInteger)
+    }
+
+    @Test
+    void testFieldStatsRequest() {
+        int matchInteger = randomInt()
+
+        // send in a document to match
+        String docId = indexDoc(indexName, typeName) {
+            value = matchInteger
+        }
+
+        // refresh the index to guarantee searchability
+        assert client.admin.indices.refresh { indices indexName }.actionGet().failedShards == 0
+
+        // Reference the document that we're interested in (just created) to see if we can find it
+        FieldStatsResponse response = client.fieldStats {
+            indices indexName
+            source {
+                fields = ["value"]
+                index_constraints {
+                    value { // <- field name!
+                        min_value {
+                            gte = matchInteger
+                        }
+                    }
+                }
+            }
+        }.actionGet()
+
+        // If it matched, then we know that we found the value
+        assert response.allFieldStats.value.minValue == Integer.toString(matchInteger)
+    }
+
+    @Test
+    void testFieldStatsRequestAsync() {
+        int matchInteger = randomInt()
+
+        // send in a document to match
+        String docId = indexDoc(indexName, typeName) {
+            value = matchInteger
+        }
+
+        // refresh the index to guarantee searchability
+        assert client.admin.indices.refreshAsync { indices indexName }.actionGet().failedShards == 0
+
+        // Reference the document that we're interested in (just created) to see if we can find it
+        FieldStatsResponse response = client.fieldStatsAsync {
+            indices indexName
+            source {
+                fields = ["value"]
+                index_constraints {
+                    value { // <- field name!
+                        min_value {
+                            gte = matchInteger
+                        }
+                    }
+                }
+            }
+        }.actionGet()
+
+        // If it matched, then we know that we found the value
+        assert response.allFieldStats.value.minValue == Integer.toString(matchInteger)
     }
 
     /**
