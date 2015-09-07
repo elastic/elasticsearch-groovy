@@ -54,8 +54,8 @@ allprojects {
 
     // A map that is defined to contain version numbers for all dependencies in the current release.
     versions = [
-      elasticsearch              : '2.0.0-beta2-SNAPSHOT',
-      'elasticsearch-groovy'     : '2.0.0-beta2-SNAPSHOT',
+      elasticsearch              : '2.1.0-SNAPSHOT',
+      'elasticsearch-groovy'     : '2.1.0-SNAPSHOT',
       'elasticsearch-license'    : '1.0.0',
       'elasticsearch-shield'     : '1.0.1',
       groovy                     : '2.4.4',
@@ -66,7 +66,7 @@ allprojects {
       // Note: Avoid passing around a Groovy String (GString) to avoid issues when the version is
       //       cloned during the uploadArchives step. (Not a problem when it's a constant, but
       //       left alone when using non-snapshot releases to simplify switching)
-      lucene                     : "5.2.1".toString(),
+      lucene                     : "5.3.0".toString(),
       mockito                    : '1.10.19',
       'randomizedtesting-runner' : '2.1.16'
     ]
