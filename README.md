@@ -47,7 +47,7 @@ In general, the version number will match the release of Elasticsearch.
 
 |    Elasticsearch    |     Groovy Client           |    Java       | Groovy |
 |---------------------|-----------------------------|---------------|--------|
-| 1.6.2-SNAPSHOT      | 1.6.2-SNAPSHOT              | 7u60 or later | 2.4.4  |
+| 1.6.2               | 1.6.2                       | 7u60 or later | 2.4.4  |
 | 1.6.1               | 1.6.1                       | 7u60 or later | 2.4.4  |
 | 1.6.0               | 1.6.0                       | 7u60 or later | 2.4.3  |
 
@@ -97,7 +97,7 @@ repositories {
 }
 
 dependencies {
-  compile 'org.elasticsearch:elasticsearch-groovy:1.6.1'
+  compile 'org.elasticsearch:elasticsearch-groovy:1.6.2'
 }
 ```
 
@@ -108,7 +108,7 @@ dependencies {
   <dependency>
     <groupId>org.elasticsearch</groupId>
     <artifactId>elasticsearch-groovy</artifactId>
-    <version>1.6.1</version>
+    <version>1.6.2</version>
     <scope>compile</scope>
   </dependency>
 </dependencies>
@@ -127,7 +127,7 @@ repositories {
 
 dependencies {
   // You may be able to use the 'runtime' scope
-  compile group: 'org.elasticsearch', name: 'elasticsearch-groovy', version: '1.6.1', classifier: 'grails'
+  compile group: 'org.elasticsearch', name: 'elasticsearch-groovy', version: '1.6.2', classifier: 'grails'
 }
 ```
 
