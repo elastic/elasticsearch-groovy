@@ -29,6 +29,8 @@ import org.elasticsearch.action.deletebyquery.DeleteByQueryRequest
 import org.elasticsearch.action.deletebyquery.DeleteByQueryResponse
 import org.elasticsearch.action.explain.ExplainRequest
 import org.elasticsearch.action.explain.ExplainResponse
+import org.elasticsearch.action.fieldstats.FieldStatsRequest
+import org.elasticsearch.action.fieldstats.FieldStatsResponse
 import org.elasticsearch.action.get.GetRequest
 import org.elasticsearch.action.get.GetResponse
 import org.elasticsearch.action.get.MultiGetRequest
@@ -615,5 +617,24 @@ class ClientExtensions extends AbstractClientExtensions {
     static ListenableActionFuture<SearchResponse> moreLikeThis(Client self, String index, Closure requestClosure) {
         // the only one that _requires_ the index as a parameter/constructor arg (no public setter)
         doRequestAsync(self, Requests.moreLikeThisRequest(index), requestClosure, self.&moreLikeThis)
+    }
+
+    /**
+     * Collect the field stats at the specified level for the specified fields.
+     * <p>
+     * The level defaults to "cluster".
+     * <pre>
+     * FieldStatsResponse response = client.fieldStats {
+     *     fields ['x', 'y', 'z']
+     * }.actionGet()
+     * </pre>
+     *
+     * @param self The {@code this} reference for the {@link Client}
+     * @param requestClosure The map-like closure that configures the {@link FieldStatsRequest}.
+     * @return Never {@code null}.
+     * @throws NullPointerException if any parameter is {@code null}
+     */
+    static ListenableActionFuture<FieldStatsResponse> fieldStats(Client self, Closure requestClosure) {
+        doRequestAsync(self, new FieldStatsRequest(), requestClosure, self.&fieldStats)
     }
 }
