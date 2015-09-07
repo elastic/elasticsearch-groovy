@@ -47,7 +47,9 @@ You need to install a version matching your Elasticsearch version:
 
 |    Elasticsearch    |     Groovy Client           |    Java       | Groovy |
 |---------------------|-----------------------------|---------------|--------|
-| master              | Build from source           | See below     | 2.4.4  |
+| master [3.0]        | Build from source           | 8 or later    | 2.4.4  |
+| 2.x                 | [2.x](https://github.com/elasticsearch/elasticsearch-groovy/tree/2.x) | 7u60 or later | 2.4.4  |
+| 2.0                 | [2.0](https://github.com/elasticsearch/elasticsearch-groovy/tree/2.0) | 7u60 or later | 2.4.4  |
 | 1.7                 | [1.7](https://github.com/elasticsearch/elasticsearch-groovy/tree/1.7) | 7u60 or later | 2.4.4  |
 | 1.6                 | [1.6](https://github.com/elasticsearch/elasticsearch-groovy/tree/1.6) | 7u60 or later | 2.4.4  |
 | 1.5                 | [1.5](https://github.com/elasticsearch/elasticsearch-groovy/tree/1.5) | 7u60 or later | 2.4.1  |
@@ -78,13 +80,13 @@ compiled with `indy` support enabled, which means that it theoretically could ca
 developers](http://groovy.codehaus.org/InvokeDynamic+support) and it is strongly suggested that you run Java 7u60 or
 later.
 
-|     JVM Release    | Groovy Client Support | `invokedynamic` Support |
-|--------------------|-----------------------|-------------------------|
-| Java 5             | *Unsupported*         | None                    |
-| Java 6             | *Unsupported*         | None                    |
-| Java 7u22 to 7u55  | *Unsupported*         | **Buggy**               |
-| Java 7u60 or later | Supported             | Supported               |
-| Java 8             | Supported             | Supported               |
+|     JVM Release    | Groovy Client Support       | `invokedynamic` Support |
+|--------------------|-----------------------------|-------------------------|
+| Java 5             | *Unsupported*               | None                    |
+| Java 6             | *Unsupported*               | None                    |
+| Java 7u22 to 7u55  | *Unsupported*               | **Buggy**               |
+| Java 7u60 or later | Supported [1.x, 2.x]        | Supported               |
+| Java 8             | Supported [1.x or later]    | Supported               |
 
 Groovy is supported on any JDK supported by Elasticsearch, which currently includes Oracle JDK and OpenJDK.
 
@@ -99,7 +101,7 @@ repositories {
 }
 
 dependencies {
-  compile 'org.elasticsearch:elasticsearch-groovy:1.7.0'
+  compile 'org.elasticsearch:elasticsearch-groovy:2.0.0-beta1'
 }
 ```
 
@@ -110,7 +112,7 @@ dependencies {
   <dependency>
     <groupId>org.elasticsearch</groupId>
     <artifactId>elasticsearch-groovy</artifactId>
-    <version>1.7.0</version>
+    <version>2.0.0-beta1</version>
     <scope>compile</scope>
   </dependency>
 </dependencies>
@@ -129,7 +131,7 @@ repositories {
 
 dependencies {
   // You may be able to use the 'runtime' scope
-  compile group: 'org.elasticsearch', name: 'elasticsearch-groovy', version: '1.7.0', classifier: 'grails'
+  compile group: 'org.elasticsearch', name: 'elasticsearch-groovy', version: '2.0.0-beta1', classifier: 'grails'
 }
 ```
 

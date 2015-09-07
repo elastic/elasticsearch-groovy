@@ -50,25 +50,25 @@ allprojects {
     // The Lucene snapshot is only used for "build from source" type builds (e.g. SNAPSHOT releases).
     // It stays on the bleeding edge of Lucene releases as expected by the corresponding
     // Elasticsearch version.
-    luceneSnapshotNumber = null
+    luceneSnapshotNumber = 1701068
 
     // A map that is defined to contain version numbers for all dependencies in the current release.
     versions = [
-      elasticsearch              : '2.0.0-beta1',
-      'elasticsearch-groovy'     : '2.0.0-beta1-SNAPSHOT',
+      elasticsearch              : '3.0.0-SNAPSHOT',
+      'elasticsearch-groovy'     : '3.0.0-SNAPSHOT',
       'elasticsearch-license'    : '1.0.0',
       'elasticsearch-shield'     : '1.0.1',
       groovy                     : '2.4.4',
-      java                       : '1.7',
+      java                       : '1.8',
       junit                      : '4.11',
       hamcrest                   : '1.3',
       log4j                      : '1.2.17',
       // Note: Avoid passing around a Groovy String (GString) to avoid issues when the version is
       //       cloned during the uploadArchives step. (Not a problem when it's a constant, but
       //       left alone when using non-snapshot releases to simplify switching)
-      lucene                     : "5.2.1".toString(),
+      lucene                     : "5.4.0-snapshot-${luceneSnapshotNumber}".toString(),
       mockito                    : '1.10.19',
-      'randomizedtesting-runner' : '2.1.14'
+      'randomizedtesting-runner' : '2.1.16'
     ]
 
     // A map defining shorthand names to reference external dependencies.
@@ -150,7 +150,6 @@ dependencies {
 
 allprojects {
   // The minimum required Java version (this matches the Elasticsearch minimum Java version)
-  // Note: If we could supply the minimum Java update, then we would specify this as 1.7.0_60 (or 7u60 for short).
   sourceCompatibility = versions.java
 
   // Project details
