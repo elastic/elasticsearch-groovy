@@ -47,6 +47,7 @@ In general, the version number will match the release of Elasticsearch.
 
 |    Elasticsearch    |     Groovy Client           |    Java       | Groovy |
 |---------------------|-----------------------------|---------------|--------|
+| 1.6.3-SNAPSHOT      | 1.6.3-SNAPSHOT              | 7u60 or later | 2.4.4  |
 | 1.6.2               | 1.6.2                       | 7u60 or later | 2.4.4  |
 | 1.6.1               | 1.6.1                       | 7u60 or later | 2.4.4  |
 | 1.6.0               | 1.6.0                       | 7u60 or later | 2.4.3  |
