@@ -878,17 +878,16 @@ class ClientExtensionsActionTests extends AbstractClientTests {
                 query {
                     match_all { }
                 }
-                // Note: Size is per relevant shard!
-                size 1000
+                size = 1000
+                sort = [ "_doc" ]
             }
-            searchType SearchType.SCAN
             scroll "60s"
         }
 
         // sanity check
         assert searchResponse.hits.totalHits == values.size()
         assert searchResponse.scrollId != null
-        assert searchResponse.hits.hits.length == 0
+        assert searchResponse.hits.hits.length == values.size()
 
         SearchResponse response = client.searchScrollSync {
             scrollId searchResponse.scrollId
@@ -917,17 +916,16 @@ class ClientExtensionsActionTests extends AbstractClientTests {
                 query {
                     match_all { }
                 }
-                // Note: Size is per relevant shard!
-                size 1000
+                size = 1000
+                sort = [ "_doc" ]
             }
-            searchType SearchType.SCAN
             scroll "60s"
         }.actionGet()
 
         // sanity check
         assert searchResponse.hits.totalHits == values.size()
         assert searchResponse.scrollId != null
-        assert searchResponse.hits.hits.length == 0
+        assert searchResponse.hits.hits.length == values.size()
 
         SearchResponse response = client.searchScroll {
             scrollId searchResponse.scrollId
@@ -956,17 +954,16 @@ class ClientExtensionsActionTests extends AbstractClientTests {
                 query {
                     match_all { }
                 }
-                // Note: Size is per relevant shard!
-                size 1000
+                size = 1000
+                sort = [ "_doc" ]
             }
-            searchType SearchType.SCAN
             scroll "60s"
         }.actionGet()
 
         // sanity check
         assert searchResponse.hits.totalHits == values.size()
         assert searchResponse.scrollId != null
-        assert searchResponse.hits.hits.length == 0
+        assert searchResponse.hits.hits.length == values.size()
 
         SearchResponse response = client.searchScrollAsync {
             scrollId searchResponse.scrollId
@@ -995,10 +992,9 @@ class ClientExtensionsActionTests extends AbstractClientTests {
                 query {
                     match_all { }
                 }
-                // Note: Size is per relevant shard!
-                size 1000
+                size = 1000
+                sort = [ "_doc" ]
             }
-            searchType SearchType.SCAN
             scroll "60s"
         }
 
@@ -1026,10 +1022,9 @@ class ClientExtensionsActionTests extends AbstractClientTests {
                 query {
                     match_all { }
                 }
-                // Note: Size is per relevant shard!
-                size 1000
+                size = 1000
+                sort = [ "_doc" ]
             }
-            searchType SearchType.SCAN
             scroll "60s"
         }.actionGet()
 
@@ -1057,10 +1052,9 @@ class ClientExtensionsActionTests extends AbstractClientTests {
                 query {
                     match_all { }
                 }
-                // Note: Size is per relevant shard!
-                size 1000
+                size = 1000
+                sort = [ "_doc" ]
             }
-            searchType SearchType.SCAN
             scroll "60s"
         }.actionGet()
 
