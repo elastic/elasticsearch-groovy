@@ -114,7 +114,7 @@ allprojects {
     // Lucene Snapshots (if any are in use!)
     if (project.luceneSnapshotNumber != null) {
       maven {
-        url "https://download.elasticsearch.org/lucenesnapshots/${luceneSnapshotNumber}"
+        url "https://s3.amazonaws.com/download.elasticsearch.org/lucenesnapshots/${luceneSnapshotNumber}"
       }
     }
   }
