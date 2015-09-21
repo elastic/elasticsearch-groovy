@@ -10,7 +10,7 @@ You can use the Java client code from any Java client example that you find onli
 extensions_.
 
 ```groovy
-TransportClient client = new TransportClient(ImmutableSettings.settingsBuilder {
+TransportClient client = new TransportClient(Settings.settingsBuilder {
   client.transport.sniff = true
   cluster.name = "your-cluster-name"
 })
