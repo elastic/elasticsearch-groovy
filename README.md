@@ -107,7 +107,7 @@ dependencies {
 
 ### Maven
 
-```
+```xml
 <dependencies>
   <dependency>
     <groupId>org.elasticsearch</groupId>
