@@ -21,7 +21,7 @@ client.addTransportAddress( ... )
 String userId = "some-user-id"
 
 // asynchronously fetch the results
-ListenableActionFuture<SearchResponse> future = client.search {
+ListenableActionFuture<SearchResponse> future = client.searchAsync {
   indices "your-index"
   types "your-type"
   source {
