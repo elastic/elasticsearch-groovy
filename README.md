@@ -101,7 +101,7 @@ repositories {
 }
 
 dependencies {
-  compile 'org.elasticsearch:elasticsearch-groovy:2.0.0-beta1'
+  compile 'org.elasticsearch:elasticsearch-groovy:2.0.0-beta2'
 }
 ```
 
@@ -112,7 +112,7 @@ dependencies {
   <dependency>
     <groupId>org.elasticsearch</groupId>
     <artifactId>elasticsearch-groovy</artifactId>
-    <version>2.0.0-beta1</version>
+    <version>2.0.0-beta2</version>
     <scope>compile</scope>
   </dependency>
 </dependencies>
@@ -131,7 +131,7 @@ repositories {
 
 dependencies {
   // You may be able to use the 'runtime' scope
-  compile group: 'org.elasticsearch', name: 'elasticsearch-groovy', version: '2.0.0-beta1', classifier: 'grails'
+  compile group: 'org.elasticsearch', name: 'elasticsearch-groovy', version: '2.0.0-beta2', classifier: 'grails'
 }
 ```
 
@@ -214,7 +214,7 @@ dependencies {
 
 #### Maven
 
-```
+```xml
 <dependencies>
   <dependency>
     <groupId>org.codehaus.groovy</groupId>
