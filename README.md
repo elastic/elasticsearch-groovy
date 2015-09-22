@@ -47,13 +47,13 @@ You need to install a version matching your Elasticsearch version:
 
 |    Elasticsearch    |     Groovy Client           |    Java       | Groovy |
 |---------------------|-----------------------------|---------------|--------|
-| master [3.0]        | Build from source           | 8 or later    | 2.4.4  |
-| 2.x                 | [2.x](https://github.com/elasticsearch/elasticsearch-groovy/tree/2.x) | 7u60 or later | 2.4.4  |
-| 2.0                 | [2.0](https://github.com/elasticsearch/elasticsearch-groovy/tree/2.0) | 7u60 or later | 2.4.4  |
-| 1.7                 | [1.7](https://github.com/elasticsearch/elasticsearch-groovy/tree/1.7) | 7u60 or later | 2.4.4  |
-| 1.6                 | [1.6](https://github.com/elasticsearch/elasticsearch-groovy/tree/1.6) | 7u60 or later | 2.4.4  |
-| 1.5                 | [1.5](https://github.com/elasticsearch/elasticsearch-groovy/tree/1.5) | 7u60 or later | 2.4.1  |
-| 1.4                 | [1.4](https://github.com/elasticsearch/elasticsearch-groovy/tree/1.4) | 7u60 or later | 2.3.7  |
+| [master [3.0]](https://github.com/elastic/elasticsearch) | Build from source           | 8 or later    | 2.4.4  |
+| [2.x](https://github.com/elastic/elasticsearch/tree/2.x) | [2.x](https://github.com/elastic/elasticsearch-groovy/tree/2.x) | 7u60 or later | 2.4.4  |
+| [2.0](https://github.com/elastic/elasticsearch/tree/2.0) | [2.0](https://github.com/elastic/elasticsearch-groovy/tree/2.0) | 7u60 or later | 2.4.4  |
+| [1.7](https://github.com/elastic/elasticsearch/tree/1.7) | [1.7](https://github.com/elastic/elasticsearch-groovy/tree/1.7) | 7u60 or later | 2.4.4  |
+| [1.6](https://github.com/elastic/elasticsearch/tree/1.6) | [1.6](https://github.com/elastic/elasticsearch-groovy/tree/1.6) | 7u60 or later | 2.4.4  |
+| [1.5](https://github.com/elastic/elasticsearch/tree/1.5) | [1.5](https://github.com/elastic/elasticsearch-groovy/tree/1.5) | 7u60 or later | 2.4.1  |
+| [1.4](https://github.com/elastic/elasticsearch/tree/1.4) | [1.4](https://github.com/elastic/elasticsearch-groovy/tree/1.4) | 7u60 or later | 2.3.7  |
 
 Please read documentation relative to the version that you are using!
 
