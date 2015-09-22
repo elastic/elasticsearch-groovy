@@ -47,7 +47,7 @@ You need to install a version matching your Elasticsearch version:
 
 |    Elasticsearch    |     Groovy Client           |    Java       | Groovy |
 |---------------------|-----------------------------|---------------|--------|
-| [master [3.0]](https://github.com/elastic/elasticsearch) | Build from source           | 8 or later    | 2.4.4  |
+| [master [3.0]](https://github.com/elastic/elasticsearch) | Build from source [3.0] | 8 or later    | 2.4.4  |
 | [2.x](https://github.com/elastic/elasticsearch/tree/2.x) | [2.x](https://github.com/elastic/elasticsearch-groovy/tree/2.x) | 7u60 or later | 2.4.4  |
 | [2.0](https://github.com/elastic/elasticsearch/tree/2.0) | [2.0](https://github.com/elastic/elasticsearch-groovy/tree/2.0) | 7u60 or later | 2.4.4  |
 | [1.7](https://github.com/elastic/elasticsearch/tree/1.7) | [1.7](https://github.com/elastic/elasticsearch-groovy/tree/1.7) | 7u60 or later | 2.4.4  |
