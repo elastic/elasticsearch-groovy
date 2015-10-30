@@ -47,6 +47,7 @@ In general, the version number will match the release of Elasticsearch.
 
 |    Elasticsearch    |     Groovy Client           |    Java       | Groovy |
 |---------------------|-----------------------------|---------------|--------|
+| 1.7.4-SNAPSHOT      | 1.7.4-SNAPSHOT              | 7u60 or later | 2.4.4  |
 | 1.7.3               | 1.7.3                       | 7u60 or later | 2.4.4  |
 | 1.7.2               | 1.7.2                       | 7u60 or later | 2.4.4  |
 | 1.7.1               | 1.7.1                       | 7u60 or later | 2.4.4  |
@@ -205,7 +206,7 @@ repositories {
 }
 
 dependencies {
-  compile 'org.codehaus.groovy:groovy-all:2.4.3:indy'
+  compile 'org.codehaus.groovy:groovy-all:2.4.4:indy'
 }
 ```
 
@@ -216,7 +217,7 @@ dependencies {
   <dependency>
     <groupId>org.codehaus.groovy</groupId>
     <artifactId>groovy-all</artifactId>
-    <version>2.4.3</version>
+    <version>2.4.4</version>
     <classifier>indy</classifier>
     <scope>compile</scope>
   </dependency>
