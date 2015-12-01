@@ -40,6 +40,8 @@ import org.elasticsearch.action.admin.indices.exists.types.TypesExistsRequest
 import org.elasticsearch.action.admin.indices.exists.types.TypesExistsResponse
 import org.elasticsearch.action.admin.indices.flush.FlushRequest
 import org.elasticsearch.action.admin.indices.flush.FlushResponse
+import org.elasticsearch.action.admin.indices.forcemerge.ForceMergeRequest
+import org.elasticsearch.action.admin.indices.forcemerge.ForceMergeResponse
 import org.elasticsearch.action.admin.indices.mapping.get.GetFieldMappingsRequest
 import org.elasticsearch.action.admin.indices.mapping.get.GetFieldMappingsResponse
 import org.elasticsearch.action.admin.indices.mapping.get.GetMappingsRequest
@@ -48,8 +50,6 @@ import org.elasticsearch.action.admin.indices.mapping.put.PutMappingRequest
 import org.elasticsearch.action.admin.indices.mapping.put.PutMappingResponse
 import org.elasticsearch.action.admin.indices.open.OpenIndexRequest
 import org.elasticsearch.action.admin.indices.open.OpenIndexResponse
-import org.elasticsearch.action.admin.indices.optimize.OptimizeRequest
-import org.elasticsearch.action.admin.indices.optimize.OptimizeResponse
 import org.elasticsearch.action.admin.indices.recovery.RecoveryRequest
 import org.elasticsearch.action.admin.indices.recovery.RecoveryResponse
 import org.elasticsearch.action.admin.indices.refresh.RefreshRequest
@@ -547,49 +547,49 @@ class IndicesAdminClientExtensions extends AbstractClientExtensions {
     /**
      * Explicitly optimize the specified indices.
      * <p>
-     * Optimizing an index will reduce the number of segments that the index contains, which will speed up future search
-     * operations. Like other operations, Elasticsearch will automatically optimize indices in the background.
+     * Force Merging an index will reduce the number of segments that the index contains, which will speed up future search
+     * operations. Like other operations, Elasticsearch will automatically merge indices in the background.
      * <p>
      * The optimal number of segments is <tt>1</tt>, but an active index will regularly have more than <tt>1</tt>. A
-     * {@link IndicesAdminClient#close(CloseIndexRequest) closed} index can be safely optimized to <tt>1</tt> segment to
+     * {@link IndicesAdminClient#close(CloseIndexRequest) closed} index can be safely merged to <tt>1</tt> segment to
      * speed up future search operations.
      *
      * @param self The {@code this} reference for the {@link IndicesAdminClient}.
-     * @param requestClosure The map-like closure that configures the {@link OptimizeRequest}.
+     * @param requestClosure The map-like closure that configures the {@link ForceMergeRequest}.
      * @return Never {@code null}.
      * @throws NullPointerException if any parameter is {@code null}
      */
-    static OptimizeResponse optimizeSync(IndicesAdminClient self, Closure requestClosure) {
-        doRequest(self, Requests.optimizeRequest(), requestClosure, self.&optimize)
+    static ForceMergeResponse forceMergeSync(IndicesAdminClient self, Closure requestClosure) {
+        doRequest(self, Requests.forceMergeRequest(), requestClosure, self.&optimize)
     }
 
     /**
      * Explicitly optimize the specified indices.
      * <p>
-     * Optimizing an index will reduce the number of segments that the index contains, which will speed up future search
-     * operations. Like other operations, Elasticsearch will automatically optimize indices in the background.
+     * Force Merging an index will reduce the number of segments that the index contains, which will speed up future search
+     * operations. Like other operations, Elasticsearch will automatically merge indices in the background.
      * <p>
      * The optimal number of segments is <tt>1</tt>, but an active index will regularly have more than <tt>1</tt>. A
-     * {@link IndicesAdminClient#close(CloseIndexRequest) closed} index can be safely optimized to <tt>1</tt> segment to
+     * {@link IndicesAdminClient#close(CloseIndexRequest) closed} index can be safely merged to <tt>1</tt> segment to
      * speed up future search operations.
      *
      * @param self The {@code this} reference for the {@link IndicesAdminClient}.
-     * @param requestClosure The map-like closure that configures the {@link OptimizeRequest}.
+     * @param requestClosure The map-like closure that configures the {@link ForceMergeRequest}.
      * @return Never {@code null}.
      * @throws NullPointerException if any parameter is {@code null}
      */
-    static ListenableActionFuture<OptimizeResponse> optimize(IndicesAdminClient self, Closure requestClosure) {
-        doRequestAsync(self, Requests.optimizeRequest(), requestClosure, self.&optimize)
+    static ListenableActionFuture<ForceMergeResponse> forceMerge(IndicesAdminClient self, Closure requestClosure) {
+        doRequestAsync(self, Requests.forceMergeRequest(), requestClosure, self.&optimize)
     }
 
     /**
      * Explicitly optimize the specified indices.
      * <p>
-     * Optimizing an index will reduce the number of segments that the index contains, which will speed up future search
-     * operations. Like other operations, Elasticsearch will automatically optimize indices in the background.
+     * Force Merging an index will reduce the number of segments that the index contains, which will speed up future search
+     * operations. Like other operations, Elasticsearch will automatically merge indices in the background.
      * <p>
      * The optimal number of segments is <tt>1</tt>, but an active index will regularly have more than <tt>1</tt>. A
-     * {@link IndicesAdminClient#close(CloseIndexRequest) closed} index can be safely optimized to <tt>1</tt> segment to
+     * {@link IndicesAdminClient#close(CloseIndexRequest) closed} index can be safely merged to <tt>1</tt> segment to
      * speed up future search operations.
      *
      * @param self The {@code this} reference for the {@link IndicesAdminClient}.
@@ -597,8 +597,8 @@ class IndicesAdminClientExtensions extends AbstractClientExtensions {
      * @return Never {@code null}.
      * @throws NullPointerException if any parameter is {@code null}
      */
-    static ListenableActionFuture<OptimizeResponse> optimizeAsync(IndicesAdminClient self, Closure requestClosure) {
-        doRequestAsync(self, Requests.optimizeRequest(), requestClosure, self.&optimize)
+    static ListenableActionFuture<ForceMergeResponse> forceMergeAsync(IndicesAdminClient self, Closure requestClosure) {
+        doRequestAsync(self, Requests.forceMergeRequest(), requestClosure, self.&optimize)
     }
 
     /**
