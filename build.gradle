@@ -54,8 +54,8 @@ allprojects {
 
     // A map that is defined to contain version numbers for all dependencies in the current release.
     versions = [
-      elasticsearch              : '2.0.2-SNAPSHOT',
-      'elasticsearch-groovy'     : '2.0.2-SNAPSHOT',
+      elasticsearch              : '2.0.2',
+      'elasticsearch-groovy'     : '2.0.2',
       'elasticsearch-license'    : '1.0.0',
       'elasticsearch-shield'     : '1.0.1',
       groovy                     : '2.4.4',
