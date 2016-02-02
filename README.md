@@ -49,6 +49,8 @@ You need to install a version matching your Elasticsearch version:
 |---------------------|-----------------------------|---------------|--------|
 | [master [3.0]](https://github.com/elastic/elasticsearch) | Build from source [3.0] | 8 or later    | 2.4.4  |
 | [2.x](https://github.com/elastic/elasticsearch/tree/2.x) | [2.x](https://github.com/elastic/elasticsearch-groovy/tree/2.x) | 7u60 or later | 2.4.4  |
+| [2.2](https://github.com/elastic/elasticsearch/tree/2.2) | [2.2](https://github.com/elastic/elasticsearch-groovy/tree/2.2) | 7u60 or later | 2.4.5  |
+| [2.1](https://github.com/elastic/elasticsearch/tree/2.1) | [2.1](https://github.com/elastic/elasticsearch-groovy/tree/2.1) | 7u60 or later | 2.4.4  |
 | [2.0](https://github.com/elastic/elasticsearch/tree/2.0) | [2.0](https://github.com/elastic/elasticsearch-groovy/tree/2.0) | 7u60 or later | 2.4.4  |
 | [1.7](https://github.com/elastic/elasticsearch/tree/1.7) | [1.7](https://github.com/elastic/elasticsearch-groovy/tree/1.7) | 7u60 or later | 2.4.4  |
 | [1.6](https://github.com/elastic/elasticsearch/tree/1.6) | [1.6](https://github.com/elastic/elasticsearch-groovy/tree/1.6) | 7u60 or later | 2.4.4  |
@@ -101,7 +103,7 @@ repositories {
 }
 
 dependencies {
-  compile 'org.elasticsearch:elasticsearch-groovy:2.0.0-beta2'
+  compile 'org.elasticsearch:elasticsearch-groovy:2.1.2'
 }
 ```
 
@@ -112,7 +114,7 @@ dependencies {
   <dependency>
     <groupId>org.elasticsearch</groupId>
     <artifactId>elasticsearch-groovy</artifactId>
-    <version>2.0.0-beta2</version>
+    <version>2.1.2</version>
     <scope>compile</scope>
   </dependency>
 </dependencies>
@@ -131,7 +133,7 @@ repositories {
 
 dependencies {
   // You may be able to use the 'runtime' scope
-  compile group: 'org.elasticsearch', name: 'elasticsearch-groovy', version: '2.0.0-beta2', classifier: 'grails'
+  compile group: 'org.elasticsearch', name: 'elasticsearch-groovy', version: '2.1.2', classifier: 'grails'
 }
 ```
 
