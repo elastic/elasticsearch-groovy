@@ -58,7 +58,7 @@ allprojects {
       'elasticsearch-groovy'     : '3.0.0-SNAPSHOT',
       'elasticsearch-license'    : '1.0.0',
       'elasticsearch-shield'     : '1.0.1',
-      groovy                     : '2.4.4',
+      groovy                     : '2.4.5',
       java                       : '1.8',
       junit                      : '4.11',
       hamcrest                   : '1.3',

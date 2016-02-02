@@ -48,7 +48,7 @@ You need to install a version matching your Elasticsearch version:
 |    Elasticsearch    |     Groovy Client           |    Java       | Groovy |
 |---------------------|-----------------------------|---------------|--------|
 | [master [3.0]](https://github.com/elastic/elasticsearch) | Build from source [3.0] | 8 or later    | 2.4.4  |
-| [2.x](https://github.com/elastic/elasticsearch/tree/2.x) | [2.x](https://github.com/elastic/elasticsearch-groovy/tree/2.x) | 7u60 or later | 2.4.4  |
+| [2.x](https://github.com/elastic/elasticsearch/tree/2.x) | [2.x](https://github.com/elastic/elasticsearch-groovy/tree/2.x) | 7u60 or later | 2.4.5  |
 | [2.2](https://github.com/elastic/elasticsearch/tree/2.2) | [2.2](https://github.com/elastic/elasticsearch-groovy/tree/2.2) | 7u60 or later | 2.4.5  |
 | [2.1](https://github.com/elastic/elasticsearch/tree/2.1) | [2.1](https://github.com/elastic/elasticsearch-groovy/tree/2.1) | 7u60 or later | 2.4.4  |
 | [2.0](https://github.com/elastic/elasticsearch/tree/2.0) | [2.0](https://github.com/elastic/elasticsearch-groovy/tree/2.0) | 7u60 or later | 2.4.4  |
@@ -71,7 +71,7 @@ Groovy Warning
 Groovy released Groovy 2.4.4 to fix a vulnerability with [CVE-2015-3253](http://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2015-3253).
 
 You are considered vulnerable just by having an earlier version of Groovy on your classpath! All users should upgrade
-to Groovy 2.4.4 as a result.
+to Groovy 2.4.4, or later, as a result.
 
 JVM Warning
 -----------
