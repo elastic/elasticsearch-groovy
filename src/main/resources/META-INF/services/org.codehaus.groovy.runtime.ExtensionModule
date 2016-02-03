@@ -42,8 +42,6 @@ extensionClasses = \
   org.elasticsearch.groovy.action.admin.indices.create.CreateIndexRequestExtensions,\
   org.elasticsearch.groovy.action.admin.indices.mapping.put.PutMappingRequestExtensions,\
   org.elasticsearch.groovy.action.admin.indices.settings.put.UpdateSettingsRequestExtensions,\
-  org.elasticsearch.groovy.action.count.CountRequestExtensions,\
-  org.elasticsearch.groovy.action.deletebyquery.DeleteByQueryRequestExtensions,\
   org.elasticsearch.groovy.action.explain.ExplainRequestExtensions,\
   org.elasticsearch.groovy.action.fieldstats.FieldStatsRequestExtensions,\
   org.elasticsearch.groovy.action.index.IndexRequestExtensions,\

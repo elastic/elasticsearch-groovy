@@ -21,8 +21,6 @@ package org.elasticsearch.groovy.action
 import org.elasticsearch.action.ActionListener
 import org.elasticsearch.action.ListenableActionFuture
 
-import static com.google.common.base.Preconditions.checkNotNull
-
 /**
  * {@code ListenableActionFutureExtensions} adds Groovy-friendly extensions to {@link ListenableActionFuture}s to
  * enable sometimes-simpler listener support.
@@ -63,7 +61,7 @@ class ListenableActionFutureExtensions {
      * @throws NullPointerException if any parameter is {@code null}
      */
     static <T> ListenableActionFuture<T> listener(ListenableActionFuture<T> self, Closure listener) {
-        checkNotNull(listener, (Object)"listener cannot be null")
+        checkNotNull(listener, "listener cannot be null")
 
         self.addListener(new ActionListener() {
             @Override
@@ -98,7 +96,7 @@ class ListenableActionFutureExtensions {
      * @throws NullPointerException if any parameter is {@code null}
      */
     static <T> ListenableActionFuture<T> successListener(ListenableActionFuture<T> self, Closure listener) {
-        checkNotNull(listener, (Object)"listener cannot be null")
+        checkNotNull(listener, "listener cannot be null")
 
         self.addListener(new ActionListener() {
             @Override
@@ -133,7 +131,7 @@ class ListenableActionFutureExtensions {
      * @throws NullPointerException if any parameter is {@code null}
      */
     static <T> ListenableActionFuture<T> failureListener(ListenableActionFuture<T> self, Closure listener) {
-        checkNotNull(listener, (Object)"listener cannot be null")
+        checkNotNull(listener, "listener cannot be null")
 
         self.addListener(new ActionListener() {
             @Override
@@ -148,5 +146,20 @@ class ListenableActionFutureExtensions {
         })
 
         self
+    }
+
+    /**
+     * Verify that {@code isNotNull} is not {@code null}.
+     * <p>
+     * If it is {@code null}, then this will throw a {@link NullPointerException}
+     * with the specified {@code message}.
+     * @param isNotNull The field to verify.
+     * @param message The message to use if it is {@code null}.
+     * @throws NullPointerException if {@code isNotNull} is {@code null}
+     */
+    private void checkNotNull(Object isNotNull, String message) {
+        if (isNotNull == null) {
+            throw new NullPointerException(message)
+	}
     }
 }

@@ -21,8 +21,6 @@ package org.elasticsearch.groovy.client
 import org.elasticsearch.action.ListenableActionFuture
 import org.elasticsearch.action.bulk.BulkRequest
 import org.elasticsearch.action.bulk.BulkResponse
-import org.elasticsearch.action.count.CountRequest
-import org.elasticsearch.action.count.CountResponse
 import org.elasticsearch.action.delete.DeleteRequest
 import org.elasticsearch.action.delete.DeleteResponse
 import org.elasticsearch.action.explain.ExplainRequest
@@ -845,72 +843,6 @@ class ClientExtensions extends AbstractClientExtensions {
      */
     static ListenableActionFuture<MultiSearchResponse> multiSearchAsync(Client self, Closure requestClosure) {
         doRequestAsync(self, new MultiSearchRequest(), requestClosure, self.&multiSearch)
-    }
-
-    /**
-     * Request a count of documents matching a specified query.
-     * <pre>
-     * CountResponse response = client.countSync {
-     *     indices "my-index1", "my-index2"
-     *     types "my-types1", "my-types2"
-     *     source {
-     *         query {
-     *             match_all { }
-     *         }
-     *     }
-     * }
-     * </pre>
-     *
-     * @param self The {@code this} reference for the {@link Client}
-     * @param requestClosure The map-like closure that configures the {@link CountRequest}.
-     * @return Never {@code null}.
-     */
-    static CountResponse countSync(Client self, Closure requestClosure) {
-        doRequest(self, Requests.countRequest(), requestClosure, self.&count)
-    }
-
-    /**
-     * Request a count of documents matching a specified query.
-     * <pre>
-     * CountResponse response = client.count {
-     *     indices "my-index1", "my-index2"
-     *     types "my-types1", "my-types2"
-     *     source {
-     *         query {
-     *             match_all { }
-     *         }
-     *     }
-     * }.actionGet()
-     * </pre>
-     *
-     * @param self The {@code this} reference for the {@link Client}
-     * @param requestClosure The map-like closure that configures the {@link CountRequest}.
-     * @return Never {@code null}.
-     */
-    static ListenableActionFuture<CountResponse> count(Client self, Closure requestClosure) {
-        doRequestAsync(self, Requests.countRequest(), requestClosure, self.&count)
-    }
-
-    /**
-     * Request a count of documents matching a specified query.
-     * <pre>
-     * CountResponse response = client.countAsync {
-     *     indices "my-index1", "my-index2"
-     *     types "my-types1", "my-types2"
-     *     source {
-     *         query {
-     *             match_all { }
-     *         }
-     *     }
-     * }.actionGet()
-     * </pre>
-     *
-     * @param self The {@code this} reference for the {@link Client}
-     * @param requestClosure The map-like closure that configures the {@link CountRequest}.
-     * @return Never {@code null}.
-     */
-    static ListenableActionFuture<CountResponse> countAsync(Client self, Closure requestClosure) {
-        doRequestAsync(self, Requests.countRequest(), requestClosure, self.&count)
     }
 
     /**

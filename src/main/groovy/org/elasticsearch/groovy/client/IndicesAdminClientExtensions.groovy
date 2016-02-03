@@ -70,12 +70,6 @@ import org.elasticsearch.action.admin.indices.template.put.PutIndexTemplateReque
 import org.elasticsearch.action.admin.indices.template.put.PutIndexTemplateResponse
 import org.elasticsearch.action.admin.indices.validate.query.ValidateQueryRequest
 import org.elasticsearch.action.admin.indices.validate.query.ValidateQueryResponse
-import org.elasticsearch.action.admin.indices.warmer.delete.DeleteWarmerRequest
-import org.elasticsearch.action.admin.indices.warmer.delete.DeleteWarmerResponse
-import org.elasticsearch.action.admin.indices.warmer.get.GetWarmersRequest
-import org.elasticsearch.action.admin.indices.warmer.get.GetWarmersResponse
-import org.elasticsearch.action.admin.indices.warmer.put.PutWarmerRequest
-import org.elasticsearch.action.admin.indices.warmer.put.PutWarmerResponse
 import org.elasticsearch.client.AdminClient
 import org.elasticsearch.client.IndicesAdminClient
 import org.elasticsearch.client.Requests
@@ -1062,118 +1056,6 @@ class IndicesAdminClientExtensions extends AbstractClientExtensions {
     static ListenableActionFuture<ValidateQueryResponse> validateQueryAsync(IndicesAdminClient self,
                                                                             Closure requestClosure) {
         doRequestAsync(self, new ValidateQueryRequest(), requestClosure, self.&validateQuery)
-    }
-
-    /**
-     * Put an index search warmer.
-     *
-     * @param self The {@code this} reference for the {@link IndicesAdminClient}.
-     * @param requestClosure The map-like closure that configures the {@link PutWarmerRequest}.
-     * @return Never {@code null}.
-     * @throws NullPointerException if any parameter is {@code null}
-     */
-    static PutWarmerResponse putWarmerSync(IndicesAdminClient self, Closure requestClosure) {
-        // warmer name is expected to be set by the closure
-        doRequest(self, new PutWarmerRequest(null), requestClosure, self.&putWarmer)
-    }
-
-    /**
-     * Put an index search warmer.
-     *
-     * @param self The {@code this} reference for the {@link IndicesAdminClient}.
-     * @param requestClosure The map-like closure that configures the {@link PutWarmerRequest}.
-     * @return Never {@code null}.
-     * @throws NullPointerException if any parameter is {@code null}
-     */
-    static ListenableActionFuture<PutWarmerResponse> putWarmer(IndicesAdminClient self, Closure requestClosure) {
-        // warmer name is expected to be set by the closure
-        doRequestAsync(self, new PutWarmerRequest(null), requestClosure, self.&putWarmer)
-    }
-
-    /**
-     * Put an index search warmer.
-     *
-     * @param self The {@code this} reference for the {@link IndicesAdminClient}.
-     * @param requestClosure The map-like closure that configures the {@link PutWarmerRequest}.
-     * @return Never {@code null}.
-     * @throws NullPointerException if any parameter is {@code null}
-     */
-    static ListenableActionFuture<PutWarmerResponse> putWarmerAsync(IndicesAdminClient self, Closure requestClosure) {
-        // warmer name is expected to be set by the closure
-        doRequestAsync(self, new PutWarmerRequest(null), requestClosure, self.&putWarmer)
-    }
-
-    /**
-     * Delete one or more index search warmers.
-     *
-     * @param self The {@code this} reference for the {@link IndicesAdminClient}.
-     * @param requestClosure The map-like closure that configures the {@link DeleteWarmerRequest}.
-     * @return Never {@code null}.
-     * @throws NullPointerException if any parameter is {@code null}
-     */
-    static DeleteWarmerResponse deleteWarmerSync(IndicesAdminClient self, Closure requestClosure) {
-        doRequest(self, new DeleteWarmerRequest(), requestClosure, self.&deleteWarmer)
-    }
-
-    /**
-     * Delete one or more index search warmers.
-     *
-     * @param self The {@code this} reference for the {@link IndicesAdminClient}.
-     * @param requestClosure The map-like closure that configures the {@link DeleteWarmerRequest}.
-     * @return Never {@code null}.
-     * @throws NullPointerException if any parameter is {@code null}
-     */
-    static ListenableActionFuture<DeleteWarmerResponse> deleteWarmer(IndicesAdminClient self, Closure requestClosure) {
-        doRequestAsync(self, new DeleteWarmerRequest(), requestClosure, self.&deleteWarmer)
-    }
-
-    /**
-     * Delete one or more index search warmers.
-     *
-     * @param self The {@code this} reference for the {@link IndicesAdminClient}.
-     * @param requestClosure The map-like closure that configures the {@link DeleteWarmerRequest}.
-     * @return Never {@code null}.
-     * @throws NullPointerException if any parameter is {@code null}
-     */
-    static ListenableActionFuture<DeleteWarmerResponse> deleteWarmerAsync(IndicesAdminClient self,
-                                                                          Closure requestClosure) {
-        doRequestAsync(self, new DeleteWarmerRequest(), requestClosure, self.&deleteWarmer)
-    }
-
-    /**
-     * Get index search warmers.
-     *
-     * @param self The {@code this} reference for the {@link IndicesAdminClient}.
-     * @param requestClosure The map-like closure that configures the {@link GetWarmersRequest}.
-     * @return Never {@code null}.
-     * @throws NullPointerException if any parameter is {@code null}
-     */
-    static GetWarmersResponse getWarmersSync(IndicesAdminClient self, Closure requestClosure) {
-        doRequest(self, new GetWarmersRequest(), requestClosure, self.&getWarmers)
-    }
-
-    /**
-     * Get index search warmers.
-     *
-     * @param self The {@code this} reference for the {@link IndicesAdminClient}.
-     * @param requestClosure The map-like closure that configures the {@link GetWarmersRequest}.
-     * @return Never {@code null}.
-     * @throws NullPointerException if any parameter is {@code null}
-     */
-    static ListenableActionFuture<GetWarmersResponse> getWarmers(IndicesAdminClient self, Closure requestClosure) {
-        doRequestAsync(self, new GetWarmersRequest(), requestClosure, self.&getWarmers)
-    }
-
-    /**
-     * Get index search warmers.
-     *
-     * @param self The {@code this} reference for the {@link IndicesAdminClient}.
-     * @param requestClosure The map-like closure that configures the {@link GetWarmersRequest}.
-     * @return Never {@code null}.
-     * @throws NullPointerException if any parameter is {@code null}
-     */
-    static ListenableActionFuture<GetWarmersResponse> getWarmersAsync(IndicesAdminClient self, Closure requestClosure) {
-        doRequestAsync(self, new GetWarmersRequest(), requestClosure, self.&getWarmers)
     }
 
     /**
