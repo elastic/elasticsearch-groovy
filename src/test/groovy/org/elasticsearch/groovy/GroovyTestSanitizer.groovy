@@ -18,8 +18,6 @@
  */
 package org.elasticsearch.groovy
 
-import com.google.common.collect.ImmutableSet
-
 import groovy.transform.CompileStatic
 import groovy.transform.TypeChecked
 
@@ -41,15 +39,15 @@ import java.lang.reflect.Modifier
  * the Grails release.</li>
  * </ul>
  * This should be invoked in a {@code static} block of every abstract test that uses the Elasticsearch test framework.
- * Since all tests are expected to extend either {@code ElasticsearchTestCase} or {@code ElasticsearchIntegrationTest},
- * {@link AbstractElasticsearchTestCase} and {@link AbstractESIntegTestCase} exist to do this for you.
+ * Since all tests are expected to extend either {@code ESTestCase} or {@code ESIntegTestCase},
+ * {@link AbstractESTestCase} and {@link AbstractESIntegTestCase} exist to do this for you.
  * <pre>
  * static {
  *     assert GroovyTestSanitizer.groovySanitized
  * }
  * </pre>
  * In particular, this should be done before any test has the chance to run.
- * @see AbstractElasticsearchTestCase
+ * @see AbstractESTestCase
  * @see AbstractESIntegTestCase
  */
 @Ignore
@@ -90,7 +88,7 @@ class GroovyTestSanitizer {
             // Types of static fields that are added by Groovy at runtime
             // - SoftReferences are the $callSiteArrays and they should be removed from the safe list once we only
             //   support running with invokedynamic support
-            ImmutableSet<String> safeGroovyTypes = ImmutableSet.of(ClassInfo.class.name, SoftReference.class.name)
+            Set<String> safeGroovyTypes = new HashSet([ClassInfo.class.name, SoftReference.class.name])
 
             // this corresponds to a Set<String>
             Field field = LuceneTestCase.class.getDeclaredField('STATIC_LEAK_IGNORED_TYPES')
@@ -104,9 +102,10 @@ class GroovyTestSanitizer {
             modifiersField.setInt(field, field.getModifiers() & ~Modifier.FINAL)
 
             // read the field
-            Set<String> staticLeakIgnoreTypes = (Set<String>)field.get(null)
-            // replace the field: add our own class to it, then replace it
-            field.set(null, ImmutableSet.builder().addAll(staticLeakIgnoreTypes).addAll(safeGroovyTypes).build())
+            safeGroovyTypes.addAll((Set<String>)field.get(null))
+
+            // replace the field after adding our own classes to it
+            field.set(null, Collections.unmodifiableSet(safeGroovyTypes))
 
             // reset it as final
             modifiersField.setInt(field, field.getModifiers() | Modifier.FINAL)

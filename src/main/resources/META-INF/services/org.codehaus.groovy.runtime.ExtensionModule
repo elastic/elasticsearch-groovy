@@ -39,13 +39,13 @@ extensionClasses = \
   org.elasticsearch.groovy.action.admin.cluster.settings.ClusterUpdateSettingsRequestExtensions,\
   org.elasticsearch.groovy.action.admin.cluster.snapshots.create.CreateSnapshotRequestExtensions,\
   org.elasticsearch.groovy.action.admin.cluster.snapshots.restore.RestoreSnapshotRequestExtensions,\
+  org.elasticsearch.groovy.action.admin.cluster.storedscripts.PutStoredScriptRequestExtensions,\
   org.elasticsearch.groovy.action.admin.indices.create.CreateIndexRequestExtensions,\
   org.elasticsearch.groovy.action.admin.indices.mapping.put.PutMappingRequestExtensions,\
   org.elasticsearch.groovy.action.admin.indices.settings.put.UpdateSettingsRequestExtensions,\
   org.elasticsearch.groovy.action.explain.ExplainRequestExtensions,\
   org.elasticsearch.groovy.action.fieldstats.FieldStatsRequestExtensions,\
   org.elasticsearch.groovy.action.index.IndexRequestExtensions,\
-  org.elasticsearch.groovy.action.indexedscripts.put.PutIndexedScriptRequestExtensions,\
   org.elasticsearch.groovy.action.percolate.PercolateRequestExtensions,\
   org.elasticsearch.groovy.action.search.SearchRequestExtensions,\
   org.elasticsearch.groovy.action.update.UpdateRequestExtensions,\

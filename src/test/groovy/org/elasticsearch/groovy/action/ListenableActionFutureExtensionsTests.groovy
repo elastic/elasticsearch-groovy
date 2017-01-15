@@ -18,8 +18,6 @@
  */
 package org.elasticsearch.groovy.action
 
-import com.google.common.collect.ImmutableSet
-
 import org.elasticsearch.ElasticsearchException
 import org.elasticsearch.action.ActionListener
 import org.elasticsearch.action.ActionRequest
@@ -32,6 +30,7 @@ import org.elasticsearch.action.support.TransportAction
 import org.elasticsearch.cluster.metadata.IndexNameExpressionResolver
 import org.elasticsearch.common.settings.Settings
 import org.elasticsearch.groovy.AbstractESTestCase
+import org.elasticsearch.tasks.TaskManager
 import org.elasticsearch.threadpool.ThreadPool
 
 import org.junit.After
@@ -65,7 +64,7 @@ class ListenableActionFutureExtensionsTests extends AbstractESTestCase {
 
     @Before
     void createThreadPool() {
-        threadPool = new ThreadPool(testName.methodName)
+        threadPool = new ThreadPool(Settings.EMPTY)
     }
 
     @After
@@ -365,8 +364,8 @@ class ListenableActionFutureExtensionsTests extends AbstractESTestCase {
      */
     static abstract class AbstractNoOpAction extends TransportAction<NoOpRequest, NoOpResponse> {
         protected AbstractNoOpAction(String actionName) {
-            super(Settings.EMPTY, actionName, null, new ActionFilters(ImmutableSet.of()),
-                  new IndexNameExpressionResolver(Settings.EMPTY))
+            super(Settings.EMPTY, actionName, null, new ActionFilters(Collections.emptySet()),
+                  new IndexNameExpressionResolver(Settings.EMPTY), new TaskManager(Settings.EMPTY))
         }
     }
 

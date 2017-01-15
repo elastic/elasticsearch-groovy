@@ -18,23 +18,26 @@
  */
 package org.elasticsearch.groovy.client
 
+import org.elasticsearch.action.DocWriteResponse
 import org.elasticsearch.action.admin.cluster.health.ClusterHealthResponse
-import org.elasticsearch.action.admin.cluster.health.ClusterHealthStatus
 import org.elasticsearch.action.admin.cluster.node.hotthreads.NodesHotThreadsResponse
 import org.elasticsearch.action.admin.cluster.node.info.NodesInfoResponse
 import org.elasticsearch.action.admin.cluster.node.stats.NodesStatsResponse
 import org.elasticsearch.action.admin.cluster.repositories.delete.DeleteRepositoryResponse
 import org.elasticsearch.action.admin.cluster.repositories.get.GetRepositoriesResponse
 import org.elasticsearch.action.admin.cluster.repositories.put.PutRepositoryResponse
-import org.elasticsearch.action.admin.cluster.reroute.ClusterRerouteResponse
 import org.elasticsearch.action.admin.cluster.snapshots.create.CreateSnapshotResponse
 import org.elasticsearch.action.admin.cluster.snapshots.delete.DeleteSnapshotResponse
 import org.elasticsearch.action.admin.cluster.snapshots.get.GetSnapshotsResponse
 import org.elasticsearch.action.admin.cluster.snapshots.restore.RestoreSnapshotResponse
 import org.elasticsearch.action.admin.cluster.snapshots.status.SnapshotsStatusResponse
 import org.elasticsearch.action.admin.cluster.state.ClusterStateResponse
+import org.elasticsearch.action.admin.cluster.storedscripts.DeleteStoredScriptResponse
+import org.elasticsearch.action.admin.cluster.storedscripts.GetStoredScriptResponse
+import org.elasticsearch.action.admin.cluster.storedscripts.PutStoredScriptResponse
 import org.elasticsearch.action.admin.cluster.tasks.PendingClusterTasksResponse
 import org.elasticsearch.action.get.GetResponse
+import org.elasticsearch.action.update.UpdateResponse
 import org.elasticsearch.client.ClusterAdminClient
 import org.elasticsearch.cluster.SnapshotsInProgress
 import org.elasticsearch.snapshots.SnapshotState
@@ -802,6 +805,316 @@ class ClusterAdminClientExtensionsActionTests extends AbstractClientTests {
         assert response.state != null
         assert response.state.nodes != null
     }
+
+    @Test
+    void testPutStoredScriptRequestSync() {
+        int startCount = randomInt(1024)
+
+        String docId = indexDoc(indexName, typeName) {
+            // actual value is ignored
+            user = randomAsciiOfLengthBetween(1, 16)
+            count = startCount
+        }
+
+        // index the script
+        PutStoredScriptResponse response = clusterAdminClient.putStoredScriptSync {
+            id 'testPutStoredScriptRequestSync'
+            scriptLang 'painless'
+            script {
+                // NOTE: The script is [in this case] Painless, but it must be a string that is interpreted on the server
+                script = "ctx._source.count += count"
+            }
+        }
+
+        assert response.acknowledged
+
+        UpdateResponse updateResponse = client.updateSync {
+            index indexName
+            type typeName
+            id docId
+            source {
+                script_id 'testPutStoredScriptRequestSync'
+                lang 'painless'
+                params {
+                    count = 5
+                }
+            }
+        }
+
+        assert updateResponse.result == DocWriteResponse.Result.UPDATED
+        assert updateResponse.id == docId
+        assert updateResponse.version == 2
+
+        GetResponse getResponse = client.getSync {
+            index indexName
+            type typeName
+            id docId
+        }
+
+        assert getResponse.exists
+        assert getResponse.version == updateResponse.version
+        assert getResponse.source.user != null
+        assert getResponse.source.count == startCount + 5
+    }
+
+    @Test
+    void testPutStoredScriptRequest() {
+        int startCount = randomInt(1024)
+
+        String docId = indexDoc(indexName, typeName) {
+            // actual value is ignored
+            user = randomAsciiOfLengthBetween(1, 16)
+            count = startCount
+        }
+
+        // index the script
+        PutStoredScriptResponse response = clusterAdminClient.putStoredScript {
+            id 'testPutStoredScriptRequest'
+            scriptLang 'painless'
+            script {
+                // NOTE: The script is [in this case] Painless, but it must be a string that is interpreted on the server
+                script = "ctx._source.count += count"
+            }
+        }.actionGet()
+
+        assert response.acknowledged
+
+        UpdateResponse updateResponse = client.update {
+            index indexName
+            type typeName
+            id docId
+            source {
+                script_id 'testPutStoredScriptRequest'
+                lang 'painless'
+                params {
+                    count = 5
+                }
+            }
+        }.actionGet()
+
+        assert updateResponse.result == DocWriteResponse.Result.UPDATED
+        assert updateResponse.id == docId
+        assert updateResponse.version == 2
+
+        GetResponse getResponse = client.get {
+            index indexName
+            type typeName
+            id docId
+        }.actionGet()
+
+        assert getResponse.exists
+        assert getResponse.version == updateResponse.version
+        assert getResponse.source.user != null
+        assert getResponse.source.count == startCount + 5
+    }
+
+    @Test
+    void testPutStoredScriptRequestAsync() {
+        int startCount = randomInt(1024)
+
+        String docId = indexDoc(indexName, typeName) {
+            // actual value is ignored
+            user = randomAsciiOfLengthBetween(1, 16)
+            count = startCount
+        }
+
+        // index the script
+        PutStoredScriptResponse response = clusterAdminClient.putStoredScriptAsync {
+            id 'testPutStoredScriptRequestAsync'
+            scriptLang 'painless'
+            script {
+                // NOTE: The script is [in this case] Painless, but it must be a string that is interpreted on the server
+                script = "ctx._source.count += count"
+            }
+        }.actionGet()
+
+        assert response.acknowledged
+
+        UpdateResponse updateResponse = client.updateAsync {
+            index indexName
+            type typeName
+            id docId
+            source {
+                script_id 'testPutStoredScriptRequestAsync'
+                lang 'groovy'
+                params {
+                    count = 5
+                }
+            }
+        }.actionGet()
+
+        assert updateResponse.result == DocWriteResponse.Result.UPDATED
+        assert updateResponse.id == docId
+        assert updateResponse.version == 2
+
+        GetResponse getResponse = client.getAsync {
+            index indexName
+            type typeName
+            id docId
+        }.actionGet()
+
+        assert getResponse.exists
+        assert getResponse.version == updateResponse.version
+        assert getResponse.source.user != null
+        assert getResponse.source.count == startCount + 5
+    }
+
+    @Test
+    void testGetStoredScriptRequestSync() {
+        String painlessScript = "ctx._source.count += count"
+
+        // index the script
+        PutStoredScriptResponse putResponse = clusterAdminClient.putStoredScriptSync {
+            id 'testGetStoredScriptRequestSync'
+            scriptLang 'painless'
+            script {
+                script = painlessScript
+            }
+        }
+
+        assert putResponse.acknowledged
+
+        GetStoredScriptResponse response = clusterAdminClient.getStoredScriptSync {
+            id 'testGetStoredScriptRequestSync'
+            lang 'painless'
+        }
+
+        assert response.storedScript == painlessScript
+    }
+
+    @Test
+    void testGetStoredScriptRequest() {
+        String painlessScript = "ctx._source.count += count"
+
+        // index the script
+        PutStoredScriptResponse putResponse = clusterAdminClient.putStoredScript {
+            id 'testGetStoredScriptRequest'
+            scriptLang 'painless'
+            script {
+                script = painlessScript
+            }
+        }.actionGet()
+
+        assert putResponse.acknowledged
+
+        GetStoredScriptResponse response = clusterAdminClient.getStoredScript {
+            id 'testGetStoredScriptRequest'
+            lang 'painless'
+        }.actionGet()
+
+        assert response.storedScript == painlessScript
+    }
+
+    @Test
+    void testGetStoredScriptRequestAsync() {
+        String painlessScript = "ctx._source.count += count"
+
+        // index the script
+        PutStoredScriptResponse putResponse = clusterAdminClient.putStoredScriptAsync {
+            id 'testGetStoredScriptRequest'
+            scriptLang 'painless'
+            script {
+                script = painlessScript
+            }
+        }.actionGet()
+
+        assert putResponse.created
+
+        GetStoredScriptResponse response = clusterAdminClient.getStoredScriptAsync {
+            id 'testGetIndexedScriptRequestAsync'
+            lang 'painless'
+        }.actionGet()
+
+        assert response.storedScript == painlessScript
+    }
+
+    @Test
+    void testDeleteStoredScriptRequestSync() {
+        // index the script
+        PutStoredScriptResponse putResponse = clusterAdminClient.putStoredScriptSync {
+            id 'testDeleteStoredScriptRequestSync'
+            scriptLang 'painless'
+            script {
+                script = "ctx._source.count += count"
+            }
+        }
+
+        assert putResponse.acknowledged
+
+        // perform the delete
+        DeleteStoredScriptResponse response = clusterAdminClient.deleteStoredScriptSync {
+            id 'testDeleteStoredScriptRequestSync'
+            scriptLang 'painless'
+        }
+
+        assert response.acknowledged
+
+        GetStoredScriptResponse getResponse = clusterAdminClient.getStoredScriptSync {
+            id 'testDeleteStoredScriptRequestSync'
+            lang 'painless'
+        }
+
+        assert getResponse.storedScript == null
+    }
+
+    @Test
+    void testDeleteStoredScriptRequest() {
+        // index the script
+        PutStoredScriptResponse putResponse = clusterAdminClient.putStoredScript {
+            id 'testDeleteStoredScriptRequest'
+            scriptLang 'painless'
+            script {
+                script = "ctx._source.count += count"
+            }
+        }.actionGet()
+
+        assert putResponse.acknowledged
+
+        // perform the delete
+        DeleteStoredScriptResponse response = clusterAdminClient.deleteStoredScript {
+            id 'testDeleteStoredScriptRequest'
+            scriptLang 'painless'
+        }.actionGet()
+
+        assert response.acknowledged
+
+        GetStoredScriptResponse getResponse = clusterAdminClient.getStoredScript {
+            id 'testDeleteStoredScriptRequest'
+            lang 'painless'
+        }.actionGet()
+
+        assert getResponse.storedScript == null
+    }
+
+    @Test
+    void testDeleteStoredScriptRequestAsync() {
+        // index the script
+        PutStoredScriptResponse putResponse = clusterAdminClient.putStoredScriptAsync {
+            id 'testDeleteStoredScriptRequestAsync'
+            scriptLang 'painless'
+            script {
+                script = "ctx._source.count += count"
+            }
+        }.actionGet()
+
+        assert putResponse.acknowledged
+
+        // perform the delete
+        DeleteStoredScriptResponse response = clusterAdminClient.deleteStoredScriptAsync {
+            id 'testDeleteStoredScriptRequestAsync'
+            scriptLang 'painless'
+        }.actionGet()
+
+        assert response.acknowledged
+
+        GetStoredScriptResponse getResponse = clusterAdminClient.getStoredScriptAsync {
+            id 'testDeleteStoredScriptRequestAsync'
+            lang 'painless'
+        }.actionGet()
+
+        assert getResponse.storedScript == null
+    }
+
 
     /**
      * Create a repository with the {@code repoName} and a snapshot with the {@code snapshotName} within the repository.

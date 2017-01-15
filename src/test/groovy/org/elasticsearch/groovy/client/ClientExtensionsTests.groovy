@@ -22,16 +22,12 @@ import org.elasticsearch.client.AdminClient
 import org.elasticsearch.client.Client
 import org.elasticsearch.common.settings.Settings
 import org.elasticsearch.groovy.AbstractESTestCase
-import org.elasticsearch.node.Node
 
 import org.junit.Test
-
-import static org.elasticsearch.node.NodeBuilder.nodeBuilder
 
 import static org.mockito.Mockito.mock
 import static org.mockito.Mockito.verifyZeroInteractions
 import static org.mockito.Mockito.when
-
 
 /**
  * Tests {@link ClientExtensions}.
@@ -60,16 +56,5 @@ class ClientExtensionsTests extends AbstractESTestCase {
         when(client.settings()).thenReturn(settings)
 
         assert ClientExtensions.getSettings(client) == settings
-    }
-
-    @Test
-    void testExtensionModuleConfigured() {
-        Node node = nodeBuilder().local(true).settings { path.home = createTempDir().toString() }.build()
-        Client client = node.client()
-
-        assert client.getAdmin() == client.admin()
-        assert client.getSettings() == client.settings()
-
-        node.close()
     }
 }

@@ -22,11 +22,8 @@ import org.elasticsearch.client.AdminClient
 import org.elasticsearch.client.ClusterAdminClient
 import org.elasticsearch.client.IndicesAdminClient
 import org.elasticsearch.groovy.AbstractESTestCase
-import org.elasticsearch.node.Node
 
 import org.junit.Test
-
-import static org.elasticsearch.node.NodeBuilder.nodeBuilder
 
 import static org.mockito.Mockito.mock
 import static org.mockito.Mockito.verifyZeroInteractions
@@ -61,16 +58,5 @@ class AdminClientExtensionsTests extends AbstractESTestCase {
         assert AdminClientExtensions.getIndices(admin) == indices
 
         verifyZeroInteractions(indices)
-    }
-
-    @Test
-    void testExtensionModuleConfigured() {
-        Node node = nodeBuilder().local(true).settings { path.home = createTempDir().toString() }.build()
-        AdminClient admin = node.client().admin()
-
-        assert admin.getCluster() == admin.cluster()
-        assert admin.getIndices() == admin.indices()
-
-        node.close()
     }
 }
