@@ -17,15 +17,15 @@
  * under the License.
  */
 
-// The name of the Gradle project. It must be set in this file.
-//
-// This is used in lieu of the directory name, which has the same name by default.
-rootProject.name = 'elasticsearch-groovy'
+File extrasDir = new File(settingsDir, '..').getCanonicalFile()
 
-// The noindy subproject exists exclusively for Grails 2.x support. At least currently, it does not contain
-// any extra code, rather it is compiled without invokedynamic support. This is necessary because Grails 2.x
-// does not make it easy to select the version of Groovy bundled with it, which makes it difficult to use
-// an invokedynamic-compatible version of Groovy with Grails.
-//
-// Once Grails 3.x is established, then this build artifact will be removed! 
-include 'grails'
+if (extrasDir.name.endsWith('-extra') == false) {
+  throw new GradleException("elasticsearch-groovy must be checked out under an elasticsearch-extra directory, but found ${extrasDir.name}")
+}
+
+File elasticsearchDir = new File(extrasDir.parentFile, extrasDir.name[0..-7])
+
+// NOTE: we ensure the elasticsearch dir is present in buildSrc
+project(':').projectDir = elasticsearchDir
+
+apply from: "${elasticsearchDir}/settings.gradle"

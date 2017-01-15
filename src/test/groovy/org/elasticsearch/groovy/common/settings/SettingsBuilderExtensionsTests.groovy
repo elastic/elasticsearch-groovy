@@ -30,7 +30,7 @@ class SettingsBuilderExtensionsTests extends AbstractESTestCase {
     /**
      * Tested {@link Settings.Builder}.
      */
-    private final Settings.Builder builder = Settings.settingsBuilder()
+    private final Settings.Builder builder = Settings.builder()
 
     @Test
     void testSettingsClosure() {
@@ -65,7 +65,7 @@ class SettingsBuilderExtensionsTests extends AbstractESTestCase {
 
     @Test
     void testExtensionModuleConfigured() {
-        Settings.Builder mapBuilder = Settings.settingsBuilder()
+        Settings.Builder mapBuilder = Settings.builder()
 
         String value = randomAsciiOfLengthBetween(16, 128)
 

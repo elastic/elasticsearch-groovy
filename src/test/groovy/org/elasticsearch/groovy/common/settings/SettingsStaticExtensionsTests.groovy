@@ -38,7 +38,7 @@ class SettingsStaticExtensionsTests extends AbstractESTestCase {
 
         // verify that the settings were added appropriately (note: first arg is unused and not shown in the actual
         //  extension version, as shown in the final test in this test class)
-        Settings settings = SettingsStaticExtensions.settingsBuilder(null) {
+        Settings settings = SettingsStaticExtensions.builder(null) {
             arbitrary {
                 field = arbitraryField
             }
@@ -61,7 +61,7 @@ class SettingsStaticExtensionsTests extends AbstractESTestCase {
 
     @Test
     void testExtensionModuleConfigured() {
-        Settings.Builder mapBuilder = Settings.settingsBuilder()
+        Settings.Builder mapBuilder = Settings.builder()
 
         String value = randomAsciiOfLengthBetween(16, 128)
 
@@ -69,7 +69,7 @@ class SettingsStaticExtensionsTests extends AbstractESTestCase {
         mapBuilder.put([key : value])
 
         // built from the closure
-        Settings closureSettings = Settings.settingsBuilder {
+        Settings closureSettings = Settings.builder {
             key = value
         }.build()
 

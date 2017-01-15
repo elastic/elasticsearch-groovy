@@ -55,7 +55,7 @@ class ClientExtensionsTests extends AbstractESTestCase {
 
     @Test
     void testGetIndices() {
-        Settings settings = Settings.settingsBuilder().build()
+        Settings settings = Settings.EMPTY
 
         when(client.settings()).thenReturn(settings)
 

@@ -18,6 +18,7 @@
  */
 package org.elasticsearch.groovy.common.xcontent
 
+import org.elasticsearch.common.bytes.BytesReference
 import org.elasticsearch.common.xcontent.XContentBuilder
 import org.elasticsearch.common.xcontent.XContentFactory
 import org.elasticsearch.common.xcontent.XContentParser
@@ -131,18 +132,8 @@ class XContentBuilderExtensionsTests extends AbstractESTestCase {
     }
 
     @Test
-    void testGetByteStream() {
-        assert XContentBuilderExtensions.getBytesStream(jsonBuilder) == jsonBuilder.bytesStream()
-    }
-
-    @Test
     void testGetGenerator() {
         assert XContentBuilderExtensions.getGenerator(jsonBuilder) == jsonBuilder.generator()
-    }
-
-    @Test
-    void testGetStream() {
-        assert XContentBuilderExtensions.getStream(jsonBuilder) == jsonBuilder.stream()
     }
 
     @Test
@@ -157,14 +148,12 @@ class XContentBuilderExtensionsTests extends AbstractESTestCase {
         XContentBuilder jsonBuilder = XContentFactory.contentBuilder(XContentType.JSON).map(closure)
 
         assert closure.asJsonString() == jsonBuilder.string()
-        assert closure.asJsonBytes() == jsonBuilder.bytes().toBytes()
+        assert closure.asJsonBytes() == BytesReference.toBytes(jsonBuilder.bytes())
         assert closure.buildString(type) == arbitraryBuilder.string()
         assert closure.build(type).string() == arbitraryBuilder.string()
         assert closure.buildBytes(type) == arbitraryBuilder.bytes().toBytes()
         assert jsonBuilder.bytes() == jsonBuilder.getBytes()
-        assert jsonBuilder.bytesStream() == jsonBuilder.getBytesStream()
         assert jsonBuilder.generator() == jsonBuilder.getGenerator()
-        assert jsonBuilder.stream() == jsonBuilder.getStream()
         assert jsonBuilder.string() == jsonBuilder.getString()
     }
 

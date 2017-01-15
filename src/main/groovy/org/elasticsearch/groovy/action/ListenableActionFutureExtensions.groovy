@@ -70,7 +70,7 @@ class ListenableActionFutureExtensions {
             }
 
             @Override
-            void onFailure(Throwable e) {
+            void onFailure(Exception e) {
                 listener.call(null, e)
             }
         })
@@ -105,7 +105,7 @@ class ListenableActionFutureExtensions {
             }
 
             @Override
-            void onFailure(Throwable e) {
+            void onFailure(Exception e) {
                 // success listener ignores failure
             }
         })
@@ -115,7 +115,7 @@ class ListenableActionFutureExtensions {
 
     /**
      * Adds the {@code listener} as a wrapped {@link ActionListener} that only handles
-     * {@link ActionListener#onFailure(Throwable)} failure}.
+     * {@link ActionListener#onFailure(Exception)} failure}.
      * <pre>
      * listenableActionFuture.failureListener { e ->
      *     // e is never null
@@ -140,7 +140,7 @@ class ListenableActionFutureExtensions {
             }
 
             @Override
-            void onFailure(Throwable e) {
+            void onFailure(Exception e) {
                 listener.call(e)
             }
         })
@@ -160,6 +160,6 @@ class ListenableActionFutureExtensions {
     private void checkNotNull(Object isNotNull, String message) {
         if (isNotNull == null) {
             throw new NullPointerException(message)
-	}
+	    }
     }
 }

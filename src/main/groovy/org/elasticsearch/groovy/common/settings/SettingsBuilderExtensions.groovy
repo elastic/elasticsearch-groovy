@@ -32,7 +32,7 @@ class SettingsBuilderExtensions {
     /**
      * Explicit settings to set.
      * <pre>
-     * Settings.Builder.settingsBuilder().put {
+     * Settings.Builder.builder().put {
      *     node {
      *         client = true
      *     }
@@ -53,7 +53,7 @@ class SettingsBuilderExtensions {
      */
     static Settings.Builder put(Settings.Builder self, Closure settings) {
         try {
-            self.put(new JsonSettingsLoader().load(settings.asJsonBytes()))
+            self.put(new JsonSettingsLoader(true).load(settings.asJsonBytes()))
         }
         catch (IOException e) {
             throw new ElasticsearchGenerationException("Closure failed to map to valid JSON.", e)

@@ -27,17 +27,14 @@ import org.elasticsearch.common.settings.Settings
  * {@code SettingsStaticExtensions} provide {@code static}, Groovy-friendly extensions to {@link Settings}.
  * <p>
  * In particular, this adds the ability to specify settings in the form of a {@link Closure} when creating a
- * new {@link Settings#settingsBuilder() Builder}.
+ * new {@link Settings#builder() Builder}.
  */
 @TypeChecked
 class SettingsStaticExtensions {
     /**
      * Explicit settings to set.
      * <pre>
-     * Settings.settingsBuilder {
-     *     node {
-     *         client = true
-     *     }
+     * Settings.builder {
      *     cluster {
      *         name = 'es-cluster-name'
      *     }
@@ -50,7 +47,7 @@ class SettingsStaticExtensions {
      * @throws NullPointerException if {@code settings} is {@code null}
      * @throws ElasticsearchGenerationException if the {@code settings} fail to parse as JSON
      */
-    static Settings.Builder settingsBuilder(Settings selfType, Closure settings) {
-        Settings.settingsBuilder().put(settings)
+    static Settings.Builder builder(Settings selfType, Closure settings) {
+        Settings.builder().put(settings)
     }
 }

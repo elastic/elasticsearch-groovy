@@ -53,6 +53,12 @@ import org.elasticsearch.action.admin.cluster.state.ClusterStateRequest
 import org.elasticsearch.action.admin.cluster.state.ClusterStateResponse
 import org.elasticsearch.action.admin.cluster.stats.ClusterStatsRequest
 import org.elasticsearch.action.admin.cluster.stats.ClusterStatsResponse
+import org.elasticsearch.action.admin.cluster.storedscripts.DeleteStoredScriptRequest
+import org.elasticsearch.action.admin.cluster.storedscripts.DeleteStoredScriptResponse
+import org.elasticsearch.action.admin.cluster.storedscripts.GetStoredScriptRequest
+import org.elasticsearch.action.admin.cluster.storedscripts.GetStoredScriptResponse
+import org.elasticsearch.action.admin.cluster.storedscripts.PutStoredScriptRequest
+import org.elasticsearch.action.admin.cluster.storedscripts.PutStoredScriptResponse
 import org.elasticsearch.action.admin.cluster.tasks.PendingClusterTasksRequest
 import org.elasticsearch.action.admin.cluster.tasks.PendingClusterTasksResponse
 import org.elasticsearch.client.AdminClient
@@ -912,5 +918,242 @@ class ClusterAdminClientExtensions extends AbstractClientExtensions {
     static ListenableActionFuture<PendingClusterTasksResponse> pendingClusterTasksAsync(ClusterAdminClient self,
                                                                                         Closure requestClosure) {
         doRequestAsync(self, new PendingClusterTasksRequest(), requestClosure, self.&pendingClusterTasks)
+    }
+
+
+    /**
+     * Put (set/add) the indexed script to be used by other requests.
+     * <pre>
+     * PutStoredScriptResponse response = client.putStoredScriptSync {
+     *     id 'my-script-name'
+     *     // NOTE1: This will be the Groovy runtime within Elasticsearch
+     *     //        and not the Groovy client (this)!
+     *     scriptLang 'painless'
+     *     script {
+     *         // NOTE2: The script is [in this case] Painless, but it must
+     *         //        be a string that is interpreted on the server
+     *         // NOTE3: "count" is a script parameter that must be filled
+     *         //        in by the associated update request that makes
+     *         //        use of this script
+     *         script = "ctx._source.count += count"
+     *     }
+     * }
+     * </pre>
+     * Once the above script is added, then you could make use of it by using it with an {@code UpdateRequest}.
+     * <pre>
+     * UpdateResponse updateResponse = client.updateSync {
+     *     index indexName
+     *     type typeName
+     *     id docId
+     *     source {
+     *         stored 'testPutIndexedScriptRequest'
+     *         lang 'painless'
+     *         params {
+     *             count = 5
+     *         }
+     *     }
+     * }
+     *
+     * @param self The {@code this} reference for the {@link ClusterAdminClient}
+     * @param requestClosure The map-like closure that configures the {@link PutStoredScriptRequest}.
+     * @return Never {@code null}.
+     * @throws NullPointerException if any parameter is {@code null}
+     */
+    static PutStoredScriptResponse putStoredScriptSync(ClusterAdminClient self, Closure requestClosure) {
+        doRequest(self, new PutStoredScriptRequest(), requestClosure, self.&putStoredScript)
+    }
+
+    /**
+     * Put (set/add) the indexed script to be used by other requests.
+     * <pre>
+     * PutStoredScriptResponse response = client.putStoredScript {
+     *     id 'my-script-name'
+     *     // NOTE1: This will be the Groovy runtime within Elasticsearch
+     *     //        and not the Groovy client (this)!
+     *     scriptLang 'painless'
+     *     script {
+     *         // NOTE2: The script is [in this case] Painless, but it must
+     *         //        be a string that is interpreted on the server
+     *         // NOTE3: "count" is a script parameter that must be filled
+     *         //        in by the associated update request that makes
+     *         //        use of this script
+     *         script = "ctx._source.count += count"
+     *     }
+     * }.actionGet()
+     * </pre>
+     * Once the above script is added, then you could make use of it by using it with an {@code UpdateRequest}.
+     * <pre>
+     * UpdateResponse updateResponse = client.update {
+     *     index indexName
+     *     type typeName
+     *     id docId
+     *     source {
+     *         stored 'testPutIndexedScriptRequest'
+     *         lang 'painless'
+     *         params {
+     *             count = 5
+     *         }
+     *     }
+     * }.actionGet()
+     *
+     * @param self The {@code this} reference for the {@link ClusterAdminClient}
+     * @param requestClosure The map-like closure that configures the {@link PutStoredScriptRequest}.
+     * @return Never {@code null}.
+     * @throws NullPointerException if any parameter is {@code null}
+     */
+    static ListenableActionFuture<PutStoredScriptResponse> putStoredScript(ClusterAdminClient self, Closure requestClosure) {
+        doRequestAsync(self, new PutStoredScriptRequest(), requestClosure, self.&putStoredScript)
+    }
+
+    /**
+     * Put (set/add) the indexed script to be used by other requests.
+     * <pre>
+     * PutStoredScriptResponse response = client.putStoredScriptAsync {
+     *     id 'my-script-name'
+     *     // NOTE1: This will be the Groovy runtime within Elasticsearch
+     *     //        and not the Groovy client (this)!
+     *     scriptLang 'painless'
+     *     script {
+     *         // NOTE2: The script is [in this case] Painless, but it must
+     *         //        be a string that is interpreted on the server
+     *         // NOTE3: "count" is a script parameter that must be filled
+     *         //        in by the associated update request that makes
+     *         //        use of this script
+     *         script = "ctx._source.count += count"
+     *     }
+     * }.actionGet()
+     * </pre>
+     * Once the above script is added, then you could make use of it by using it with an {@code UpdateRequest}.
+     * <pre>
+     * UpdateResponse updateResponse = client.updateAsync {
+     *     index indexName
+     *     type typeName
+     *     id docId
+     *     source {
+     *         stored 'testPutIndexedScriptRequest'
+     *         lang 'painless'
+     *         params {
+     *             count = 5
+     *         }
+     *     }
+     * }.actionGet()
+     *
+     * @param self The {@code this} reference for the {@link ClusterAdminClient}
+     * @param requestClosure The map-like closure that configures the {@link PutStoredScriptRequest}.
+     * @return Never {@code null}.
+     * @throws NullPointerException if any parameter is {@code null}
+     */
+    static ListenableActionFuture<PutStoredScriptResponse> putStoredScriptAsync(ClusterAdminClient self, Closure requestClosure) {
+        doRequestAsync(self, new PutStoredScriptRequest(), requestClosure, self.&putStoredScript)
+    }
+
+    /**
+     * Get an indexed script.
+     * <pre>
+     * GetStoredScriptResponse response = client.getStoredScriptSync {
+     *     id 'my-script-name'
+     *     lang 'painless'
+     * }
+     * </pre>
+     *
+     * @param self The {@code this} reference for the {@link ClusterAdminClient}
+     * @param requestClosure The map-like closure that configures the {@link GetStoredScriptRequest}.
+     * @return Never {@code null}.
+     * @throws NullPointerException if any parameter is {@code null}
+     */
+    static GetStoredScriptResponse getStoredScriptSync(ClusterAdminClient self, Closure requestClosure) {
+        doRequest(self, new GetStoredScriptRequest(null, null), requestClosure, self.&getStoredScript)
+    }
+
+    /**
+     * Get an indexed script.
+     * <pre>
+     * GetStoredScriptResponse response = client.getStoredScript {
+     *     id 'my-script-name'
+     *     lang 'painless'
+     * }.actionGet()
+     * </pre>
+     *
+     * @param self The {@code this} reference for the {@link ClusterAdminClient}
+     * @param requestClosure The map-like closure that configures the {@link GetStoredScriptRequest}.
+     * @return Never {@code null}.
+     * @throws NullPointerException if any parameter is {@code null}
+     */
+    static ListenableActionFuture<GetStoredScriptResponse> getStoredScript(ClusterAdminClient self, Closure requestClosure) {
+        doRequestAsync(self, new GetStoredScriptRequest(null, null), requestClosure, self.&getStoredScript)
+    }
+
+    /**
+     * Get an indexed script.
+     * <pre>
+     * GetStoredScriptResponse response = client.getStoredScriptAsync {
+     *     id 'my-script-name'
+     *     lang 'painless'
+     * }.actionGet()
+     * </pre>
+     *
+     * @param self The {@code this} reference for the {@link ClusterAdminClient}
+     * @param requestClosure The map-like closure that configures the {@link GetStoredScriptRequest}.
+     * @return Never {@code null}.
+     * @throws NullPointerException if any parameter is {@code null}
+     */
+    static ListenableActionFuture<GetStoredScriptResponse> getStoredScriptAsync(ClusterAdminClient self, Closure requestClosure) {
+        doRequestAsync(self, new GetStoredScriptRequest(null, null), requestClosure, self.&getStoredScript)
+    }
+
+    /**
+     * Delete an indexed script.
+     * <pre>
+     * DeleteStoredScriptResponse response = client.deleteStoredScriptSync {
+     *     id 'my-script-name'
+     *     scriptLang 'painless'
+     * }
+     * </pre>
+     *
+     * @param self The {@code this} reference for the {@link ClusterAdminClient}
+     * @param requestClosure The map-like closure that configures the {@link DeleteStoredScriptRequest}.
+     * @return Never {@code null}.
+     * @throws NullPointerException if any parameter is {@code null}
+     */
+    static DeleteStoredScriptResponse deleteStoredScriptSync(ClusterAdminClient self, Closure requestClosure) {
+        doRequest(self, new DeleteStoredScriptRequest(null, null), requestClosure, self.&deleteStoredScript)
+    }
+
+    /**
+     * Delete an indexed script.
+     * <pre>
+     * DeleteStoredScriptResponse response = client.deleteStoredScript {
+     *     id 'my-script-name'
+     *     scriptLang 'painless'
+     * }.actionGet()
+     * </pre>
+     *
+     * @param self The {@code this} reference for the {@link ClusterAdminClient}
+     * @param requestClosure The map-like closure that configures the {@link DeleteStoredScriptRequest}.
+     * @return Never {@code null}.
+     * @throws NullPointerException if any parameter is {@code null}
+     */
+    static ListenableActionFuture<DeleteStoredScriptResponse> deleteStoredScript(ClusterAdminClient self,
+                                                                                 Closure requestClosure) {
+        doRequestAsync(self, new DeleteStoredScriptRequest(null, null), requestClosure, self.&deleteStoredScript)
+    }
+
+    /**
+     * Delete an indexed script.
+     * <pre>
+     * DeleteStoredScriptResponse response = client.deleteStoredScriptAsync {
+     *     id 'my-script-name'
+     *     scriptLang 'painless'
+     * }.actionGet()
+     * </pre>
+     *
+     * @param self The {@code this} reference for the {@link ClusterAdminClient}
+     * @param requestClosure The map-like closure that configures the {@link DeleteStoredScriptRequest}.
+     * @return Never {@code null}.
+     * @throws NullPointerException if any parameter is {@code null}
+     */
+    static ListenableActionFuture<DeleteStoredScriptResponse> deleteIndexedScriptAsync(ClusterAdminClient self,
+                                                                                       Closure requestClosure) {
+        doRequestAsync(self, new DeleteStoredScriptRequest(null, null), requestClosure, self.&deleteStoredScript)
     }
 }

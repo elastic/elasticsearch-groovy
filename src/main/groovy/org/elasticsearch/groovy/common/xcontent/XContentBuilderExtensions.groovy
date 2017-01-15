@@ -19,9 +19,7 @@
 package org.elasticsearch.groovy.common.xcontent
 
 import org.elasticsearch.common.bytes.BytesReference
-import org.elasticsearch.common.io.BytesStream
 import org.elasticsearch.common.xcontent.XContentBuilder
-import org.elasticsearch.common.xcontent.XContentBuilderString
 import org.elasticsearch.common.xcontent.XContentFactory
 import org.elasticsearch.common.xcontent.XContentGenerator
 import org.elasticsearch.common.xcontent.XContentType
@@ -125,7 +123,7 @@ class XContentBuilderExtensions {
      * @throws IOException if any error occurs while mapping the {@link Closure}
      */
     static byte[] buildBytes(Closure self, XContentType type) throws IOException {
-        build(self, type).bytes().toBytes()
+        BytesReference.toBytes(build(self, type).bytes())
     }
 
     /**
@@ -156,17 +154,6 @@ class XContentBuilderExtensions {
     }
 
     /**
-     * Close the {@link XContentBuilder} and get the result as a {@link BytesStream} in the preset {@code XContentType}.
-     *
-     * @param self The {@code this} reference for the {@link XContentBuilder}
-     * @return Always {@link XContentBuilder#bytesStream()}.
-     * @throws NullPointerException if {@code self} is {@code null}
-     */
-    static BytesStream getBytesStream(XContentBuilder self) {
-        self.bytesStream()
-    }
-
-    /**
      * Get the internal {@link XContentGenerator} of the {@link XContentBuilder}.
      * <p>
      * Note: This does <em>not</em> close the {@link XContentBuilder#generator()}.
@@ -177,20 +164,6 @@ class XContentBuilderExtensions {
      */
     static XContentGenerator getGenerator(XContentBuilder self) {
         self.generator()
-    }
-
-
-    /**
-     * Get the internal {@link OutputStream} of the {@link XContentBuilder}.
-     * <p>
-     * Note: This does <em>not</em> close the {@link XContentBuilder#generator()}.
-     *
-     * @param self The {@code this} reference for the {@link XContentBuilder}
-     * @return Always {@link XContentBuilder#stream()}.
-     * @throws NullPointerException if {@code self} is {@code null}
-     */
-    static OutputStream getStream(XContentBuilder self) {
-        self.stream()
     }
 
     /**
@@ -215,20 +188,6 @@ class XContentBuilderExtensions {
      * @throws IOException if any error occurs while adding the field
      */
     static XContentBuilder field(XContentBuilder self, String name, Closure closure) throws IOException {
-        self.field(name, closure.asMap())
-    }
-
-    /**
-     * Convert the {@code closure} into a {@link Map} and call {@link XContentBuilder#field(String, Map)}, effectively
-     * setting the {@code name} to the defined sub-object.
-     *
-     * @param self The {@code this} reference for the {@link XContentBuilder}
-     * @param closure The closure to convert to a map and add to the builder
-     * @return Always {@code self}.
-     * @throws NullPointerException if any parameter is {@code null}
-     * @throws IOException if any error occurs while adding the field
-     */
-    static XContentBuilder field(XContentBuilder self, XContentBuilderString name, Closure closure) throws IOException {
         self.field(name, closure.asMap())
     }
 

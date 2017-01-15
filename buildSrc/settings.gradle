@@ -16,17 +16,19 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.elasticsearch.groovy
+ 
+File extrasDir = new File(settingsDir, '../..').getCanonicalFile()
 
-import groovy.transform.CompileStatic
-
-/**
- * The basis for all Groovy client test classes that do not require a running Elasticsearch cluster / client.
- * @see AbstractESTestCase
- * @deprecated Use {@link AbstractESTestCase} instead (to match rename of the base ES code).
- */
-@Deprecated
-@CompileStatic
-abstract class AbstractElasticsearchTestCase extends AbstractESTestCase {
-
+if (extrasDir.name.endsWith('-extra') == false) {
+  throw new GradleException("elasticsearch-groovy must be checked out under an elasticsearch-extra directory, but found ${extrasDir.name}")
 }
+
+// elasticsearch does not require that its directory be named 'elasticsearch', but the -extra dir shares the same prefix!
+File elasticsearchDir = new File(extrasDir.parentFile, extrasDir.name[0..-7])
+
+if (elasticsearchDir.exists() == false) {
+  throw new GradleException("${elasticsearchDir.name} is missing as a sibling to ${extrasDir.name}")
+}
+
+// set the project root
+project(':').projectDir = new File(elasticsearchDir, 'buildSrc')
