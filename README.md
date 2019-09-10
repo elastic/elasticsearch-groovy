@@ -1,6 +1,8 @@
 Groovy Client for Elasticsearch
 ===============================
 
+**IMPORTANT**: The Groovy Client is deprecated as of Elasticsearch v6.0.0 and is no longer actively maintained.
+
 The Elasticsearch Groovy client project helps you to use Elasticsearch in Groovy projects. This Groovy client inherently
 supports 100% of the Elasticsearch API for the supported version by using Groovy extension modules with the Java client.
 Literally anything possible in the same version of the Java client is possible with the Groovy client, plus some
